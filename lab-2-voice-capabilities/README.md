@@ -12,6 +12,7 @@ In this lab, you'll enhance your RAG chatbot from Lab 1 by adding voice capabili
 
 ## 📖 What You'll Learn
 
+- **Foundry IQ**: Integrating Foundry IQ with voice capabilities for enhanced knowledge retrieval
 - **Azure Speech Services**: Speech-to-Text (STT) and Text-to-Speech (TTS)
 - **Audio Processing**: Handling audio streams and formats
 - **Real-time Communication**: WebSockets for streaming audio

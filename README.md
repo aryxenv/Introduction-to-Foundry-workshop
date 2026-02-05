@@ -13,6 +13,7 @@ By the end of this workshop, you will have:
 ### Learning Objectives
 
 - Understand the architecture of our Retrieval-Augmented Generation (RAG) part on Azure
+- Learn to use Foundry IQ for knowledge base management and indexing
 - Set up a knowledge base using Azure AI Search that will be used by our chatbot
 - Learn to use the Microsoft Agent Framework for building conversational AI
 - Deploy and host AI applications on Microsoft Foundry
@@ -47,6 +48,7 @@ This workshop is divided into two progressive labs:
 In this lab, you will:
 - Set up your Azure AI Foundry environment
 - Understand RAG architecture and its benefits
+- Learn to use Foundry IQ for knowledge base management
 - Build a knowledge base using Azure AI Search
 - Create a chatbot using Microsoft Agent Framework (Semantic Kernel)
 - Deploy your chatbot to Azure AI Foundry

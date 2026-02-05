@@ -11,6 +11,7 @@ In this lab, you'll build a chatbot with Retrieval-Augmented Generation (RAG) ca
 ## 📖 What You'll Learn
 
 - **RAG Fundamentals**: Understanding how RAG combines retrieval and generation
+- **Foundry IQ**: Using Foundry IQ for knowledge base management and indexing
 - **Azure AI Search**: Working with embeddings and semantic search on Azure
 - **Microsoft Agent Framework**: Building intelligent agents with Semantic Kernel
 - **Azure AI Foundry Deployment**: Hosting and scaling AI applications on Azure's unified platform
