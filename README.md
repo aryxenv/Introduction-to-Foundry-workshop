@@ -86,8 +86,6 @@ If available in your org/account - no local setup needed:
 2. Follow the [Setup Guide](./SETUP.md)
 3. Start with [Lab 1](./lab-1-rag-chatbot/README.md)
 
-1. [Lab 1: Building a RAG-Enabled Chatbot](./lab-1-rag-chatbot/README.md)
-2. [Lab 2: Adding Voice Capabilities](./lab-2-voice-capabilities/README.md)
 
 ## 📚 Additional Resources
 

@@ -2,7 +2,7 @@
 
 ## 🎯 Lab Overview
 
-In this lab, you'll build a chatbot with Retrieval-Augmented Generation (RAG) capabilities using the Microsoft Agent Framework and deploy it on Microsoft Azure AI Foundry. By the end of this lab, you'll have a production-ready chatbot hosted on Azure's unified AI platform that can answer questions based on your custom knowledge base.
+In this lab, you'll build a chatbot with Retrieval-Augmented Generation (RAG) capabilities using the Microsoft Agent Framework and deploy it on Microsoft Foundry. By the end of this lab, you'll have a production-ready chatbot hosted on Microsoft's unified AI platform that can answer questions based on your custom knowledge base.
 
 **Estimated Time**: 40 minutes
 
@@ -11,11 +11,10 @@ In this lab, you'll build a chatbot with Retrieval-Augmented Generation (RAG) ca
 ## 📖 What You'll Learn
 
 - **RAG Fundamentals**: Understanding how RAG combines retrieval and generation
-- **Foundry IQ**: Using Foundry IQ for knowledge base management and indexing
 - **Azure AI Search**: Working with embeddings and semantic search on Azure
+- **Foundry IQ**: Using Foundry IQ for knowledge base management and indexing
 - **Microsoft Agent Framework**: Building intelligent agents with Semantic Kernel
-- **Azure AI Foundry Deployment**: Hosting and scaling AI applications on Azure's unified platform
-- **Best Practices**: Security, error handling, and monitoring
+- **Microsoft Foundry Deployment**: Hosting and scaling AI applications on Microsoft's unified platform
 
 ## 🏗️ Architecture Overview
 
@@ -35,13 +34,24 @@ User Query → Embedding → Vector Search → Relevant Context
                                LLM (with context) → Response
 ```
 
-**Components:**
-- **Document Store**: Your knowledge base (PDFs, docs, etc.)
-- **Embedding Model**: Converts text to numerical vectors (Azure OpenAI)
-- **Vector Database**: Stores and searches embeddings (Azure AI Search)
-- **LLM**: Generates responses (Azure OpenAI GPT-4)
-- **Agent Framework**: Orchestrates the workflow (Semantic Kernel)
-- **Azure AI Foundry**: Unified platform for hosting, managing, and monitoring your AI application
+### Microsoft Services Used
+
+| Component | Microsoft Service | Purpose |
+|-----------|------------------|---------|
+| **AI Platform** | Microsoft Foundry | Unified platform for building, deploying, and managing AI applications |
+| **Knowledge Base** | Foundry IQ | Automatic indexing, chunking, and retrieval of your documents |
+| **Vector Search** | Azure AI Search | Stores embeddings and performs semantic search |
+| **Embedding Model** | Azure OpenAI (text-embedding-ada-002) | Converts text into numerical vectors |
+| **LLM** | Azure OpenAI (GPT-4) | Generates natural language responses |
+| **Agent Orchestration** | Microsoft Agent Framework | Coordinates the RAG workflow and tool calling |
+
+### How It All Fits Together
+
+1. **Microsoft Foundry** is your central hub - it's where you create your project, manage models, and deploy your agent
+2. **Foundry IQ** handles your knowledge base - upload documents and it automatically chunks, embeds, and indexes them
+3. **Azure AI Search** powers the vector database behind Foundry IQ
+4. **Azure OpenAI** provides both the embedding model (for search) and the LLM (for responses)
+5. **Microsoft Agent Framework** is the SDK you use to build the agent logic in Python
 
 ## 📋 Prerequisites
 
@@ -49,53 +59,80 @@ Before starting, ensure you have:
 
 - [ ] Completed the [Setup Guide](../SETUP.md)
 - [ ] Azure subscription with credits
-- [ ] Access to Azure OpenAI Service
-- [ ] Access to Azure AI Foundry (included with Azure subscription)
+- [ ] Access to Microsoft Foundry (included with Azure subscription)
 
 ## 🛠️ Step-by-Step Instructions
 
 ### Step 1: Set Up Azure Resources (20 minutes)
 
-**Option A: Using Azure Portal (Recommended for Beginners)**
+<details>
+<summary><strong>Option A: Using Azure Portal (Recommended for Beginners)</strong></summary>
 
 1. **Create a Resource Group**
    - Go to [Azure Portal](https://portal.azure.com)
    - Click "Resource groups" → "Create"
+      <td><img src="images/resource-group-console-1.png" width="800"/>
+
+      <td><img src="images/resource-group-console-2.png" width="800"/> 
+
    - Name: `rg-foundry-chatbot-workshop`
    - Region: Choose closest to you
-   - Click "Review + Create"
+   - Click "Review + Create" and then "Create".
+      <td><img src="images/resource-group-console-3.png" width="500"/>
 
-2. **Create Azure OpenAI Service**
-   - Search for "Azure OpenAI"
-   - Click "Create"
+2. **Create Microsoft Foundry Resource**
+   - Search for "Microsoft Foundry"
+   - Click "Create a resource"
+      <td><img src="images/foundry-resource-1.png" width="500"/>
+
    - Select your resource group
-   - Name: `openai-chatbot-workshop`
-   - Pricing tier: Standard (if available in your region)
-   - Click "Review + Create"
-   - After creation, go to "Keys and Endpoint" and note:
-     - Endpoint URL
-     - API Key 1
+   - Name: `foundry-workshop-`+ unique differentiator
+   - Region: East US
+   - Default project name: `my-first-chatbot`
+   - Click "Review + Create" and then "Create"
+      <td><img src="images/foundry-resource-2.png" width="500"/>
 
 3. **Deploy Models**
-   - In your Azure OpenAI resource, go to "Model deployments"
-   - Click "Create new deployment"
-   - Deploy **gpt-4** (or gpt-35-turbo):
-     - Deployment name: `gpt-4-deployment`
-     - Model: GPT-4
-   - Deploy **text-embedding-ada-002**:
-     - Deployment name: `text-embedding-deployment`
-     - Model: text-embedding-ada-002
+   - Go to the Foundry resource you just created by either clicking 'Go to resource'' or searching Microsoft foundry and going to all resources and clicking the newply created resource.
+   - Click "Go to Foundry portal".
+   - Select the new FOundry experience by toggling the box next to New Foundry:
+      <td><img src="images/new-foundry.png" width="800"/>
+
+    - when being prompted to select a project to continue select the "my-first-chatbot" that we just created and click "Let's go".
+      <td><img src="images/select-project.png" width="500"/>
+
+   - Go to the Discovery tab in Foundry
+      <td><img src="images/foundry-models-1.png" width="800"/>
+   - Click Models on the left tab. 
+   - Search for the gpt-4o model
+   - Click on the model
+      <td><img src="images/foundry-models-2.png" width="800"/>
+
+   - Create a new deployment by clicking Deploy and then "Default settings"
+      <td><img src="images/foundry-models-2.png" width="800"/>
+
+   - Do the same thing for the embeddings model (Discover -> models -> **text-embedding-3-small** -> Deploy -> Default settings)
+
+
 
 4. **Create Azure AI Search Service**
-   - Search for "Azure AI Search" (formerly Cognitive Search)
+   - Go back to [Azure Portal](https://portal.azure.com)
+   - Search for "Azure AI Search" in the top bar
    - Click "Create"
+      <td><img src="images/ai-search-1.png" width="800"/>
+
    - Resource group: Select existing `rg-foundry-chatbot-workshop`
    - Name: `search-chatbot-workshop-[yourname]` (must be globally unique)
-   - Pricing tier: Free (sufficient for workshop)
-   - Click "Review + Create"
-   - After creation, go to "Keys" and note the Primary admin key
+   - Region: East US
+   - Pricing tier: Free (sufficient for workshop, but not production-grade)
+   - Click "Review + Create" and then "Create"
+      <td><img src="images/ai-search-2.png" width="500"/>
 
-**Option B: Using Azure CLI (For Advanced Users)**
+
+</details>
+
+<details>
+<summary><strong>Option B: Using Azure CLI (For Advanced Users)</strong></summary>
 
 ```bash
 # Login to Azure
@@ -119,7 +156,11 @@ az search service create \
   --sku free
 ```
 
-#### 1.4 Configure Environment Variables
+</details>
+
+### Step 2: Configure Environment Variables
+
+After completing either Option A or B above, configure your environment:
 
 Create a `.env` file in the `lab-1-rag-chatbot` directory:
 
@@ -151,7 +192,7 @@ TEMPERATURE=0.7
 
 **Important**: Never commit `.env` file to version control!
 
-### Step 2: Understanding the Code Structure (15 minutes)
+### Step 3: Understanding the Code Structure (15 minutes)
 
 Let's examine the project structure:
 
@@ -185,7 +226,7 @@ lab-1-rag-chatbot/
 4. **RAG Agent**: Orchestrates retrieval and generation using Semantic Kernel
 5. **API**: Exposes chatbot functionality via REST endpoints
 
-### Step 3: Build the Document Processing Pipeline (30 minutes)
+### Step 4: Build the Document Processing Pipeline (30 minutes)
 
 #### 3.1 Understanding Document Processing
 
@@ -270,7 +311,7 @@ Total: 7 chunks ready for embedding
 
 **Exercise**: Add your own document and observe how it's chunked!
 
-### Step 4: Create and Store Embeddings (30 minutes)
+### Step 5: Create and Store Embeddings (30 minutes)
 
 #### 4.1 Understanding Embeddings
 
@@ -340,7 +381,7 @@ python scripts/ingest_documents.py
 - Go to Azure Portal → Your Search Service → Indexes
 - You should see `chatbot-knowledge-base` with 7 documents
 
-### Step 5: Build the RAG Agent (45 minutes)
+### Step 6: Build the RAG Agent (45 minutes)
 
 #### 5.1 Understanding Semantic Kernel
 
@@ -463,7 +504,7 @@ You: quit
 3. Add more documents and re-run ingestion
 4. Test again with new topics
 
-### Step 6: Create REST API (30 minutes)
+### Step 7: Create REST API (30 minutes)
 
 #### 6.1 Understanding the API Design
 
@@ -568,7 +609,7 @@ FastAPI provides automatic interactive documentation:
 }
 ```
 
-### Step 7: Deploy to Azure AI Foundry (45 minutes)
+### Step 8: Deploy to Microsoft Foundry (45 minutes)
 
 #### 7.1 Understanding Azure AI Foundry
 
@@ -891,8 +932,9 @@ az ml online-deployment update \
   --set instance_count=2  # Scale up
 ```
 
-### Step 8: Testing and Validation (20 minutes)
+#### 8.5 Deploy Container (Alternative)
 
+```bash
 # Deploy container
 foundry container deploy \
   --file foundry-deployment.yml \
@@ -933,9 +975,9 @@ curl -X POST https://your-foundry-instance.com/chatbot-workshop/api/chat \
 
 **Expected**: Should see the same responses as local testing!
 
-### Step 8: Testing and Validation (20 minutes)
+### Step 9: Testing and Validation (20 minutes)
 
-#### 8.1 Run Unit Tests
+#### 9.1 Run Unit Tests
 
 ```bash
 # Run all tests
@@ -945,7 +987,7 @@ pytest tests/
 pytest tests/ --cov=src --cov-report=html
 ```
 
-#### 8.2 Manual Testing Checklist
+#### 9.2 Manual Testing Checklist
 
 Test various scenarios:
 
@@ -986,7 +1028,7 @@ In Azure AI Foundry:
    - High token usage
    - Deployment failures
 
-### Step 9: Best Practices and Optimization (20 minutes)
+### Step 10: Best Practices and Optimization (20 minutes)
 
 #### 9.1 Improving RAG Quality
 
