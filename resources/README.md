@@ -5,8 +5,8 @@ This folder contains additional resources to support your learning throughout th
 ## 📚 Contents
 
 ### Technical Documentation
+- [**Azure AI Foundry Guide**](./azure-ai-foundry-guide.md) - Complete guide to Azure AI Foundry
 - [Azure Services Guide](./azure-services-guide.md) - Detailed guide on Azure services used
-- [Foundry Deployment Guide](./foundry-deployment-guide.md) - Step-by-step Foundry deployment
 - [Troubleshooting Guide](./troubleshooting.md) - Common issues and solutions
 - [API Reference](./api-reference.md) - Complete API documentation
 
