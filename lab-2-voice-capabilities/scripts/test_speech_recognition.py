@@ -43,12 +43,12 @@ async def test_speech_recognition():
     print("\nPress Ctrl+C to stop\n")
     
     # Continuous recognition demo
-    recognized_count = 0
+    stats = {'recognized_count': 0}
+    recognizer = None
     
     def on_recognized(text):
-        nonlocal recognized_count
         if text.strip():
-            recognized_count += 1
+            stats['recognized_count'] += 1
             print(f"\n> You said: \"{text}\"")
             
             if "stop" in text.lower() or "quit" in text.lower():
@@ -66,13 +66,18 @@ async def test_speech_recognition():
             
     except KeyboardInterrupt:
         print("\n\n⏹️  Stopping...")
+    except Exception as e:
+        print(f"\n❌ Error during recognition: {e}")
     finally:
         # Stop recognition
         if recognizer:
-            recognizer.stop_continuous_recognition()
+            try:
+                recognizer.stop_continuous_recognition()
+            except Exception as e:
+                print(f"Warning: Error stopping recognition: {e}")
         
         print(f"\n📊 Test Summary:")
-        print(f"   Recognized {recognized_count} speech inputs")
+        print(f"   Recognized {stats['recognized_count']} speech inputs")
         print("\n✅ Test complete!")
 
 
