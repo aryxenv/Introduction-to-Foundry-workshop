@@ -13,7 +13,7 @@ By the end of this workshop, you will have:
 ### Learning Objectives
 
 - Understand the architecture of our Retrieval-Augmented Generation (RAG) part on Azure
-- Set up a knowledge base using FOundry IQ that will be used by our chatbot
+- Set up a knowledge base using Azure AI Search that will be used by our chatbot
 - Learn to use the Microsoft Agent Framework for building conversational AI
 - Deploy and host AI applications on Microsoft Foundry
 - Implement voice capabilities using Azure Speech Services
