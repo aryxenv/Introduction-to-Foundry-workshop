@@ -245,35 +245,30 @@ app.add_middleware(
 3. Check port conflicts
 4. Ensure resources are sufficient
 
-### Foundry Deployment
+### Azure AI Foundry Deployment
 
 **Issue**: Deployment fails
 
 **Solutions**:
-1. Verify Foundry CLI is authenticated:
+1. Verify Azure CLI is authenticated:
    ```bash
-   foundry auth status
+   az account show
    ```
-2. Check namespace exists
-3. Verify secrets are configured
+2. Check that your project and hub exist
+3. Verify all connections are configured
 4. Check resource quotas
-5. Review deployment logs:
-   ```bash
-   foundry container logs rag-chatbot-api
-   ```
+5. Review deployment logs in Azure AI Foundry portal
 
 ---
 
 **Issue**: Service not accessible
 
 **Solutions**:
-1. Check deployment status:
-   ```bash
-   foundry container status rag-chatbot-api
-   ```
+1. Check deployment status in Azure AI Foundry portal
 2. Verify health check is passing
-3. Check network policies
-4. Verify service URL is correct
+3. Check networking configuration
+4. Verify endpoint URL is correct
+5. Check authentication settings
 
 ## Performance Issues
 
@@ -356,7 +351,7 @@ If issues persist:
 
 1. **Check official documentation**
    - Azure: https://learn.microsoft.com/en-us/azure/
-   - Foundry: https://www.palantir.com/docs/foundry/
+   - Azure AI Foundry: https://learn.microsoft.com/en-us/azure/ai-foundry/
 
 2. **Review error messages carefully**
    - Often contain specific guidance

@@ -2,16 +2,16 @@
 
 ## 🎯 Lab Overview
 
-In this lab, you'll build a chatbot with Retrieval-Augmented Generation (RAG) capabilities using the Microsoft Agent Framework (Semantic Kernel) and deploy it on Palantir Foundry. By the end of this lab, you'll have a production-ready chatbot that can answer questions based on your custom knowledge base.
+In this lab, you'll build a chatbot with Retrieval-Augmented Generation (RAG) capabilities using the Microsoft Agent Framework (Semantic Kernel) and deploy it on Microsoft Azure AI Foundry. By the end of this lab, you'll have a production-ready chatbot hosted on Azure's unified AI platform that can answer questions based on your custom knowledge base.
 
 **Estimated Time**: 2-3 hours
 
 ## 📖 What You'll Learn
 
 - **RAG Fundamentals**: Understanding how RAG combines retrieval and generation
-- **Vector Databases**: Working with embeddings and semantic search
+- **Azure AI Search**: Working with embeddings and semantic search on Azure
 - **Microsoft Agent Framework**: Building intelligent agents with Semantic Kernel
-- **Foundry Deployment**: Hosting and scaling AI applications on Palantir Foundry
+- **Azure AI Foundry Deployment**: Hosting and scaling AI applications on Azure's unified platform
 - **Best Practices**: Security, error handling, and monitoring
 
 ## 🏗️ Architecture Overview
@@ -34,11 +34,11 @@ User Query → Embedding → Vector Search → Relevant Context
 
 **Components:**
 - **Document Store**: Your knowledge base (PDFs, docs, etc.)
-- **Embedding Model**: Converts text to numerical vectors
-- **Vector Database**: Stores and searches embeddings (Azure AI Search or FAISS)
+- **Embedding Model**: Converts text to numerical vectors (Azure OpenAI)
+- **Vector Database**: Stores and searches embeddings (Azure AI Search)
 - **LLM**: Generates responses (Azure OpenAI GPT-4)
 - **Agent Framework**: Orchestrates the workflow (Semantic Kernel)
-- **Foundry**: Hosts and scales your application
+- **Azure AI Foundry**: Unified platform for hosting, managing, and monitoring your AI application
 
 ## 📋 Prerequisites
 
@@ -46,8 +46,8 @@ Before starting, ensure you have:
 
 - [ ] Python 3.9 or higher installed
 - [ ] Azure subscription with credits
-- [ ] Access to Azure OpenAI Service (or OpenAI API key)
-- [ ] Palantir Foundry access
+- [ ] Access to Azure OpenAI Service
+- [ ] Access to Azure AI Foundry (included with Azure subscription)
 - [ ] Code editor (VS Code recommended)
 - [ ] Basic understanding of Python and REST APIs
 
@@ -602,126 +602,330 @@ FastAPI provides automatic interactive documentation:
 }
 ```
 
-### Step 7: Deploy to Palantir Foundry (45 minutes)
+### Step 7: Deploy to Azure AI Foundry (45 minutes)
 
-#### 7.1 Understanding Foundry Deployment
+#### 7.1 Understanding Azure AI Foundry
 
-Palantir Foundry provides:
-- Container orchestration
-- Automatic scaling
-- Monitoring and logging
-- Security and access control
-- Integration with other Foundry resources
+Microsoft Azure AI Foundry is a unified platform for AI development that provides:
+- Integrated development environment for AI applications
+- Seamless integration with Azure AI services (OpenAI, Speech, Search, etc.)
+- Model deployment and management
+- Built-in monitoring and evaluation tools
+- Prompt flow for orchestrating AI workflows
+- Collaborative workspace for teams
 
-**Deployment Options:**
-1. **Python Functions**: Serverless Python code
-2. **Container Workloads**: Docker containers (we'll use this)
-3. **Scheduled Jobs**: Periodic execution
+**Key Benefits:**
+- **Unified Experience**: Single platform for all Azure AI services
+- **Rapid Development**: Pre-built templates and components
+- **Production Ready**: Built-in scaling, monitoring, and security
+- **Cost Effective**: Pay only for what you use
+- **Integration**: Works with existing Azure resources
 
-#### 7.2 Create Dockerfile
+#### 7.2 Set Up Azure AI Foundry Project
 
-Review the `Dockerfile`:
+**Using Azure Portal:**
 
-```dockerfile
-FROM python:3.10-slim
+1. **Navigate to Azure AI Foundry**
+   - Go to [Azure AI Foundry](https://ai.azure.com)
+   - Sign in with your Azure account
 
-WORKDIR /app
+2. **Create a New Hub**
+   - Click "Create hub"
+   - Name: `aifoundry-chatbot-workshop`
+   - Resource group: `rg-foundry-chatbot-workshop` (same as before)
+   - Region: Choose same as your other resources
+   - This hub will contain all AI projects and resources
+   - Click "Create"
 
-# Install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+3. **Create a Project**
+   - In your hub, click "Create project"
+   - Name: `rag-chatbot`
+   - Description: "RAG-enabled chatbot with knowledge base"
+   - Click "Create"
 
-# Copy application code
-COPY src/ ./src/
-COPY data/ ./data/
+4. **Connect Your Azure Resources**
+   - Go to "Settings" → "Connections"
+   - Add connection to Azure OpenAI Service:
+     - Connection name: `openai-connection`
+     - Select your Azure OpenAI resource
+     - Authenticate
+   - Add connection to Azure AI Search:
+     - Connection name: `search-connection`
+     - Select your Azure AI Search resource
+     - Authenticate
 
-# Environment variables will be set in Foundry
-ENV PORT=8000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD python -c "import requests; requests.get('http://localhost:8000/api/health')"
-
-# Run application
-CMD ["uvicorn", "src.api:app", "--host", "0.0.0.0", "--port", "8000"]
-```
-
-**Key Points:**
-- Based on official Python image
-- Installs dependencies
-- Copies only necessary files
-- Includes health check
-- Exposes port 8000
-
-#### 7.3 Test Docker Container Locally
-
-Build and run:
-
-```bash
-# Build the image
-docker build -t rag-chatbot:latest .
-
-# Run the container
-docker run -p 8000:8000 --env-file .env rag-chatbot:latest
-```
-
-Test that it works: `curl http://localhost:8000/api/health`
-
-#### 7.4 Prepare for Foundry Deployment
-
-Create `foundry-deployment.yml`:
-
-```yaml
-# Foundry Container Workload Configuration
-apiVersion: v1
-kind: deployment
-metadata:
-  name: rag-chatbot-api
-  namespace: your-namespace
-spec:
-  replicas: 2
-  image: rag-chatbot:latest
-  resources:
-    requests:
-      memory: "512Mi"
-      cpu: "500m"
-    limits:
-      memory: "2Gi"
-      cpu: "2000m"
-  env:
-    - name: AZURE_OPENAI_ENDPOINT
-      valueFrom:
-        secretRef: azure-openai-endpoint
-    - name: AZURE_OPENAI_API_KEY
-      valueFrom:
-        secretRef: azure-openai-api-key
-    # ... other env vars from secrets
-  ports:
-    - containerPort: 8000
-      protocol: TCP
-  healthCheck:
-    httpGet:
-      path: /api/health
-      port: 8000
-    initialDelaySeconds: 30
-    periodSeconds: 10
-```
-
-#### 7.5 Deploy to Foundry
-
-**Using Foundry CLI:**
+**Using Azure CLI:**
 
 ```bash
-# Authenticate to Foundry
-foundry auth login
+# Install Azure AI extension
+az extension add --name ml
 
-# Create namespace (if not exists)
-foundry namespace create chatbot-workshop
+# Create AI Hub
+az ml workspace create \
+  --kind hub \
+  --name aifoundry-chatbot-workshop \
+  --resource-group rg-foundry-chatbot-workshop \
+  --location eastus
 
-# Store secrets
-foundry secret create azure-openai-endpoint --value "$AZURE_OPENAI_ENDPOINT"
-foundry secret create azure-openai-api-key --value "$AZURE_OPENAI_API_KEY"
-# ... store other secrets
+# Create AI Project
+az ml workspace create \
+  --kind project \
+  --hub-id /subscriptions/{subscription-id}/resourceGroups/rg-foundry-chatbot-workshop/providers/Microsoft.MachineLearningServices/workspaces/aifoundry-chatbot-workshop \
+  --name rag-chatbot \
+  --resource-group rg-foundry-chatbot-workshop
+```
+
+#### 7.3 Deploy Using Prompt Flow
+
+Azure AI Foundry uses Prompt Flow for orchestrating AI applications.
+
+**Option A: Using the Portal (Recommended for Beginners)**
+
+1. **Create a Prompt Flow**
+   - In your project, go to "Prompt flow"
+   - Click "Create"
+   - Choose "Chat flow" template
+   - Name: `rag-chatbot-flow`
+
+2. **Configure the Flow**
+   - Add a "Vector DB Lookup" node:
+     - Connect to your Azure AI Search index
+     - Configure to search for relevant documents
+   - Add a "LLM" node:
+     - Select your Azure OpenAI deployment
+     - Configure the prompt template with context
+   - Connect nodes: User Input → Vector Search → LLM → Output
+
+3. **Test the Flow**
+   - Use the built-in test panel
+   - Enter test queries
+   - Verify responses are correct
+
+4. **Deploy as Web App**
+   - Click "Deploy"
+   - Choose "Web app"
+   - Configure:
+     - Name: `rag-chatbot-webapp`
+     - Compute: Standard (F2 or higher)
+     - Authentication: Enable (optional)
+   - Click "Deploy"
+
+**Option B: Using Python SDK**
+
+Create `deploy_to_foundry.py`:
+
+```python
+from azure.ai.ml import MLClient
+from azure.ai.ml.entities import ManagedOnlineEndpoint, ManagedOnlineDeployment
+from azure.identity import DefaultAzureCredential
+
+# Authenticate
+credential = DefaultAzureCredential()
+ml_client = MLClient(
+    credential=credential,
+    subscription_id="your-subscription-id",
+    resource_group_name="rg-foundry-chatbot-workshop",
+    workspace_name="rag-chatbot"
+)
+
+# Create endpoint
+endpoint = ManagedOnlineEndpoint(
+    name="rag-chatbot-endpoint",
+    description="RAG chatbot endpoint",
+    auth_mode="key"
+)
+ml_client.online_endpoints.begin_create_or_update(endpoint).result()
+
+# Create deployment
+deployment = ManagedOnlineDeployment(
+    name="rag-chatbot-deployment",
+    endpoint_name="rag-chatbot-endpoint",
+    model="path/to/your/model",  # or use registered model
+    instance_type="Standard_DS3_v2",
+    instance_count=1
+)
+ml_client.online_deployments.begin_create_or_update(deployment).result()
+
+print("Deployment complete!")
+print(f"Endpoint: {endpoint.scoring_uri}")
+```
+
+Run deployment:
+
+```bash
+python deploy_to_foundry.py
+```
+
+#### 7.4 Alternative: Deploy as Azure Web App
+
+If you prefer a simpler deployment:
+
+1. **Build Docker Image (Optional)**
+   
+   Review the `Dockerfile`:
+   
+   ```dockerfile
+   FROM python:3.10-slim
+   
+   WORKDIR /app
+   
+   # Install dependencies
+   COPY requirements.txt .
+   RUN pip install --no-cache-dir -r requirements.txt
+   
+   # Copy application code
+   COPY src/ ./src/
+   COPY data/ ./data/
+   
+   ENV PORT=8000
+   
+   HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+     CMD python -c "import requests; requests.get('http://localhost:8000/api/health')"
+   
+   CMD ["uvicorn", "src.api:app", "--host", "0.0.0.0", "--port", "8000"]
+   ```
+
+2. **Deploy to Azure Web App**
+
+   ```bash
+   # Create App Service Plan
+   az appservice plan create \
+     --name chatbot-plan \
+     --resource-group rg-foundry-chatbot-workshop \
+     --sku B1 \
+     --is-linux
+   
+   # Create Web App
+   az webapp create \
+     --name rag-chatbot-webapp-[yourname] \
+     --resource-group rg-foundry-chatbot-workshop \
+     --plan chatbot-plan \
+     --runtime "PYTHON:3.10"
+   
+   # Configure environment variables
+   az webapp config appsettings set \
+     --name rag-chatbot-webapp-[yourname] \
+     --resource-group rg-foundry-chatbot-workshop \
+     --settings \
+       AZURE_OPENAI_ENDPOINT="$AZURE_OPENAI_ENDPOINT" \
+       AZURE_OPENAI_API_KEY="$AZURE_OPENAI_API_KEY" \
+       AZURE_SEARCH_ENDPOINT="$AZURE_SEARCH_ENDPOINT" \
+       AZURE_SEARCH_API_KEY="$AZURE_SEARCH_API_KEY"
+   
+   # Deploy code
+   az webapp up \
+     --name rag-chatbot-webapp-[yourname] \
+     --resource-group rg-foundry-chatbot-workshop
+   ```
+
+#### 7.5 Configure Azure AI Foundry Monitoring
+
+1. **Enable Application Insights**
+   - In Azure AI Foundry project, go to "Settings"
+   - Enable Application Insights
+   - This automatically tracks:
+     - Request rates
+     - Response times
+     - Error rates
+     - Token usage
+
+2. **Set Up Metrics Dashboard**
+   - Go to "Monitoring" in AI Foundry
+   - Create custom dashboard with:
+     - Total requests
+     - Average response time
+     - Success rate
+     - Token consumption
+     - Cost tracking
+
+3. **Configure Alerts**
+   - Set up alerts for:
+     - High error rate (>5%)
+     - Slow responses (>10s)
+     - High token usage
+     - Service downtime
+
+#### 7.6 Verify Deployment
+
+**Using Azure AI Foundry Portal:**
+
+1. Go to your project in AI Foundry
+2. Navigate to "Deployments"
+3. Click on your deployment
+4. Test using the built-in test interface
+
+**Using Command Line:**
+
+```bash
+# Get endpoint URL
+ENDPOINT_URL=$(az ml online-endpoint show \
+  --name rag-chatbot-endpoint \
+  --resource-group rg-foundry-chatbot-workshop \
+  --workspace-name rag-chatbot \
+  --query scoring_uri -o tsv)
+
+# Get API key
+API_KEY=$(az ml online-endpoint get-credentials \
+  --name rag-chatbot-endpoint \
+  --resource-group rg-foundry-chatbot-workshop \
+  --workspace-name rag-chatbot \
+  --query primaryKey -o tsv)
+
+# Test endpoint
+curl -X POST $ENDPOINT_URL \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "message": "What products does TechCorp offer?"
+  }'
+```
+
+**Expected Response:**
+```json
+{
+  "response": "TechCorp offers three main products: SmartAssist (AI customer service platform), DataVision (Business intelligence and analytics), and CloudSync (Multi-cloud data synchronization).",
+  "sources": ["company_info.txt"],
+  "session_id": "abc-123"
+}
+```
+
+#### 7.7 Manage and Monitor in Azure AI Foundry
+
+**View Deployment Metrics:**
+
+1. In AI Foundry, go to "Deployments"
+2. Select your deployment
+3. View real-time metrics:
+   - Request count
+   - Latency percentiles
+   - Error rates
+   - Token usage
+
+**View Logs:**
+
+```bash
+# Stream logs
+az ml online-endpoint get-logs \
+  --name rag-chatbot-endpoint \
+  --deployment rag-chatbot-deployment \
+  --resource-group rg-foundry-chatbot-workshop \
+  --workspace-name rag-chatbot \
+  --tail 100
+```
+
+**Update Deployment:**
+
+```bash
+# Update with new code
+az ml online-deployment update \
+  --name rag-chatbot-deployment \
+  --endpoint rag-chatbot-endpoint \
+  --resource-group rg-foundry-chatbot-workshop \
+  --workspace-name rag-chatbot \
+  --set instance_count=2  # Scale up
+```
+
+### Step 8: Testing and Validation (20 minutes)
 
 # Deploy container
 foundry container deploy \
@@ -802,17 +1006,19 @@ Expected metrics:
 
 #### 8.4 Monitoring Setup
 
-In Foundry:
-1. Set up application logging
-2. Configure metrics dashboard:
+In Azure AI Foundry:
+1. Application Insights is automatically enabled
+2. View metrics in the Azure AI Foundry portal:
    - Request count
    - Response time
    - Error rate
    - Token usage
-3. Set up alerts:
+   - Cost tracking
+3. Set up alerts in Application Insights:
    - Error rate > 5%
    - Response time > 10s
-   - Container restarts
+   - High token usage
+   - Deployment failures
 
 ### Step 9: Best Practices and Optimization (20 minutes)
 
@@ -902,8 +1108,8 @@ Congratulations! You've learned:
 
 - ✅ How RAG works and why it's powerful
 - ✅ Building a chatbot with Semantic Kernel
-- ✅ Working with vector databases
-- ✅ Deploying to Palantir Foundry
+- ✅ Working with Azure AI Search for vector storage
+- ✅ Deploying to Azure AI Foundry
 - ✅ Best practices for production AI systems
 
 ## 🔍 Troubleshooting
@@ -938,29 +1144,32 @@ Congratulations! You've learned:
 
 ---
 
-**Issue**: Container fails to start in Foundry
+**Issue**: Deployment fails in Azure AI Foundry
 
 **Solution**:
-- Check logs: `foundry container logs rag-chatbot-api`
-- Verify all secrets are configured
-- Check resource limits are sufficient
-- Test locally with Docker first
+- Check deployment logs in Azure AI Foundry portal
+- Verify all connections are configured correctly
+- Check resource quotas in your subscription
+- Ensure your Azure OpenAI and Search services are in compatible regions
+- Review Application Insights logs for errors
 
 ## 📚 Additional Resources
 
+- [Azure AI Foundry Documentation](https://learn.microsoft.com/en-us/azure/ai-foundry/)
 - [Semantic Kernel Documentation](https://learn.microsoft.com/en-us/semantic-kernel/)
 - [Azure AI Search RAG Tutorial](https://learn.microsoft.com/en-us/azure/search/search-get-started-rag)
-- [Palantir Foundry Developer Guide](https://www.palantir.com/docs/foundry/platform-overview/)
-- [RAG Best Practices](https://www.anthropic.com/index/contextual-retrieval)
+- [Prompt Flow Documentation](https://learn.microsoft.com/en-us/azure/machine-learning/prompt-flow/)
+- [RAG Best Practices](https://learn.microsoft.com/en-us/azure/search/retrieval-augmented-generation-overview)
 
 ## ✅ Lab Completion Checklist
 
 Before moving to Lab 2, ensure you have:
 
 - [ ] Successfully set up Azure resources
-- [ ] Ingested documents into vector database
+- [ ] Created Azure AI Foundry project and hub
+- [ ] Ingested documents into Azure AI Search
 - [ ] Tested RAG chatbot locally
-- [ ] Deployed API to Foundry
+- [ ] Deployed to Azure AI Foundry
 - [ ] Verified deployment with test queries
 - [ ] Understand the RAG workflow
 - [ ] Reviewed best practices

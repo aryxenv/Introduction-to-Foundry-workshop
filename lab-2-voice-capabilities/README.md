@@ -2,7 +2,7 @@
 
 ## 🎯 Lab Overview
 
-In this lab, you'll enhance your RAG chatbot from Lab 1 by adding voice capabilities using Azure Speech Services. By the end of this lab, users will be able to interact with your chatbot using voice input and receive audio responses.
+In this lab, you'll enhance your RAG chatbot from Lab 1 by adding voice capabilities using Azure Speech Services. By the end of this lab, users will be able to interact with your chatbot using voice input and receive audio responses, all deployed on Azure AI Foundry.
 
 **Estimated Time**: 1-2 hours
 
@@ -558,70 +558,74 @@ docker run -p 8000:8000 --env-file .env rag-chatbot-voice:latest
 open http://localhost:8000
 ```
 
-#### 7.3 Deploy to Foundry
+#### 7.3 Deploy to Azure AI Foundry
 
-Update Foundry configuration:
+Update your Azure AI Foundry project to include voice capabilities:
 
-```yaml
-# foundry-deployment.yml
-apiVersion: v1
-kind: deployment
-metadata:
-  name: rag-chatbot-voice-api
-  namespace: chatbot-workshop
-spec:
-  replicas: 2
-  image: rag-chatbot-voice:latest
-  resources:
-    requests:
-      memory: "1Gi"  # Increased for audio processing
-      cpu: "1000m"
-    limits:
-      memory: "3Gi"
-      cpu: "3000m"
-  env:
-    # Azure OpenAI (from Lab 1)
-    - name: AZURE_OPENAI_ENDPOINT
-      valueFrom:
-        secretRef: azure-openai-endpoint
-    # Azure Speech (new)
-    - name: AZURE_SPEECH_KEY
-      valueFrom:
-        secretRef: azure-speech-key
-    - name: AZURE_SPEECH_REGION
-      value: "eastus"
-  ports:
-    - containerPort: 8000
-      protocol: TCP
-```
+**Option A: Update Existing Deployment**
 
-Deploy:
+1. **Add Speech Service Connection**
+   - In Azure AI Foundry, go to your project
+   - Navigate to "Settings" → "Connections"
+   - Add Azure Speech Service connection:
+     - Name: `speech-connection`
+     - Select your Speech Service resource
+     - Authenticate
+
+2. **Update Prompt Flow or Deployment**
+   - If using Prompt Flow: Add audio input/output nodes
+   - If using direct deployment: Update your endpoint configuration
+
+**Option B: Deploy Updated Web App**
 
 ```bash
-# Store new secrets
-foundry secret create azure-speech-key --value "$AZURE_SPEECH_KEY"
+# Update environment variables
+az webapp config appsettings set \
+  --name rag-chatbot-webapp-[yourname] \
+  --resource-group rg-foundry-chatbot-workshop \
+  --settings \
+    AZURE_SPEECH_KEY="$AZURE_SPEECH_KEY" \
+    AZURE_SPEECH_REGION="$AZURE_SPEECH_REGION"
 
-# Deploy updated container
-foundry container deploy \
-  --file foundry-deployment.yml \
-  --namespace chatbot-workshop
+# Deploy updated code
+az webapp up \
+  --name rag-chatbot-webapp-[yourname] \
+  --resource-group rg-foundry-chatbot-workshop
+```
 
-# Verify deployment
-foundry container status rag-chatbot-voice-api
+**Option C: Update Azure AI Foundry Endpoint**
+
+```bash
+# Update online deployment with new environment variables
+az ml online-deployment update \
+  --name rag-chatbot-deployment \
+  --endpoint rag-chatbot-endpoint \
+  --resource-group rg-foundry-chatbot-workshop \
+  --workspace-name rag-chatbot \
+  --set \
+    environment_variables.AZURE_SPEECH_KEY="$AZURE_SPEECH_KEY" \
+    environment_variables.AZURE_SPEECH_REGION="$AZURE_SPEECH_REGION"
 ```
 
 #### 7.4 Test Production Deployment
 
 ```bash
-# Get service URL
-FOUNDRY_URL=$(foundry container get-url rag-chatbot-voice-api)
+# Get endpoint URL (if using Azure AI Foundry endpoint)
+ENDPOINT_URL=$(az ml online-endpoint show \
+  --name rag-chatbot-endpoint \
+  --resource-group rg-foundry-chatbot-workshop \
+  --workspace-name rag-chatbot \
+  --query scoring_uri -o tsv)
 
 # Test voice endpoint
-curl -X POST $FOUNDRY_URL/api/voice/transcribe \
+curl -X POST $ENDPOINT_URL/api/voice/transcribe \
+  -H "Authorization: Bearer $API_KEY" \
   -F "audio=@test_audio.wav"
 
-# Test in browser
-open $FOUNDRY_URL
+# Or if using Web App
+WEBAPP_URL="https://rag-chatbot-webapp-[yourname].azurewebsites.net"
+curl -X POST $WEBAPP_URL/api/voice/transcribe \
+  -F "audio=@test_audio.wav"
 ```
 
 ### Step 8: Best Practices for Voice Interfaces (15 minutes)
@@ -916,7 +920,7 @@ Before finishing, ensure you have:
 
 ## 🎉 Congratulations!
 
-You've successfully completed the workshop! You now have a fully functional, voice-enabled RAG chatbot deployed on Palantir Foundry.
+You've successfully completed the workshop! You now have a fully functional, voice-enabled RAG chatbot deployed on Microsoft Azure AI Foundry.
 
 **What's Next?**
 - Experiment with different voices and languages

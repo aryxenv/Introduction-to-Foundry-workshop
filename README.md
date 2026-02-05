@@ -1,8 +1,8 @@
-# Introduction to Foundry Workshop: Building an Intelligent Chatbot
+# Introduction to Azure AI Foundry Workshop: Building an Intelligent Chatbot
 
 ## 🎯 Workshop Overview
 
-Welcome to this hands-on workshop where you'll learn to build an intelligent chatbot with Retrieval-Augmented Generation (RAG) capabilities using the Microsoft Agent Framework and deploy it on Palantir Foundry. This workshop is designed to be educational and provides deep insights into modern AI application development.
+Welcome to this hands-on workshop where you'll learn to build an intelligent chatbot with Retrieval-Augmented Generation (RAG) capabilities using the Microsoft Agent Framework and deploy it on Microsoft Azure AI Foundry. This workshop is designed to be educational and provides deep insights into modern AI application development on Azure's unified AI platform.
 
 ### What You'll Build
 
@@ -14,8 +14,9 @@ By the end of this workshop, you will have:
 
 - Understand the fundamentals of Retrieval-Augmented Generation (RAG)
 - Learn to use the Microsoft Agent Framework for building conversational AI
-- Deploy and host AI applications on Palantir Foundry
+- Deploy and host AI applications on Microsoft Azure AI Foundry
 - Implement voice capabilities using Azure Speech Services
+- Work with Azure AI services in an integrated environment
 - Apply best practices for building production-ready AI applications
 
 ## 📋 Prerequisites
@@ -36,8 +37,8 @@ By the end of this workshop, you will have:
 
 ### Required Accounts
 - Microsoft Azure account (sign up for free at https://azure.microsoft.com/free/)
-- Palantir Foundry access (provided by your organization)
-- OpenAI API key or Azure OpenAI access
+- Access to Azure AI Foundry (included with Azure subscription)
+- Azure OpenAI Service access (request at https://aka.ms/oai/access)
 
 ## 🗂️ Workshop Structure
 
@@ -47,11 +48,11 @@ This workshop is divided into two progressive labs:
 **Duration**: 2-3 hours
 
 In this lab, you will:
-- Set up your development environment
+- Set up your Azure AI Foundry environment
 - Understand RAG architecture and its benefits
-- Build a knowledge base from custom documents
-- Create a chatbot using Microsoft Agent Framework
-- Deploy your chatbot to Palantir Foundry
+- Build a knowledge base using Azure AI Search
+- Create a chatbot using Microsoft Agent Framework (Semantic Kernel)
+- Deploy your chatbot to Azure AI Foundry
 - Test and validate your implementation
 
 ### [Lab 2: Adding Voice Capabilities](./lab-2-voice-capabilities/README.md)
@@ -80,10 +81,11 @@ In this lab, you will:
 
 ## 📚 Additional Resources
 
-- [Microsoft Agent Framework Documentation](https://github.com/microsoft/semantic-kernel)
-- [Palantir Foundry Documentation](https://www.palantir.com/docs/foundry/)
+- [Microsoft Azure AI Foundry Documentation](https://learn.microsoft.com/en-us/azure/ai-foundry/)
+- [Microsoft Agent Framework (Semantic Kernel)](https://github.com/microsoft/semantic-kernel)
 - [Azure OpenAI Service](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [Understanding RAG](https://learn.microsoft.com/en-us/azure/search/retrieval-augmented-generation-overview)
+- [Azure AI Search](https://learn.microsoft.com/en-us/azure/search/)
 - [Azure Speech Services](https://azure.microsoft.com/en-us/products/ai-services/speech-to-text)
 
 ## 🆘 Getting Help

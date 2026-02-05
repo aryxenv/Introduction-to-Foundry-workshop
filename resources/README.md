@@ -23,10 +23,12 @@ This folder contains additional resources to support your learning throughout th
 ## 🔗 External Resources
 
 ### Microsoft Documentation
+- [Azure AI Foundry](https://learn.microsoft.com/en-us/azure/ai-foundry/)
 - [Azure OpenAI Service](https://learn.microsoft.com/en-us/azure/ai-services/openai/)
 - [Azure Speech Services](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/)
 - [Semantic Kernel](https://learn.microsoft.com/en-us/semantic-kernel/)
 - [Azure AI Search](https://learn.microsoft.com/en-us/azure/search/)
+- [Prompt Flow](https://learn.microsoft.com/en-us/azure/machine-learning/prompt-flow/)
 
 ### Palantir Resources
 - [Foundry Documentation](https://www.palantir.com/docs/foundry/)
