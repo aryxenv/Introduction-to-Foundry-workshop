@@ -4,11 +4,14 @@
 
 In this lab, you'll build a chatbot with Retrieval-Augmented Generation (RAG) capabilities using the Microsoft Agent Framework (Semantic Kernel) and deploy it on Microsoft Azure AI Foundry. By the end of this lab, you'll have a production-ready chatbot hosted on Azure's unified AI platform that can answer questions based on your custom knowledge base.
 
-**Estimated Time**: 2-3 hours
+**Estimated Time**: 40 minutes
+
+> **Note**: This lab is designed for a 40-minute guided workshop session. The detailed steps below include comprehensive explanations for self-paced learning and reference. In a guided workshop with pre-configured environments, you'll focus on the core concepts and hands-on activities.
 
 ## 📖 What You'll Learn
 
 - **RAG Fundamentals**: Understanding how RAG combines retrieval and generation
+- **Foundry IQ**: Using Foundry IQ for knowledge base management and indexing
 - **Azure AI Search**: Working with embeddings and semantic search on Azure
 - **Microsoft Agent Framework**: Building intelligent agents with Semantic Kernel
 - **Azure AI Foundry Deployment**: Hosting and scaling AI applications on Azure's unified platform

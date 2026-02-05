@@ -4,12 +4,15 @@
 
 In this lab, you'll enhance your RAG chatbot from Lab 1 by adding voice capabilities using Azure Speech Services. By the end of this lab, users will be able to interact with your chatbot using voice input and receive audio responses, all deployed on Azure AI Foundry.
 
-**Estimated Time**: 1-2 hours
+**Estimated Time**: 20 minutes
+
+> **Note**: This lab is designed for a 20-minute guided workshop session building on Lab 1. The detailed steps below include comprehensive explanations for self-paced learning and reference. In a guided workshop with pre-configured environments, you'll focus on the core voice integration activities.
 
 **Prerequisites**: Completion of Lab 1
 
 ## 📖 What You'll Learn
 
+- **Foundry IQ**: Integrating Foundry IQ with voice capabilities for enhanced knowledge retrieval
 - **Azure Speech Services**: Speech-to-Text (STT) and Text-to-Speech (TTS)
 - **Audio Processing**: Handling audio streams and formats
 - **Real-time Communication**: WebSockets for streaming audio
