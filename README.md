@@ -1,8 +1,8 @@
-# Introduction to Azure AI Foundry Workshop: Building an Intelligent Chatbot
+# Introduction Workshop to Microsoft Foundry and Micrsoft Agent Framework: Building an Intelligent RAG Chatbot with voice capabilities
 
 ## 🎯 Workshop Overview
 
-Welcome to this hands-on workshop where you'll learn to build an intelligent chatbot with Retrieval-Augmented Generation (RAG) capabilities using the Microsoft Agent Framework and deploy it on Microsoft Azure AI Foundry. This workshop is designed to be educational and provides deep insights into modern AI application development on Azure's unified AI platform.
+Welcome to this hands-on workshop where you'll learn to build an intelligent chatbot with Retrieval-Augmented Generation (RAG) capabilities using the Microsoft Agent Framework and deploy it on Microsoft Foundry. This workshop is designed to be educational and provides insights into modern AI application development using the newest Microsoft AI technologies
 
 ### What You'll Build
 
@@ -12,12 +12,11 @@ By the end of this workshop, you will have:
 
 ### Learning Objectives
 
-- Understand the fundamentals of Retrieval-Augmented Generation (RAG)
+- Understand the architecture of our Retrieval-Augmented Generation (RAG) part on Azure
+- Set up a knowledge base using FOundry IQ that will be used by our chatbot
 - Learn to use the Microsoft Agent Framework for building conversational AI
-- Deploy and host AI applications on Microsoft Azure AI Foundry
+- Deploy and host AI applications on Microsoft Foundry
 - Implement voice capabilities using Azure Speech Services
-- Work with Azure AI services in an integrated environment
-- Apply best practices for building production-ready AI applications
 
 ## 📋 Prerequisites
 
@@ -25,27 +24,25 @@ By the end of this workshop, you will have:
 - Basic understanding of Python programming
 - Familiarity with REST APIs
 - Basic understanding of cloud services
-- Understanding of basic AI/ML concepts (helpful but not required)
+- Understanding of basic AI/ML concepts 
 
 ### Required Tools
 - **Python 3.9+** installed on your machine
 - **Visual Studio Code** or another code editor
 - **Git** for version control
 - **Azure subscription** (free tier available)
-- **Palantir Foundry access** (your instructor will provide details)
-- **Postman** or similar API testing tool (optional but recommended)
+- **Microsoft Foundry access** (your instructor will provide details)
 
 ### Required Accounts
-- Microsoft Azure account (sign up for free at https://azure.microsoft.com/free/)
-- Access to Azure AI Foundry (included with Azure subscription)
-- Azure OpenAI Service access (request at https://aka.ms/oai/access)
+- Microsoft Azure account (sign up for free at https://azure.microsoft.com/free/ or in case of an event, ask your Microsoft representative for account access)
+- Access to Microsoft Foundry (included with Azure subscription)
 
 ## 🗂️ Workshop Structure
 
 This workshop is divided into two progressive labs:
 
 ### [Lab 1: Building a RAG-Enabled Chatbot](./lab-1-rag-chatbot/README.md)
-**Duration**: 2-3 hours
+**Duration**: 40 minutes
 
 In this lab, you will:
 - Set up your Azure AI Foundry environment
@@ -56,7 +53,7 @@ In this lab, you will:
 - Test and validate your implementation
 
 ### [Lab 2: Adding Voice Capabilities](./lab-2-voice-capabilities/README.md)
-**Duration**: 1-2 hours
+**Duration**: 20 minutes
 
 In this lab, you will:
 - Integrate Azure Speech Services
@@ -69,7 +66,7 @@ In this lab, you will:
 
 ### Option 1: GitHub Codespaces (Recommended - Fastest Setup) ⚡
 
-GitHub Codespaces provides a pre-configured cloud development environment with everything installed.
+GitHub Codespaces provides a pre-configured cloud development environment with everything installed. If you have this available in your org/account this will be the fastest way.
 
 **Steps:**
 1. Click the green "Code" button on the GitHub repository
@@ -156,24 +153,12 @@ cat SETUP.md
 
 ## 📚 Additional Resources
 
-- [Microsoft Azure AI Foundry Documentation](https://learn.microsoft.com/en-us/azure/ai-foundry/)
-- [Microsoft Agent Framework (Semantic Kernel)](https://github.com/microsoft/semantic-kernel)
-- [Azure OpenAI Service](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
+- [Microsoft Foundry Documentation]([https://learn.microsoft.com/en-us/azure/ai-foundry/](https://learn.microsoft.com/en-us/azure/ai-foundry/what-is-foundry?view=foundry))
+- [Microsoft Agent Framework](https://github.com/microsoft/agent-framework)
 - [Understanding RAG](https://learn.microsoft.com/en-us/azure/search/retrieval-augmented-generation-overview)
 - [Azure AI Search](https://learn.microsoft.com/en-us/azure/search/)
 - [Azure Speech Services](https://azure.microsoft.com/en-us/products/ai-services/speech-to-text)
 
-## 🆘 Getting Help
-
-If you encounter issues:
-1. Check the troubleshooting section in each lab's README
-2. Review the [resources](./resources/README.md) folder for additional guidance
-3. Ask your instructor or workshop facilitator
-4. Open an issue in this repository
-
-## 📝 Workshop Feedback
-
-We value your feedback! After completing the workshop, please share your experience to help us improve.
 
 ## 📄 License
 
