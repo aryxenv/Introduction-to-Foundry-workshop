@@ -1,0 +1,39 @@
+Company Policies
+
+Return Policy:
+Products can be returned within 30 days of purchase for a full refund. Items must be in original packaging and unused. To initiate a return, contact our support team with your order number.
+
+Refund Processing:
+Refunds are processed within 5-7 business days after we receive the returned item. The refund will be credited to the original payment method.
+
+Shipping Policy:
+We offer three shipping options:
+- Standard shipping: 5-7 business days (Free for orders over $100)
+- Express shipping: 2-3 business days ($15)
+- Overnight: 1 business day ($30)
+
+International shipping is available to select countries. Additional customs fees may apply.
+
+Customer Support:
+Email: support@techcorp.com
+Phone: 1-800-TECH-CORP (Available 9 AM - 5 PM EST, Monday-Friday)
+Live Chat: Available on our website 24/7
+Response Time: We aim to respond to all inquiries within 24 hours
+
+Support Channels:
+- Email support for detailed inquiries
+- Phone support for urgent issues
+- Live chat for quick questions
+- Support ticket system for tracking complex issues
+
+Privacy Policy:
+We take your privacy seriously. We collect only necessary information to provide our services. Your data is encrypted and never shared with third parties without your consent. For full details, visit our Privacy Policy page.
+
+Terms of Service:
+By using TechCorp services, you agree to our Terms of Service. We reserve the right to modify these terms with 30 days notice to users.
+
+Subscription Cancellation:
+Subscriptions can be cancelled anytime. You will retain access until the end of your current billing period. No refunds for partial months.
+
+Data Security:
+All data is encrypted in transit and at rest. We use industry-standard security protocols including TLS 1.3, AES-256 encryption, and regular security audits.

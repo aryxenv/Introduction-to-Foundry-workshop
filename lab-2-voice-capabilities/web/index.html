@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice-Enabled RAG Chatbot</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .chat-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .chat-messages {
+            height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 80%;
+            animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .message.user {
+            background: #667eea;
+            color: white;
+            margin-left: auto;
+            text-align: right;
+        }
+        .message.bot {
+            background: white;
+            border: 2px solid #e9ecef;
+        }
+        .controls {
+            padding: 20px;
+            background: white;
+            border-top: 2px solid #e9ecef;
+        }
+        .mic-button {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-size: 32px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .mic-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        .mic-button:active {
+            transform: scale(0.95);
+        }
+        .mic-button.recording {
+            background: #dc3545;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+            50% { box-shadow: 0 0 0 20px rgba(220, 53, 69, 0); }
+        }
+        .status-text {
+            text-align: center;
+            margin-top: 10px;
+            color: #6c757d;
+            font-size: 14px;
+        }
+        .visualizer {
+            height: 60px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .visualizer-bar {
+            width: 4px;
+            height: 20px;
+            background: #667eea;
+            margin: 0 2px;
+            border-radius: 2px;
+            transition: height 0.1s;
+        }
+        .sources {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 8px;
+            font-style: italic;
+        }
+        .loading {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h2>🎤 Voice-Enabled RAG Chatbot</h2>
+            <p class="mb-0">Ask me anything about TechCorp!</p>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot">
+                <div>👋 Hello! I'm your voice-enabled assistant. Click the microphone button and ask me a question about TechCorp's products, policies, or anything else!</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="text-center">
+                <button class="mic-button" id="micButton">
+                    🎤
+                </button>
+                <div class="status-text" id="statusText">
+                    Click to start recording
+                </div>
+            </div>
+            
+            <div class="visualizer" id="visualizer">
+                <!-- Audio visualizer bars will be added here -->
+            </div>
+            
+            <div class="mt-3">
+                <input type="text" class="form-control" id="textInput" placeholder="Or type your message here...">
+                <button class="btn btn-primary w-100 mt-2" id="sendButton">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let isRecording = false;
+        let mediaRecorder;
+        let audioChunks = [];
+        let audioContext;
+        let analyser;
+        
+        // DOM elements
+        const micButton = document.getElementById('micButton');
+        const statusText = document.getElementById('statusText');
+        const chatMessages = document.getElementById('chatMessages');
+        const textInput = document.getElementById('textInput');
+        const sendButton = document.getElementById('sendButton');
+        const visualizer = document.getElementById('visualizer');
+        
+        // Initialize visualizer bars
+        for (let i = 0; i < 20; i++) {
+            const bar = document.createElement('div');
+            bar.className = 'visualizer-bar';
+            visualizer.appendChild(bar);
+        }
+        
+        // Add message to chat
+        function addMessage(text, isUser, sources = []) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+            
+            let content = `<div>${text}</div>`;
+            if (sources.length > 0) {
+                content += `<div class="sources">Sources: ${sources.join(', ')}</div>`;
+            }
+            
+            messageDiv.innerHTML = content;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Add loading indicator
+        function addLoadingIndicator() {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'message bot';
+            loadingDiv.id = 'loading';
+            loadingDiv.innerHTML = '<div class="loading"></div> Processing...';
+            chatMessages.appendChild(loadingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Remove loading indicator
+        function removeLoadingIndicator() {
+            const loading = document.getElementById('loading');
+            if (loading) {
+                loading.remove();
+            }
+        }
+        
+        // Initialize audio context
+        async function initAudio() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                // Setup media recorder
+                mediaRecorder = new MediaRecorder(stream);
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+                
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    audioChunks = [];
+                    await sendAudioToAPI(audioBlob);
+                };
+                
+                // Setup audio visualizer
+                audioContext = new AudioContext();
+                analyser = audioContext.createAnalyser();
+                const source = audioContext.createMediaStreamSource(stream);
+                source.connect(analyser);
+                
+                return true;
+            } catch (error) {
+                console.error('Error accessing microphone:', error);
+                alert('Could not access microphone. Please check permissions.');
+                return false;
+            }
+        }
+        
+        // Update visualizer
+        function updateVisualizer() {
+            if (!analyser) return;
+            
+            const dataArray = new Uint8Array(analyser.frequencyBinCount);
+            analyser.getByteFrequencyData(dataArray);
+            
+            const bars = visualizer.querySelectorAll('.visualizer-bar');
+            bars.forEach((bar, index) => {
+                const dataIndex = Math.floor(index * dataArray.length / bars.length);
+                const value = dataArray[dataIndex];
+                const height = Math.max(20, (value / 255) * 60);
+                bar.style.height = `${height}px`;
+            });
+            
+            if (isRecording) {
+                requestAnimationFrame(updateVisualizer);
+            }
+        }
+        
+        // Handle microphone button click
+        micButton.addEventListener('click', async () => {
+            if (!isRecording) {
+                // Start recording
+                if (!mediaRecorder) {
+                    const success = await initAudio();
+                    if (!success) return;
+                }
+                
+                audioChunks = [];
+                mediaRecorder.start();
+                isRecording = true;
+                
+                micButton.classList.add('recording');
+                micButton.textContent = '⏹️';
+                statusText.textContent = 'Recording... Click to stop';
+                
+                updateVisualizer();
+            } else {
+                // Stop recording
+                mediaRecorder.stop();
+                isRecording = false;
+                
+                micButton.classList.remove('recording');
+                micButton.textContent = '🎤';
+                statusText.textContent = 'Processing...';
+            }
+        });
+        
+        // Send audio to API
+        async function sendAudioToAPI(audioBlob) {
+            try {
+                // In a real implementation, this would:
+                // 1. Convert blob to proper format
+                // 2. Send to /api/voice/transcribe
+                // 3. Get transcribed text
+                // 4. Send text to /api/chat
+                // 5. Get response
+                // 6. Send response to /api/voice/synthesize
+                // 7. Play audio response
+                
+                addLoadingIndicator();
+                
+                // Simulate API call (replace with actual implementation)
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                removeLoadingIndicator();
+                
+                // Simulated response
+                const userMessage = "What are your office hours?";
+                const botResponse = "Our office hours are Monday through Friday, 9 AM to 5 PM EST. You can reach us at support@techcorp.com or call 1-800-TECH-CORP during these hours.";
+                const sources = ["company_info.txt"];
+                
+                addMessage(userMessage, true);
+                addMessage(botResponse, false, sources);
+                
+                // In real implementation, play audio response here
+                // playAudio(audioResponseBlob);
+                
+                statusText.textContent = 'Click to start recording';
+                
+            } catch (error) {
+                console.error('Error processing audio:', error);
+                removeLoadingIndicator();
+                addMessage('Sorry, I encountered an error processing your request.', false);
+                statusText.textContent = 'Error - Click to try again';
+            }
+        }
+        
+        // Handle text input
+        sendButton.addEventListener('click', async () => {
+            const message = textInput.value.trim();
+            if (!message) return;
+            
+            addMessage(message, true);
+            textInput.value = '';
+            
+            addLoadingIndicator();
+            
+            try {
+                // In real implementation, call /api/chat
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                removeLoadingIndicator();
+                
+                // Simulated response
+                const response = "This is a placeholder response. In a real implementation, this would come from the RAG chatbot API.";
+                addMessage(response, false, ["placeholder.txt"]);
+                
+            } catch (error) {
+                console.error('Error sending message:', error);
+                removeLoadingIndicator();
+                addMessage('Sorry, I encountered an error.', false);
+            }
+        });
+        
+        // Handle Enter key in text input
+        textInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendButton.click();
+            }
+        });
+    </script>
+</body>
+</html>
