@@ -1,0 +1,24 @@
+About TechCorp
+
+TechCorp is a leading technology company founded in 2020. We specialize in AI-powered solutions for enterprise customers.
+
+Our Mission:
+To empower businesses with cutting-edge AI technology that drives innovation and efficiency.
+
+Our Products:
+- SmartAssist: AI customer service platform that handles customer inquiries 24/7
+- DataVision: Business intelligence and analytics platform with AI-powered insights
+- CloudSync: Multi-cloud data synchronization and management solution
+
+Company Information:
+Founded: 2020
+Headquarters: San Francisco, California
+Employees: 500+
+Contact: support@techcorp.com
+Phone: 1-800-TECH-CORP
+Office Hours: Monday-Friday, 9 AM - 5 PM EST
+
+Awards and Recognition:
+- 2023 Best AI Solution Provider
+- 2024 Innovation Leader Award
+- Top 50 Tech Companies to Watch
