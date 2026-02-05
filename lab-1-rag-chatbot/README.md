@@ -2,11 +2,11 @@
 
 ## 🎯 Lab Overview
 
-In this lab, you'll build a chatbot with Retrieval-Augmented Generation (RAG) capabilities using the Microsoft Agent Framework (Semantic Kernel) and deploy it on Microsoft Azure AI Foundry. By the end of this lab, you'll have a production-ready chatbot hosted on Azure's unified AI platform that can answer questions based on your custom knowledge base.
+In this lab, you'll build a chatbot with Retrieval-Augmented Generation (RAG) capabilities using the Microsoft Agent Framework and deploy it on Microsoft Azure AI Foundry. By the end of this lab, you'll have a production-ready chatbot hosted on Azure's unified AI platform that can answer questions based on your custom knowledge base.
 
 **Estimated Time**: 40 minutes
 
-> **Note**: This lab is designed for a 40-minute guided workshop session. The detailed steps below include comprehensive explanations for self-paced learning and reference. In a guided workshop with pre-configured environments, you'll focus on the core concepts and hands-on activities.
+> **Prerequisites**: Make sure you've completed the [Setup Guide](../SETUP.md) before starting this lab.
 
 ## 📖 What You'll Learn
 
@@ -47,51 +47,14 @@ User Query → Embedding → Vector Search → Relevant Context
 
 Before starting, ensure you have:
 
-- [ ] Python 3.9 or higher installed
+- [ ] Completed the [Setup Guide](../SETUP.md)
 - [ ] Azure subscription with credits
 - [ ] Access to Azure OpenAI Service
 - [ ] Access to Azure AI Foundry (included with Azure subscription)
-- [ ] Code editor (VS Code recommended)
-- [ ] Basic understanding of Python and REST APIs
 
 ## 🛠️ Step-by-Step Instructions
 
-### Step 1: Environment Setup (20 minutes)
-
-#### 1.1 Create a Virtual Environment
-
-```bash
-# Navigate to the lab directory
-cd lab-1-rag-chatbot
-
-# Create a virtual environment
-python -m venv venv
-
-# Activate the virtual environment
-# On Windows:
-venv\Scripts\activate
-# On macOS/Linux:
-source venv/bin/activate
-```
-
-#### 1.2 Install Required Dependencies
-
-```bash
-# Install core dependencies
-pip install -r requirements.txt
-```
-
-**What each package does:**
-- `semantic-kernel`: Microsoft's Agent Framework for AI orchestration
-- `azure-search-documents`: Vector database for storing embeddings
-- `azure-identity`: Authentication for Azure services
-- `openai`: Interface to OpenAI models
-- `python-dotenv`: Environment variable management
-- `pypdf`: PDF document processing
-- `fastapi`: Web framework for API endpoints
-- `uvicorn`: ASGI server for FastAPI
-
-#### 1.3 Set Up Azure Resources
+### Step 1: Set Up Azure Resources (20 minutes)
 
 **Option A: Using Azure Portal (Recommended for Beginners)**
 
