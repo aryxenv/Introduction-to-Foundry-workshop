@@ -2,19 +2,19 @@
 
 ## 🎯 Workshop Overview
 
-Welcome to this hands-on workshop where you'll learn to build an intelligent chatbot with Retrieval-Augmented Generation (RAG) capabilities using the Microsoft Agent Framework and deploy it on Microsoft Foundry. This workshop is designed to be educational and provides insights into modern AI application development using the newest Microsoft AI technologies
+Welcome to this hands-on workshop where you'll learn to build an intelligent chatbot with Retrieval-Augmented Generation (RAG) capabilities using the Microsoft Agent Framework and deploy it on Microsoft Foundry. As well as how to integrate speech capabilities with this chatbot. This workshop is designed to be educational and provides insights into modern AI application development using the newest Microsoft AI technologies
 
 ### What You'll Build
 
 By the end of this workshop, you will have:
 1. **Lab 1**: A fully functional chatbot with RAG capabilities that can answer questions using your custom knowledge base
-2. **Lab 2**: Voice-enabled chatbot that supports speech-to-text input and text-to-speech output
+2. **Lab 2**: Adding voice capabilities to your chatbot (Voice-enabled chatbot that supports speech-to-text input and text-to-speech output)
 
 ### Learning Objectives
 
-- Understand the architecture of our Retrieval-Augmented Generation (RAG) part on Azure
-- Learn to use Foundry IQ for knowledge base management and indexing
+- Understand the architecture of our chatbot on Azure
 - Set up a knowledge base using Azure AI Search that will be used by our chatbot
+- Learn to use Foundry IQ for knowledge base management and indexing
 - Learn to use the Microsoft Agent Framework for building conversational AI
 - Deploy and host AI applications on Microsoft Foundry
 - Implement voice capabilities using Azure Speech Services
@@ -46,12 +46,12 @@ This workshop is divided into two progressive labs:
 **Duration**: 40 minutes
 
 In this lab, you will:
-- Set up your Azure AI Foundry environment
+- Set up your Microsoft Foundry environment
 - Understand RAG architecture and its benefits
-- Learn to use Foundry IQ for knowledge base management
 - Build a knowledge base using Azure AI Search
-- Create a chatbot using Microsoft Agent Framework (Semantic Kernel)
-- Deploy your chatbot to Azure AI Foundry
+- Learn to use Foundry IQ for knowledge base management
+- Create a chatbot using Microsoft Agent Framework 
+- Deploy your chatbot to Microsoft Foundry
 - Test and validate your implementation
 
 ### [Lab 2: Adding Voice Capabilities](./lab-2-voice-capabilities/README.md)
