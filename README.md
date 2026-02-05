@@ -67,17 +67,92 @@ In this lab, you will:
 
 ## 🚀 Getting Started
 
+### Option 1: GitHub Codespaces (Recommended - Fastest Setup) ⚡
+
+GitHub Codespaces provides a pre-configured cloud development environment with everything installed.
+
+**Steps:**
+1. Click the green "Code" button on the GitHub repository
+2. Select "Codespaces" tab
+3. Click "Create codespace on main"
+4. Wait for the environment to build (2-3 minutes)
+5. Everything is pre-installed and ready to go! 🎉
+
+**What's included:**
+- ✅ Python 3.10
+- ✅ All dependencies installed
+- ✅ Azure CLI with ML extension
+- ✅ VS Code extensions
+- ✅ Docker support
+
+**Next steps after Codespace loads:**
+1. Run `az login` to authenticate with Azure
+2. Configure your `.env` files with Azure credentials
+3. Start with [Lab 1](./lab-1-rag-chatbot/README.md)
+
+---
+
+### Option 2: Local Development with VS Code
+
+For local development on your machine, follow our comprehensive setup guide.
+
+**Prerequisites:**
+- Visual Studio Code
+- Python 3.10 or 3.11
+- Git
+- Azure CLI
+
+📖 **[Complete VS Code Setup Guide →](./SETUP.md)**
+
+The setup guide includes:
+- Step-by-step installation instructions for all platforms (Windows, macOS, Linux)
+- Required VS Code extensions
+- Environment configuration
+- Troubleshooting common issues
+- Verification scripts
+
+**Quick Start:**
+```bash
+# Clone repository
+git clone https://github.com/LauraVerghote/Introduction-to-Foundry-workshop.git
+cd Introduction-to-Foundry-workshop
+
+# Follow the setup guide
+cat SETUP.md
+```
+
+---
+
+### Option 3: Manual Setup
+
 1. **Clone this repository**
    ```bash
    git clone https://github.com/LauraVerghote/Introduction-to-Foundry-workshop.git
    cd Introduction-to-Foundry-workshop
    ```
 
-2. **Follow the labs in order**
+2. **Install prerequisites:**
+   - Python 3.10+
+   - Azure CLI
+   - Git
+
+3. **Set up Lab 1:**
+   ```bash
+   cd lab-1-rag-chatbot
+   python -m venv venv
+   source venv/bin/activate  # or venv\Scripts\activate on Windows
+   pip install -r requirements.txt
+   cp .env.example .env
+   # Edit .env with your Azure credentials
+   ```
+
+4. **Follow the labs in order**
    - Start with [Lab 1](./lab-1-rag-chatbot/README.md)
    - Then proceed to [Lab 2](./lab-2-voice-capabilities/README.md)
 
-3. **Complete the setup in each lab before proceeding**
+---
+
+**💡 Tip:** We recommend Codespaces for workshop environments or if you want to get started quickly. Use local setup if you prefer working on your own machine or need offline access.
 
 ## 📚 Additional Resources
 
