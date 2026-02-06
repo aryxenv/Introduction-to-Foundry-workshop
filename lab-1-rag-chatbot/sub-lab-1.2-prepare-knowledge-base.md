@@ -8,7 +8,36 @@
 
 ## Overview
 
-In this sub-lab, you'll set up Azure Blob Storage and upload your documents that will form the knowledge base for your chatbot.
+In this sub-lab, you'll upload your documents to Azure Blob Storage. These documents become the knowledge base that your chatbot can search and reference when answering questions.
+
+---
+
+## 🎓 Key Concepts
+
+### What is Azure Blob Storage?
+
+Azure Blob Storage is Microsoft's object storage solution for the cloud:
+- **Blobs**: Binary Large Objects - any type of file
+- **Containers**: Logical groupings of blobs (like folders)
+- **Storage Account**: Top-level namespace for your data
+
+### Why Blob Storage for RAG?
+
+1. **Scalable**: Handle any amount of documents
+2. **Integrated**: Works seamlessly with Azure AI Search
+3. **Secure**: Fine-grained access control
+4. **Cost-effective**: Pay only for what you store
+
+### Sample Documents
+
+The `data/knowledge_base/` folder contains sample documents:
+
+| File | Contents |
+|------|----------|
+| `company_info.txt` | Company name, founding date, products, contact info |
+| `policies.txt` | Return policy, shipping options, support channels |
+
+---
 
 ## Resources You'll Create
 
@@ -55,13 +84,6 @@ In this sub-lab, you'll set up Azure Blob Storage and upload your documents that
 ### 3. Upload Your Documents
 
 1. Click on your `knowledge-base-container`
-2. Click "Upload"
-3. Select files from the `data/knowledge_base/` folder:
-   - `company_info.txt`
-   - `policies.txt`
-4. Click "Upload"
-
-   <img src="images/storage-account-5.png" width="1000"/>
 
 > ⚠️ **Warning: Permissions Error?**
 >
@@ -81,6 +103,15 @@ In this sub-lab, you'll set up Azure Blob Storage and upload your documents that
 >
 > Log out and back in, then retry the upload.
 
+2. Click "Upload"
+3. Select files from the `data/knowledge_base/` folder:
+   - `company_info.txt`
+   - `policies.txt`
+4. Click "Upload"
+
+   <img src="images/storage-account-5.png" width="1000"/>
+
+
 ### ✅ Console Checkpoint
 
 You should now have:
@@ -92,7 +123,7 @@ You should now have:
 
 ---
 
-## 💻 Option: Code
+## 💻 Option: Code - TO DO
 
 <details>
 <summary><strong>Click to expand Code instructions</strong></summary>
@@ -211,38 +242,6 @@ You should now have:
 - [ ] `.env` updated with storage credentials
 
 </details>
-
----
-
-## 🎓 Key Concepts
-
-### What is Azure Blob Storage?
-
-Azure Blob Storage is Microsoft's object storage solution for the cloud:
-- **Blobs**: Binary Large Objects - any type of file
-- **Containers**: Logical groupings of blobs (like folders)
-- **Storage Account**: Top-level namespace for your data
-
-### Why Blob Storage for RAG?
-
-1. **Scalable**: Handle any amount of documents
-2. **Integrated**: Works seamlessly with Azure AI Search
-3. **Secure**: Fine-grained access control
-4. **Cost-effective**: Pay only for what you store
-
-### Sample Documents
-
-The `data/knowledge_base/` folder contains sample documents:
-
-**company_info.txt** - Company information:
-- Company name and founding date
-- Products and services
-- Contact information
-
-**policies.txt** - Company policies:
-- Return policy
-- Shipping options
-- Customer support channels
 
 ---
 

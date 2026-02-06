@@ -4,7 +4,7 @@
 
 In this lab, you'll build a chatbot with Retrieval-Augmented Generation (RAG) capabilities using Microsoft Foundry. By the end of this lab, you'll have a production-ready chatbot that can answer questions based on your custom knowledge base.
 
-**Estimated Time**: 60-90 minutes (depending on path chosen)
+**Estimated Time**: 55-75 minutes (depending on path chosen)
 
 ---
 
@@ -23,7 +23,7 @@ This lab offers two parallel paths. Choose the one that best fits your learning 
 
 ## 📖 What You'll Learn
 
-- **RAG Fundamentals**: Understanding how RAG combines retrieval and generation
+- **RAG Fundamentals**: Understanding how RAG works and is implemented in Azure
 - **Azure AI Search**: Working with embeddings and semantic search on Azure
 - **Azure Blob Storage**: Storing and managing your source documents
 - **Microsoft Foundry**: Using the unified AI platform for deployment
@@ -43,9 +43,14 @@ Retrieval-Augmented Generation (RAG) is a technique that enhances Large Language
 ### System Architecture
 
 ```
-User Query → Embedding → Vector Search → Relevant Context
-                                              ↓
-                               LLM (with context) → Response
+                                                    
+                                                                      
+User Query ──┬──→ Embedding → Vector Search → Relevant Context        
+             │                                      │                  
+             │                                      ↓                  
+             └─────────────────────────────────→  LLM  ───→ Response   
+                                                                     
+                                                    
 ```
 
 ### Microsoft Services Used
@@ -55,41 +60,29 @@ User Query → Embedding → Vector Search → Relevant Context
 | **AI Platform** | Microsoft Foundry | Unified platform for building, deploying, and managing AI applications |
 | **Document Storage** | Azure Blob Storage | Stores your source documents (PDFs, text files, etc.) |
 | **Vector Search** | Azure AI Search | Stores embeddings and performs semantic search |
-| **Embedding Model** | Azure OpenAI (text-embedding-3-small) | Converts text into numerical vectors |
-| **LLM** | Azure OpenAI (GPT-4o) | Generates natural language responses |
+| **Embedding Model** | Microsoft Foundry Model (text-embedding-3-small) | Converts text into numerical vectors |
+| **LLM** | Microsoft Foundry Model (GPT-4o) | Generates natural language responses |
 
 ### How It All Fits Together
 
-1. **Microsoft Foundry** is your central hub - it's where you create your project, manage models, and deploy your agent
+1. **Microsoft Foundry** is your central hub - it's where you create your project, manage models, and deploy your agent. It also provides both the embedding model (for search) and the LLM (for responses)
 2. **Azure Blob Storage** is where you upload your source documents (company policies, FAQs, product info, etc.)
 3. **Azure AI Search** indexes your documents, chunks them, creates embeddings, and enables semantic search
-4. **Azure OpenAI** provides both the embedding model (for search) and the LLM (for responses)
 
 ---
 
 ## 📋 Sub-Labs
 
-| Sub-Lab | Title | Time | Console | Code |
+| Sub-Lab | Time | Console | Code |
 |:-------:|-------|:----:|:-------:|:----:|
-| 1.1 | [Set Up Azure Resources](./sub-lab-1.1-setup-azure-resources.md) | 15-20 min | ✅ | ✅ |
-| 1.2 | [Prepare Your Knowledge Base](./sub-lab-1.2-prepare-knowledge-base.md) | 10-15 min | ✅ | ✅ |
-| 1.3 | [Create Vector Index](./sub-lab-1.3-create-vector-index.md) | 15-20 min | ✅ | ✅ |
-| 1.4 | [Test Your RAG Chatbot](./sub-lab-1.4-test-chatbot.md) | 10-15 min | ✅ | ✅ |
-| 1.5 | [Deploy to Production](./sub-lab-1.5-deploy-to-production.md) | 20-30 min | ✅ | ✅ |
+| [1.1 Set Up Azure Resources](./sub-lab-1.1-setup-azure-resources.md) | 15-20 min | ✅ | ✅ |
+| [1.2 Prepare Your Knowledge Base](./sub-lab-1.2-prepare-knowledge-base.md) | 10-15 min | ✅ | ✅ |
+| [1.3 Create Vector Index](./sub-lab-1.3-create-vector-index.md) | 15-20 min | ✅ | ✅ |
+| [1.4 Create Your Agent in Foundry](./sub-lab-1.4-create-agent.md) | 15-20 min | ✅ | ❌ |
 
 ---
 
-## ✅ Lab Completion Checklist
-
-Before moving to Lab 2, ensure you have:
-
-- [ ] Azure resources created (Foundry, Storage, AI Search)
-- [ ] Documents uploaded and indexed
-- [ ] RAG chatbot tested successfully
-- [ ] (Optional) Deployed to production
-- [ ] Understand the RAG workflow
-
----
+Complete these individual labs before continuing to Lab 2. 
 
 ## 🔍 Troubleshooting
 
@@ -134,6 +127,4 @@ Before moving to Lab 2, ensure you have:
 
 Ready to add voice capabilities? Head over to [Lab 2: Adding Voice Capabilities](../lab-2-voice-capabilities/README.md)!
 
----
 
-**Questions or Issues?** Check the [resources](../resources/README.md) folder or ask your instructor.

@@ -1,6 +1,6 @@
 # Sub-Lab 1.3: Create Vector Index
 
-[← Back to Lab 1 Overview](./README.md) | [← Previous: Sub-Lab 1.2](./sub-lab-1.2-prepare-knowledge-base.md) | [Next: Sub-Lab 1.4 →](./sub-lab-1.4-test-chatbot.md)
+[← Back to Lab 1 Overview](./README.md) | [← Previous: Sub-Lab 1.2](./sub-lab-1.2-prepare-knowledge-base.md) | [Next: Sub-Lab 1.4 →](./sub-lab-1.4-create-agent.md)
 
 ---
 
@@ -8,12 +8,57 @@
 
 ## Overview
 
-In this sub-lab, you'll create an Azure AI Search index that will store vector embeddings of your documents, enabling semantic search.
+In this sub-lab, you'll create a vector index in Azure AI Search. This index stores embeddings (numerical representations) of your documents, enabling the chatbot to find relevant information based on meaning rather than just keywords.
+
+You'll also configure the necessary permissions so AI Search can read your documents from Blob Storage and use the embedding model from Foundry.
+
+---
+
+## 🎓 Key Concepts
+
+### What is a Vector Index?
+
+A vector index stores numerical representations (embeddings) of your documents:
+- **Embeddings**: Dense vectors (e.g., 1536 dimensions) that capture semantic meaning
+- **Vector Search**: Find similar documents based on meaning, not just keywords
+- **HNSW Algorithm**: Efficient approximate nearest neighbor search
+
+### How Embeddings Work
+
+```
+"What is the return policy?" 
+    ↓ Embedding Model
+[0.023, -0.456, 0.789, ..., 0.234]  (1536 numbers)
+```
+
+Similar meanings → Similar vectors → Found together in search
+
+### Example
+
+These questions have different words but similar meanings:
+- "How do I return a product?"
+- "What's your refund policy?"
+- "Can I get my money back?"
+
+The embedding model understands this similarity!
+
+### Index Schema
+
+Our index has these fields:
+| Field | Type | Purpose |
+|-------|------|---------|
+| `id` | String | Unique identifier for each chunk |
+| `content` | String | The actual text content |
+| `source` | String | Original document name |
+| `embedding` | Vector (1536) | Numerical representation |
+
+---
 
 ## Resources You'll Create
 
 - **Azure AI Search Service**: Search infrastructure
 - **Vector Index**: Searchable index with embeddings
+- **Role Assignments**: Permissions for AI Search to access Storage and Foundry
 
 ---
 
@@ -54,7 +99,7 @@ Your AI Search service needs permission to read documents from Blob Storage.
 
    <img src="images/storage-account-6.png" width="500"/>
 
-### 3. Grant AI Search Access to OpenAI
+### 3. Grant AI Search Access to Foundry
 
 Your AI Search service needs permission to use the embedding model.
 
@@ -101,13 +146,13 @@ Your AI Search service needs permission to use the embedding model.
 You should now have:
 - [ ] Azure AI Search service: `search-chatbot-[yourname]`
 - [ ] Vector index with your documents
-- [ ] Proper role assignments for Search to access Storage and OpenAI
+- [ ] Proper role assignments for Search to access Storage and Foundry
 
 </details>
 
 ---
 
-## 💻 Option: Code
+## 💻 Option: Code - TO DO
 
 <details>
 <summary><strong>Click to expand Code instructions</strong></summary>
@@ -306,44 +351,4 @@ You should now have:
 
 ---
 
-## 🎓 Key Concepts
-
-### What is a Vector Index?
-
-A vector index stores numerical representations (embeddings) of your documents:
-- **Embeddings**: Dense vectors (e.g., 1536 dimensions) that capture semantic meaning
-- **Vector Search**: Find similar documents based on meaning, not just keywords
-- **HNSW Algorithm**: Efficient approximate nearest neighbor search
-
-### How Embeddings Work
-
-```
-"What is the return policy?" 
-    ↓ Embedding Model
-[0.023, -0.456, 0.789, ..., 0.234]  (1536 numbers)
-```
-
-Similar meanings → Similar vectors → Found together in search
-
-### Example
-
-These questions have different words but similar meanings:
-- "How do I return a product?"
-- "What's your refund policy?"
-- "Can I get my money back?"
-
-The embedding model understands this similarity!
-
-### Index Schema
-
-Our index has these fields:
-| Field | Type | Purpose |
-|-------|------|---------|
-| `id` | String | Unique identifier for each chunk |
-| `content` | String | The actual text content |
-| `source` | String | Original document name |
-| `embedding` | Vector (1536) | Numerical representation |
-
----
-
-[← Back to Lab 1 Overview](./README.md) | [← Previous: Sub-Lab 1.2](./sub-lab-1.2-prepare-knowledge-base.md) | [Next: Sub-Lab 1.4 →](./sub-lab-1.4-test-chatbot.md)
+[← Back to Lab 1 Overview](./README.md) | [← Previous: Sub-Lab 1.2](./sub-lab-1.2-prepare-knowledge-base.md) | [Next: Sub-Lab 1.4 →](./sub-lab-1.4-create-agent.md)

@@ -8,7 +8,29 @@
 
 ## Overview
 
-In this sub-lab, you'll create the foundational Azure resources needed for your RAG chatbot.
+In this sub-lab, you'll set up Microsoft Foundry and deploy the AI models that power your chatbot:
+- **GPT-4o** – generates responses to user questions
+- **text-embedding-3-small** – converts text into vectors for semantic search
+
+---
+
+## 🎓 Key Concepts
+
+### What is Microsoft Foundry?
+
+Microsoft Foundry is a unified AI platform that provides:
+- **Project Management**: Organize your AI resources and deployments
+- **Model Catalog**: Access to GPT, embedding, and other AI models
+- **Development Tools**: Build, test, and deploy AI applications
+- **Monitoring**: Track usage, costs, and performance
+
+### What are Model Deployments?
+
+A deployment is an instance of a model that you can call via API:
+- **GPT-4o**: For generating natural language responses
+- **text-embedding-3-small**: For converting text to vectors (embeddings)
+
+---
 
 ## Resources You'll Create
 
@@ -88,7 +110,7 @@ You should now have:
 
 ---
 
-## 💻 Option: Code
+## 💻 Option: Code - TO DO
 
 <details>
 <summary><strong>Click to expand Code instructions</strong></summary>
@@ -109,7 +131,7 @@ az group create \
   --name rg-foundry-chatbot-workshop \
   --location eastus
 
-# Create Foundry resource (includes Azure OpenAI)
+# Create Foundry resource
 az cognitiveservices account create \
   --name foundry-workshop-[yourname] \
   --resource-group rg-foundry-chatbot-workshop \
@@ -155,7 +177,7 @@ cp .env.example .env
 Edit `.env` with your credentials:
 
 ```properties
-# Azure OpenAI Configuration
+# Foundry Configuration
 AZURE_OPENAI_ENDPOINT=https://foundry-workshop-[yourname].openai.azure.com/
 AZURE_OPENAI_API_KEY=your-api-key-here
 AZURE_OPENAI_CHAT_DEPLOYMENT=gpt-4o
@@ -178,28 +200,10 @@ AZURE_STORAGE_CONTAINER_NAME=knowledge-base-container
 
 You should now have:
 - [ ] Resource group created
-- [ ] Azure OpenAI resource with deployed models
-- [ ] `.env` file configured with OpenAI credentials
+- [ ] Foundry resource with deployed models
+- [ ] `.env` file configured with Foundry credentials
 
 </details>
-
----
-
-## 🎓 Key Concepts
-
-### What is Microsoft Foundry?
-
-Microsoft Foundry is a unified AI platform that provides:
-- **Project Management**: Organize your AI resources and deployments
-- **Model Catalog**: Access to Azure OpenAI and other AI models
-- **Development Tools**: Build, test, and deploy AI applications
-- **Monitoring**: Track usage, costs, and performance
-
-### What are Azure OpenAI Deployments?
-
-A deployment is an instance of a model that you can call via API:
-- **GPT-4o**: For generating natural language responses
-- **text-embedding-3-small**: For converting text to vectors (embeddings)
 
 ---
 
