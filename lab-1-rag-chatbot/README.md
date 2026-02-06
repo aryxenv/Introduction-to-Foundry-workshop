@@ -221,8 +221,8 @@ Before RAG can work, we need to get your documents into a searchable format. The
 | Option | Approach | Best For |
 |--------|----------|----------|
 | **Option A** | Upload documents via Azure Portal and index from the console | Quick setup, minimal code |
-| **Option B** | Programmatically upload to Blob Storage and index via API | Automated pipelines, CI/CD - TO DO |
-| **Option C** | Create embeddings programmatically and store in Azure AI Search | Full control, learning the details - TO DO |
+| **Option B** | Programmatically upload to Blob Storage and index via API | Automated pipelines, CI/CD  |
+| **Option C** | Create embeddings programmatically and store in Azure AI Search | Full control, learning the details |
 
 Choose the option that best fits your learning goals and proceed with the corresponding section below.
 
@@ -300,11 +300,13 @@ Choose the option that best fits your learning goals and proceed with the corres
 > Go back to overview in your container. You may need to log in and out to refresh. Now execute the instructions above.
 
    #### Create Azure AI Search Service
+   1. **Navigate to Azure Portal**
    - Go back to [Azure Portal](https://portal.azure.com)
    - Search for "Azure AI Search" in the top bar
    - Click "Create"
       <td><img src="images/ai-search-1.png" width="800"/>
 
+   2. **Configure AI Search**
    - Resource group: Select existing `rg-foundry-chatbot-workshop`
    - Name: `search-chatbot-workshop-[yourname]` (must be globally unique)
    - Region: East US
@@ -312,9 +314,56 @@ Choose the option that best fits your learning goals and proceed with the corres
    - Click "Review + Create" and then "Create"
       <td><img src="images/ai-search-2.png" width="500"/>
 
-   #### Create Vector Index from Foundry Portal
+   3. **Ensure your AI Search had sufficient permissions to your data**
+   - When your deployment is ready go back to your storage account -> container
+   - Go to access control (IAM)
+   - Click Add -> Add role assignment
+   - Select the role: Storage Blob Data Reader
+   - Click "Next"
+   - Select "Managed identity"
+   - Click 'Select members"
+   - Under managed identity choose 'Search service'
+   - Select the search service we just created: `search-chatbot-workshop-[yourname]`
+   - Click "select"
+       <td><img src="images/storage-account-6" width="500"/>  
 
-   1. **Navigate to Foundry Portal**
+   - Click "Review + assign" and then again "Review + assign"
+
+   4. **Ensure your AI Search had sufficient permissions to use your embeddings model**
+   - Go to your Foundry resource we created
+   - Go to access control (IAM)
+   - Click Add -> Add role assignment
+       <td><img src="images/sfoundry-resource-3" width="1000"/>     
+   - Select the role: Cognitive Services OpenAI User
+   - Click "Next"
+   - Select "Managed identity"
+   - Click 'Select members"
+   - Under managed identity choose 'Search service'
+   - Select the search service we just created: `search-chatbot-workshop-[yourname]`
+   - Click "select"
+       <td><img src="images/storage-account-6" width="500"/>  
+
+   - Click "Review + assign" and then again "Review + assign"
+
+   5. **Import Data into the index**
+   - Go back to your AI search resource and click "Import data (new)". 
+      <td><img src="images/ai-search-3.png" width="800"/>
+
+   - Choose Azure Blob Storage
+   - Choose RAG
+   - Choose the storage account we just created: `stchatbotworkshop[yourname]`
+   - Pick the container we created: `knowledge-base-container`
+   - Click next
+   - Kind: Azure AI Foundry (Preview) / Microsoft Foundry. 
+   - Azure AI Foundry / Hub project: Select the one we created (my-first-chatbot (foundry-workshop-lv))
+   - Model deployment: the one we deployed together (text-embedding-3-small)
+   - Click the checkbox next to "I acknowledge ..."
+   - Click "Next"
+   - Click "Next" 
+   - Click "Next" 
+   - Click "Create"
+
+   . **Navigate to Foundry Portal**
       - Go to [Microsoft Foundry](https://ai.azure.com)
       - Select your project (`my-first-chatbot`)
 
@@ -356,7 +405,7 @@ Choose the option that best fits your learning goals and proceed with the corres
 ---
 
 <details>
-<summary><strong>Option B: Programmatic Blob Upload and Indexing (For Automation)</strong></summary>
+<summary><strong>Option B: Programmatic Blob Upload and Indexing (For Automation) - TO DO </strong></summary>
 
 This option demonstrates how to automate the entire pipeline: upload files to Blob Storage and create/update the vector index programmatically. Ideal for CI/CD pipelines and production scenarios.
 
@@ -622,7 +671,7 @@ python scripts/create_vector_index.py
 ---
 
 <details>
-<summary><strong>Option C: Create Your Own Embeddings Programmatically (Full Control)</strong></summary>
+<summary><strong>Option C: Create Your Own Embeddings Programmatically (Full Control) - TO DO </strong></summary>
 
    This option gives you full control over the embedding and indexing process. You'll understand exactly how documents are processed, chunked, embedded, and stored.
 
