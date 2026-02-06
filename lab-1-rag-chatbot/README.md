@@ -57,8 +57,7 @@ User Query ──┬──→ Embedding → Vector Search → Relevant Context
 
 | Component | Microsoft Service | Purpose |
 |-----------|------------------|---------|
-| **AI Platform** | Microsoft Foundry | Unified platform for building, deploying, and managing AI applications |
-| **Document Storage** | Azure Blob Storage | Stores your source documents (PDFs, text files, etc.) |
+| **AI Platform** | Microsoft Foundry | Unified platform for building, deploying, and managing AI applications || **Knowledge Layer** | Foundry IQ | Manages knowledge bases with agentic retrieval and permission-aware responses || **Document Storage** | Azure Blob Storage | Stores your source documents (PDFs, text files, etc.) |
 | **Vector Search** | Azure AI Search | Stores embeddings and performs semantic search |
 | **Embedding Model** | Microsoft Foundry Model (text-embedding-3-small) | Converts text into numerical vectors |
 | **LLM** | Microsoft Foundry Model (GPT-4o) | Generates natural language responses |
@@ -68,6 +67,7 @@ User Query ──┬──→ Embedding → Vector Search → Relevant Context
 1. **Microsoft Foundry** is your central hub - it's where you create your project, manage models, and deploy your agent. It also provides both the embedding model (for search) and the LLM (for responses)
 2. **Azure Blob Storage** is where you upload your source documents (company policies, FAQs, product info, etc.)
 3. **Azure AI Search** indexes your documents, chunks them, creates embeddings, and enables semantic search
+4. **Foundry IQ** connects it all together - it creates a knowledge base from your indexed data and uses agentic retrieval to provide your agent with permission-aware, grounded answers with citations
 
 ---
 
@@ -78,7 +78,7 @@ User Query ──┬──→ Embedding → Vector Search → Relevant Context
 | [1.1 Set Up Azure Resources](./sub-lab-1.1-setup-azure-resources.md) | 15-20 min | ✅ | ✅ |
 | [1.2 Prepare Your Knowledge Base](./sub-lab-1.2-prepare-knowledge-base.md) | 10-15 min | ✅ | ✅ |
 | [1.3 Create Vector Index](./sub-lab-1.3-create-vector-index.md) | 15-20 min | ✅ | ✅ |
-| [1.4 Create Your Agent in Foundry](./sub-lab-1.4-create-agent.md) | 15-20 min | ✅ | ❌ |
+| [1.4 Create Your Agent in Foundry](./sub-lab-1.4-create-agent.md) | 15-20 min | ✅ | ✅ |
 
 ---
 
