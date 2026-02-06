@@ -40,6 +40,7 @@ User Query → Embedding → Vector Search → Relevant Context
 |-----------|------------------|---------|
 | **AI Platform** | Microsoft Foundry | Unified platform for building, deploying, and managing AI applications |
 | **Knowledge Base** | Foundry IQ | Automatic indexing, chunking, and retrieval of your documents |
+| **Document Storage** | Azure Blob Storage | Stores your source documents (PDFs, text files, etc.) |
 | **Vector Search** | Azure AI Search | Stores embeddings and performs semantic search |
 | **Embedding Model** | Azure OpenAI (text-embedding-ada-002) | Converts text into numerical vectors |
 | **LLM** | Azure OpenAI (GPT-4) | Generates natural language responses |
@@ -48,10 +49,11 @@ User Query → Embedding → Vector Search → Relevant Context
 ### How It All Fits Together
 
 1. **Microsoft Foundry** is your central hub - it's where you create your project, manage models, and deploy your agent
-2. **Foundry IQ** handles your knowledge base - upload documents and it automatically chunks, embeds, and indexes them
-3. **Azure AI Search** powers the vector database behind Foundry IQ
-4. **Azure OpenAI** provides both the embedding model (for search) and the LLM (for responses)
-5. **Microsoft Agent Framework** is the SDK you use to build the agent logic in Python
+2. **Azure Blob Storage** is where you upload your source documents (company policies, FAQs, product info, etc.)
+3. **Foundry IQ** handles your knowledge base - it reads from Blob Storage and automatically chunks, embeds, and indexes your documents
+4. **Azure AI Search** powers the vector database behind Foundry IQ
+5. **Azure OpenAI** provides both the embedding model (for search) and the LLM (for responses)
+6. **Microsoft Agent Framework** is the SDK you use to build the agent logic in Python
 
 ## 📋 Prerequisites
 
@@ -271,9 +273,12 @@ Choose the option that best fits your learning goals and proceed with the corres
       - Click "Upload"
       - Select your files (`company_info.txt`, `policies.txt`)
       - Click "Upload"
+         <td><img src="images/storage-account-5.png" width="1000"/>
 
 
-> [!WARNING]
+
+> ⚠️ **Warning**
+>
 > **If you get an error like this when accessing the container:**
 >
 > *You do not have permissions to list the data using your user account with Microsoft Entra ID. Click to learn more about authenticating with Microsoft Entra ID. This request is not authorized to perform this operation using this permission. RequestId:XXXX Time:XXXX.*
