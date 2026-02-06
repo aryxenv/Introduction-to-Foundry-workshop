@@ -63,7 +63,7 @@ Before starting, ensure you have:
 
 ## 🛠️ Step-by-Step Instructions
 
-### Step 1: Set Up Azure Resources (20 minutes)
+### Step 1: Set Up Microsoft Foundry Resources (20 minutes)
 
 <details>
 <summary><strong>Option A: Using Azure Portal (Recommended for Beginners)</strong></summary>
@@ -115,24 +115,10 @@ Before starting, ensure you have:
 
 
 
-4. **Create Azure AI Search Service**
-   - Go back to [Azure Portal](https://portal.azure.com)
-   - Search for "Azure AI Search" in the top bar
-   - Click "Create"
-      <td><img src="images/ai-search-1.png" width="800"/>
-
-   - Resource group: Select existing `rg-foundry-chatbot-workshop`
-   - Name: `search-chatbot-workshop-[yourname]` (must be globally unique)
-   - Region: East US
-   - Pricing tier: Free (sufficient for workshop, but not production-grade)
-   - Click "Review + Create" and then "Create"
-      <td><img src="images/ai-search-2.png" width="500"/>
-
-
 </details>
 
 <details>
-<summary><strong>Option B: Using Azure CLI (For Advanced Users)</strong></summary>
+<summary><strong>Option B: Using Azure CLI (For Advanced Users) - TO DO</strong></summary>
 
 ```bash
 # Login to Azure
@@ -158,7 +144,7 @@ az search service create \
 
 </details>
 
-### Step 2: Configure Environment Variables
+### Step 2: Configure Environment Variables - TO DO
 
 After completing either Option A or B above, configure your environment:
 
@@ -192,7 +178,7 @@ TEMPERATURE=0.7
 
 **Important**: Never commit `.env` file to version control!
 
-### Step 3: Understanding the Code Structure (15 minutes)
+### Step 3: Understanding the Code Structure (15 minutes) - TO DO
 
 Let's examine the project structure:
 
@@ -228,88 +214,501 @@ lab-1-rag-chatbot/
 
 ### Step 4: Build the Document Processing Pipeline (30 minutes)
 
-#### 3.1 Understanding Document Processing
+Before RAG can work, we need to get your documents into a searchable format. There are **three different approaches** you can choose from:
 
-Before RAG can work, we need to:
-1. Load documents from various formats
-2. Split them into manageable chunks
-3. Create embeddings for each chunk
-4. Store embeddings in the vector database
+| Option | Approach | Best For |
+|--------|----------|----------|
+| **Option A** | Upload documents via Azure Portal and index from the console | Quick setup, minimal code |
+| **Option B** | Programmatically upload to Blob Storage and index via API | Automated pipelines, CI/CD - TO DO |
+| **Option C** | Create embeddings programmatically and store in Azure AI Search | Full control, learning the details - TO DO |
 
-#### 3.2 Review `document_processor.py`
+Choose the option that best fits your learning goals and proceed with the corresponding section below.
 
-Open `src/document_processor.py` and review the code:
+---
 
-```python
-# Key function: process_document
-# - Reads a file
-# - Splits into chunks (500 chars with 50 char overlap)
-# - Preserves metadata (filename, page number)
-```
+<details>
+<summary><strong>Option A: Upload Documents via Azure Portal (Quickest Setup)</strong></summary>
 
-**Why chunking?**
-- LLMs have token limits
-- Smaller chunks = more precise retrieval
-- Overlap ensures context isn't lost at boundaries
+   This option uses the Azure Portal to upload documents to Blob Storage and create a vector index directly from the Foundry console. Ideal for quick prototyping.
 
-**Optimal chunk size**: 500-1000 characters (adjust based on your data)
+   #### Create a Storage Account
 
-#### 3.3 Add Your Knowledge Base
+   1. **Navigate to Azure Portal**
+      - Go to [Azure Portal](https://portal.azure.com)
+      - Search for "Storage accounts" and click "Create"
 
-1. Create sample documents in `data/knowledge_base/`:
+         <td><img src="images/storage-account-1.png" width="800"/>
 
-Create `data/knowledge_base/company_info.txt`:
-```
-About TechCorp
+   2. **Configure Storage Account**
+      - Resource group: `rg-foundry-chatbot-workshop`
+      - Storage account name: `stchatbotworkshop[yourname]` (must be globally unique, lowercase, no special characters)
+      - Region: Same as your other resources (e.g., East US)
+      - Preferred storage type: Azure Blob Storage or Azure Data Lake Storage Gen 2
+      - Performance: Standard
+      - Redundancy: Locally-redundant storage (LRS)
+      - Click "Review + Create" then "Create"
 
-TechCorp is a leading technology company founded in 2020. We specialize in 
-AI-powered solutions for enterprise customers.
+         <td><img src="images/storage-account-2.png" width="500"/>
 
-Our Products:
-- SmartAssist: AI customer service platform
-- DataVision: Business intelligence and analytics
-- CloudSync: Multi-cloud data synchronization
+   3. **Create a Blob Container**
+      - Go to your new storage account (Click on "Go to resource" when the Deployment is complete)
+      - In the left menu, click "Containers" under "Data storage"
+      - Click "+ Add Container"
+      - Name: `knowledge-base-container`
+      - Public access level / Anonymous access level: Private
+      - Click "Create"
 
-Contact: support@techcorp.com
-Office Hours: Monday-Friday, 9 AM - 5 PM EST
-```
+         <td><img src="images/storage-account-3.png" width="1000"/>
 
-Create `data/knowledge_base/policies.txt`:
-```
-Company Policies
+   #### Upload Your Documents
 
-Return Policy:
-Products can be returned within 30 days of purchase for a full refund.
-Items must be in original packaging and unused.
+   1. **Prepare Your Documents**
+      - Use the sample documents from `data/knowledge_base/` folder
+      - Or create your own `.txt`, `.pdf`, or `.docx` files
 
-Shipping:
-- Standard shipping: 5-7 business days (Free)
-- Express shipping: 2-3 business days ($15)
-- Overnight: 1 business day ($30)
+   2. **Upload via Portal**
+      - Click on your `knowledge-basecontainer` container
+      - Click "Upload"
+      - Select your files (`company_info.txt`, `policies.txt`)
+      - Click "Upload"
 
-Customer Support:
-Email: support@techcorp.com
-Phone: 1-800-TECH-CORP
-Live Chat: Available on website 24/7
-```
 
-#### 3.4 Test Document Processing
+> [!WARNING]
+> **If you get an error like this when accessing the container:**
+>
+> *You do not have permissions to list the data using your user account with Microsoft Entra ID. Click to learn more about authenticating with Microsoft Entra ID. This request is not authorized to perform this operation using this permission. RequestId:XXXX Time:XXXX.*
+>
+> <img src="images/storage-account-4.png" width="1000"/>
+>
+> A company policy might prevent you from using storage account key access. In that case you should give yourself data plane permissions on the storage account in order to upload data:
+>
+> 1. Go to **Access Control (IAM)**
+> 2. Click **Add** → **Add role assignment**
+> 3. Choose the role **"Storage Blob Data Owner"**
+> 4. Press **Next**
+> 5. Select **"User, group, or service principal"**
+> 6. Click **"Select members"**
+> 7. Select yourself
+> 8. Click **Review + assign**
+> 9. Click **Review + assign** again
+>
+> Go back to overview in your container. You may need to log in and out to refresh. Now execute the instructions above.
 
-Run the document processor:
+   #### Create Azure AI Search Service
+   - Go back to [Azure Portal](https://portal.azure.com)
+   - Search for "Azure AI Search" in the top bar
+   - Click "Create"
+      <td><img src="images/ai-search-1.png" width="800"/>
+
+   - Resource group: Select existing `rg-foundry-chatbot-workshop`
+   - Name: `search-chatbot-workshop-[yourname]` (must be globally unique)
+   - Region: East US
+   - Pricing tier: Free (sufficient for workshop, but not production-grade)
+   - Click "Review + Create" and then "Create"
+      <td><img src="images/ai-search-2.png" width="500"/>
+
+   #### Create Vector Index from Foundry Portal
+
+   1. **Navigate to Foundry Portal**
+      - Go to [Microsoft Foundry](https://ai.azure.com)
+      - Select your project (`my-first-chatbot`)
+
+   2. **Create a New Index**
+      - In the left navigation, click "Indexes" under "Data"
+      - Click "+ New index"
+      - Select "Azure Blob Storage" as the data source
+
+   3. **Configure the Data Source**
+      - Connection: Create new or select existing connection to your storage account
+      - Container: `knowledge-base`
+      - Click "Next"
+
+   4. **Configure Index Settings**
+      - Index name: `chatbot-knowledge-base`
+      - Embedding model: Select your deployed `text-embedding-3-small` model
+      - Chunking strategy: Auto (or configure custom settings)
+      - Click "Create"
+
+   5. **Wait for Indexing**
+      - The indexing process will take a few minutes
+      - You can monitor progress in the "Indexes" section
+      - Once complete, you'll see the document count and status
+
+   #### Verify Your Index
+
+   1. **Test the Index**
+      - Click on your index name
+      - Use the "Search" feature to test queries
+      - Try: "What products does TechCorp offer?"
+      - Verify that relevant chunks are returned
+
+   **Expected Result:**
+   - Index shows 7+ documents indexed
+   - Search returns relevant results for your test queries
+
+</details>
+
+---
+
+<details>
+<summary><strong>Option B: Programmatic Blob Upload and Indexing (For Automation)</strong></summary>
+
+This option demonstrates how to automate the entire pipeline: upload files to Blob Storage and create/update the vector index programmatically. Ideal for CI/CD pipelines and production scenarios.
+
+#### B.1 Install Additional Dependencies
+
+Add the Azure Storage SDK to your environment:
 
 ```bash
-python src/document_processor.py
+pip install azure-storage-blob azure-identity
+```
+
+#### B.2 Create the Upload Script
+
+Create a new file `scripts/upload_to_blob.py`:
+
+```python
+"""
+Programmatic upload of documents to Azure Blob Storage
+"""
+import os
+from pathlib import Path
+from azure.storage.blob import BlobServiceClient
+from azure.identity import DefaultAzureCredential
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Configuration
+STORAGE_ACCOUNT_NAME = os.getenv("AZURE_STORAGE_ACCOUNT_NAME")
+CONTAINER_NAME = os.getenv("AZURE_STORAGE_CONTAINER_NAME", "knowledge-base")
+DATA_FOLDER = Path(__file__).parent.parent / "data" / "knowledge_base"
+
+def upload_documents():
+    """Upload all documents from data/knowledge_base to Azure Blob Storage"""
+    
+    # Create blob service client using DefaultAzureCredential
+    account_url = f"https://{STORAGE_ACCOUNT_NAME}.blob.core.windows.net"
+    credential = DefaultAzureCredential()
+    blob_service_client = BlobServiceClient(account_url, credential=credential)
+    
+    # Get or create container
+    container_client = blob_service_client.get_container_client(CONTAINER_NAME)
+    try:
+        container_client.create_container()
+        print(f"✅ Created container: {CONTAINER_NAME}")
+    except Exception as e:
+        if "ContainerAlreadyExists" in str(e):
+            print(f"📁 Container already exists: {CONTAINER_NAME}")
+        else:
+            raise e
+    
+    # Upload each file
+    uploaded_count = 0
+    for file_path in DATA_FOLDER.glob("*"):
+        if file_path.is_file() and file_path.suffix in ['.txt', '.pdf', '.docx', '.md']:
+            blob_name = file_path.name
+            blob_client = container_client.get_blob_client(blob_name)
+            
+            with open(file_path, "rb") as data:
+                blob_client.upload_blob(data, overwrite=True)
+            
+            print(f"📤 Uploaded: {blob_name}")
+            uploaded_count += 1
+    
+    print(f"\n🎉 Successfully uploaded {uploaded_count} documents to Blob Storage!")
+    return uploaded_count
+
+if __name__ == "__main__":
+    upload_documents()
+```
+
+#### B.3 Create the Indexing Script
+
+Create a new file `scripts/create_vector_index.py`:
+
+```python
+"""
+Programmatically create and populate a vector index in Azure AI Search
+from documents stored in Azure Blob Storage
+"""
+import os
+from azure.identity import DefaultAzureCredential
+from azure.search.documents.indexes import SearchIndexClient
+from azure.search.documents.indexes.models import (
+    SearchIndex,
+    SearchField,
+    SearchFieldDataType,
+    VectorSearch,
+    HnswAlgorithmConfiguration,
+    VectorSearchProfile,
+    SearchableField,
+    SimpleField,
+)
+from azure.search.documents import SearchClient
+from azure.storage.blob import BlobServiceClient
+from openai import AzureOpenAI
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Configuration
+SEARCH_ENDPOINT = os.getenv("AZURE_SEARCH_ENDPOINT")
+INDEX_NAME = os.getenv("AZURE_SEARCH_INDEX_NAME", "chatbot-knowledge-base")
+STORAGE_ACCOUNT_NAME = os.getenv("AZURE_STORAGE_ACCOUNT_NAME")
+CONTAINER_NAME = os.getenv("AZURE_STORAGE_CONTAINER_NAME", "knowledge-base")
+AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
+EMBEDDING_DEPLOYMENT = os.getenv("AZURE_OPENAI_EMBEDDING_DEPLOYMENT")
+
+def create_index():
+    """Create the vector search index"""
+    credential = DefaultAzureCredential()
+    index_client = SearchIndexClient(SEARCH_ENDPOINT, credential)
+    
+    # Define the index schema
+    fields = [
+        SimpleField(name="id", type=SearchFieldDataType.String, key=True),
+        SearchableField(name="content", type=SearchFieldDataType.String),
+        SimpleField(name="source", type=SearchFieldDataType.String, filterable=True),
+        SearchField(
+            name="embedding",
+            type=SearchFieldDataType.Collection(SearchFieldDataType.Single),
+            searchable=True,
+            vector_search_dimensions=1536,
+            vector_search_profile_name="myHnswProfile",
+        ),
+    ]
+    
+    vector_search = VectorSearch(
+        algorithms=[HnswAlgorithmConfiguration(name="myHnsw")],
+        profiles=[VectorSearchProfile(name="myHnswProfile", algorithm_configuration_name="myHnsw")],
+    )
+    
+    index = SearchIndex(name=INDEX_NAME, fields=fields, vector_search=vector_search)
+    
+    result = index_client.create_or_update_index(index)
+    print(f"✅ Created/updated index: {result.name}")
+    return result
+
+def download_and_chunk_documents():
+    """Download documents from Blob Storage and split into chunks"""
+    credential = DefaultAzureCredential()
+    account_url = f"https://{STORAGE_ACCOUNT_NAME}.blob.core.windows.net"
+    blob_service_client = BlobServiceClient(account_url, credential=credential)
+    container_client = blob_service_client.get_container_client(CONTAINER_NAME)
+    
+    chunks = []
+    chunk_size = 500
+    overlap = 50
+    
+    for blob in container_client.list_blobs():
+        blob_client = container_client.get_blob_client(blob.name)
+        content = blob_client.download_blob().readall().decode('utf-8')
+        
+        # Simple chunking
+        for i in range(0, len(content), chunk_size - overlap):
+            chunk_text = content[i:i + chunk_size]
+            if chunk_text.strip():
+                chunks.append({
+                    "id": f"{blob.name}_{i}",
+                    "content": chunk_text,
+                    "source": blob.name
+                })
+        
+        print(f"📄 Processed: {blob.name}")
+    
+    print(f"🧩 Created {len(chunks)} chunks")
+    return chunks
+
+def generate_embeddings(chunks):
+    """Generate embeddings for each chunk using Azure OpenAI"""
+    credential = DefaultAzureCredential()
+    client = AzureOpenAI(
+        azure_endpoint=AZURE_OPENAI_ENDPOINT,
+        azure_ad_token=credential.get_token("https://cognitiveservices.azure.com/.default").token,
+        api_version="2024-02-15-preview"
+    )
+    
+    for chunk in chunks:
+        response = client.embeddings.create(
+            input=chunk["content"],
+            model=EMBEDDING_DEPLOYMENT
+        )
+        chunk["embedding"] = response.data[0].embedding
+    
+    print(f"🔢 Generated embeddings for {len(chunks)} chunks")
+    return chunks
+
+def upload_to_index(chunks):
+    """Upload chunks with embeddings to Azure AI Search"""
+    credential = DefaultAzureCredential()
+    search_client = SearchClient(SEARCH_ENDPOINT, INDEX_NAME, credential)
+    
+    result = search_client.upload_documents(documents=chunks)
+    print(f"📤 Uploaded {len(result)} documents to index")
+    return result
+
+def main():
+    print("🚀 Starting programmatic indexing pipeline...\n")
+    
+    # Step 1: Create/update the index
+    create_index()
+    
+    # Step 2: Download and chunk documents
+    chunks = download_and_chunk_documents()
+    
+    # Step 3: Generate embeddings
+    chunks = generate_embeddings(chunks)
+    
+    # Step 4: Upload to index
+    upload_to_index(chunks)
+    
+    print("\n🎉 Indexing pipeline complete!")
+
+if __name__ == "__main__":
+    main()
+```
+
+#### B.4 Update Environment Variables
+
+Add these variables to your `.env` file:
+
+```properties
+# Azure Storage Configuration (for Option B)
+AZURE_STORAGE_ACCOUNT_NAME=stchatbotworkshop[yourname]
+AZURE_STORAGE_CONTAINER_NAME=knowledge-base
+```
+
+#### B.5 Run the Pipeline
+
+Execute the scripts in order:
+
+```bash
+# Step 1: Upload documents to Blob Storage
+python scripts/upload_to_blob.py
+
+# Step 2: Create index and populate with embeddings
+python scripts/create_vector_index.py
 ```
 
 **Expected Output:**
 ```
-Processing documents from data/knowledge_base/...
-Processed company_info.txt: 3 chunks created
-Processed policies.txt: 4 chunks created
-Total: 7 chunks ready for embedding
+🚀 Starting programmatic indexing pipeline...
+
+✅ Created/updated index: chatbot-knowledge-base
+📄 Processed: company_info.txt
+📄 Processed: policies.txt
+🧩 Created 7 chunks
+🔢 Generated embeddings for 7 chunks
+📤 Uploaded 7 documents to index
+
+🎉 Indexing pipeline complete!
 ```
 
-**Exercise**: Add your own document and observe how it's chunked!
+#### B.6 Verify in Azure Portal
+
+1. Go to your Azure AI Search service
+2. Click on "Indexes"
+3. Verify `chatbot-knowledge-base` shows 7 documents
+4. Use the "Search explorer" to test queries
+
+</details>
+
+---
+
+<details>
+<summary><strong>Option C: Create Your Own Embeddings Programmatically (Full Control)</strong></summary>
+
+   This option gives you full control over the embedding and indexing process. You'll understand exactly how documents are processed, chunked, embedded, and stored.
+
+   #### C.1 Understanding Document Processing
+
+   Before RAG can work, we need to:
+   1. Load documents from various formats
+   2. Split them into manageable chunks
+   3. Create embeddings for each chunk
+   4. Store embeddings in the vector database
+
+   #### C.2 Review `document_processor.py`
+
+   Open `src/document_processor.py` and review the code:
+
+   ```python
+   # Key function: process_document
+   # - Reads a file
+   # - Splits into chunks (500 chars with 50 char overlap)
+   # - Preserves metadata (filename, page number)
+   ```
+
+   **Why chunking?**
+   - LLMs have token limits
+   - Smaller chunks = more precise retrieval
+   - Overlap ensures context isn't lost at boundaries
+
+   **Optimal chunk size**: 500-1000 characters (adjust based on your data)
+
+   #### C.3 Add Your Knowledge Base
+
+   1. Create sample documents in `data/knowledge_base/`:
+
+   Create `data/knowledge_base/company_info.txt`:
+   ```
+   About TechCorp
+
+   TechCorp is a leading technology company founded in 2020. We specialize in 
+   AI-powered solutions for enterprise customers.
+
+   Our Products:
+   - SmartAssist: AI customer service platform
+   - DataVision: Business intelligence and analytics
+   - CloudSync: Multi-cloud data synchronization
+
+   Contact: support@techcorp.com
+   Office Hours: Monday-Friday, 9 AM - 5 PM EST
+   ```
+
+   Create `data/knowledge_base/policies.txt`:
+   ```
+   Company Policies
+
+   Return Policy:
+   Products can be returned within 30 days of purchase for a full refund.
+   Items must be in original packaging and unused.
+
+   Shipping:
+   - Standard shipping: 5-7 business days (Free)
+   - Express shipping: 2-3 business days ($15)
+   - Overnight: 1 business day ($30)
+
+   Customer Support:
+   Email: support@techcorp.com
+   Phone: 1-800-TECH-CORP
+   Live Chat: Available on website 24/7
+   ```
+
+   #### C.4 Test Document Processing
+
+   Run the document processor:
+
+   ```bash
+   python src/document_processor.py
+   ```
+
+   **Expected Output:**
+   ```
+   Processing documents from data/knowledge_base/...
+   Processed company_info.txt: 3 chunks created
+   Processed policies.txt: 4 chunks created
+   Total: 7 chunks ready for embedding
+   ```
+
+   **Exercise**: Add your own document and observe how it's chunked!
+
+</details>
+
+---
+
+**✅ Checkpoint:** Regardless of which option you chose, you should now have a populated vector index in Azure AI Search with your knowledge base documents. Verify this before proceeding to Step 5.
 
 ### Step 5: Create and Store Embeddings (30 minutes)
 
