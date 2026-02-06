@@ -1,6 +1,6 @@
 # Sub-Lab 1.4: Create Your Agent in Foundry
 
-[← Back to Lab 1 Overview](./README.md) | [← Previous: Sub-Lab 1.3](./sub-lab-1.3-create-vector-index.md)
+[← Back to Lab 1 Overview](./README.md) | [← Previous: Sub-Lab 1.3](./sub-lab-1.3-create-vector-index.md) | [Next: Lab 2 →](../lab-2-voice-capabilities/README.md)
 
 ---
 

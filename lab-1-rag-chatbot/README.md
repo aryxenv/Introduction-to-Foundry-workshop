@@ -1,5 +1,9 @@
 # Lab 1: Building a RAG-Enabled Chatbot
 
+[Next: Lab 2 →](../lab-2-voice-capabilities/README.md)
+
+---
+
 ## 🎯 Lab Overview
 
 In this lab, you'll build a chatbot with Retrieval-Augmented Generation (RAG) capabilities using Microsoft Foundry. By the end of this lab, you'll have a production-ready chatbot that can answer questions based on your custom knowledge base.
