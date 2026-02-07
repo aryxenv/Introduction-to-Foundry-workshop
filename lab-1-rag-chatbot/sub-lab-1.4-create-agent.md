@@ -60,7 +60,7 @@ When a user asks a question:
 ### 2. Create a Foundry IQ connection
 
 1. In the top menu, go to Build
-2. Go to Knowledge on the left
+2. Go to "Knowledge" on the left
 3. Connect to an AI Search resource by selecting your index at the bottom. This allows Foundry IQ to intelligently search between different knowlege sources in the knowledge base
 4. choose API Key as the Auth Type. 
 5. Press connect
@@ -87,7 +87,7 @@ When a user asks a question:
      If you don't know the answer, say so - don't make things up.
      Always be polite and professional.
      ```
-5. Click Knowledge and then "Add" and then Connect ot Foundry IQ
+5. Click "Knowledge" and then "Add" and then Connect ot Foundry IQ
 6. Select the knowledge base in the list and then "Connect".
    <img src="images/create-agent-1.png" width="500"/>
 7. Press "Save" on the top right

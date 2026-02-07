@@ -115,8 +115,7 @@ GPT Realtime supports multiple voices:
 | Sub-Lab | Time | Console | Code |
 |:-------:|-------|:------:|:----:|
 | [2.1 Deploy GPT Realtime Model](./sub-lab-2.1-deploy-realtime-model.md) | 10-15 min | ✅ | ✅ |
-| [2.2 Test in Audio Playground](./sub-lab-2.2-audio-playground.md) | 10-15 min | ✅ | ❌ |
-| [2.3 Build Voice Web App](./sub-lab-2.3-voice-web-app.md) | 15-20 min | ❌ | ✅ |
+| [2.2 Add Voice to Your Agent](./sub-lab-2.2-add-voice-to-agent.md) | 15-20 min | ✅ | ✅ |
 
 ---
 
@@ -137,7 +136,7 @@ GPT Realtime supports multiple voices:
 
 **Solution**:
 - Verify `gpt-realtime` model is deployed
-- Check Audio Playground settings (threshold, silence duration)
+- Check agent configuration
 - Ensure microphone is working and selected
 
 ---
