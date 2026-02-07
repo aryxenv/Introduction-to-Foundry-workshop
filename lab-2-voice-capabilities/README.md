@@ -48,7 +48,7 @@ GPT Realtime is a model family that enables natural voice conversations:
 ┌──────────────────────────────────────────────────────────────────┐
 │                    GPT Realtime Model                            │
 │                                                                  │
-│   User Voice ──→ [Audio Processing] ──→ LLM ──→ Voice Response  │
+│   User Voice ──→ [Audio Processing] ──→ LLM ──→ Voice Response   │
 │       ↑                                              │           │
 │       └──────────── Interruption Detection ──────────┘           │
 │                                                                  │
@@ -84,20 +84,20 @@ GPT Realtime supports multiple voices:
 ### Voice-Enabled Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                     Microsoft Foundry                           │
-│                                                                  │
-│  ┌─────────────┐    ┌─────────────────┐    ┌─────────────────┐  │
-│  │ GPT Realtime│ ←→ │ Your RAG Agent  │ ←→ │ Knowledge Base  │  │
-│  │   (voice)   │    │ (from Lab 1)    │    │ (AI Search)     │  │
-│  └─────────────┘    └─────────────────┘    └─────────────────┘  │
-│         ↑                                                        │
-└─────────│────────────────────────────────────────────────────────┘
-          │
-    ┌─────┴─────┐
-    │   User    │
-    │ 🎤 Voice  │
-    └───────────┘
+┌───────────────────────────────────────────────────────────────────┐
+│                      Microsoft Foundry                            │
+│                                                                   │
+│   ┌─────────────┐    ┌─────────────────┐    ┌─────────────────┐   │
+│   │ GPT Realtime│ ←→ │ Your RAG Agent  │ ←→ │ Knowledge Base  │   │
+│   │   (voice)   │    │ (from Lab 1)    │    │ (AI Search)     │   │
+│   └─────────────┘    └─────────────────┘    └─────────────────┘   │
+│          ↑                                                        │
+└──────────│────────────────────────────────────────────────────────┘
+           │
+    ┌──────┴─────┐
+    │    User    │
+    │ 🎤Voice🎤 │
+    └────────────┘
 ```
 
 ### Microsoft Services Used

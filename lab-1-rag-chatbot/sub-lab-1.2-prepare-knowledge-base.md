@@ -62,7 +62,7 @@ The `data/knowledge_base/` folder contains sample documents:
 3. Configure:
    - **Resource group**: `rg-foundry-chatbot-workshop`
    - **Storage account name**: `stchatbot[yourname]` (must be globally unique, lowercase, no special characters)
-   - **Region**: Same as your other resources (e.g., East US)
+   - **Region**: East US 2
    - **Performance**: Standard
    - **Redundancy**: Locally-redundant storage (LRS)
 4. Click "Review + Create" → "Create"
@@ -141,7 +141,7 @@ pip install azure-storage-blob azure-identity python-dotenv
 az storage account create \
   --name stchatbot[yourname] \
   --resource-group rg-foundry-chatbot-workshop \
-  --location eastus \
+  --location eastus2 \
   --sku Standard_LRS
 
 # Create container

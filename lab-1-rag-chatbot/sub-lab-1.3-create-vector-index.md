@@ -77,7 +77,7 @@ Our index has these fields:
 3. Configure:
    - **Resource group**: `rg-foundry-chatbot-workshop`
    - **Service name**: `search-chatbot-[yourname]` (must be globally unique)
-   - **Location**: East US
+   - **Location**: East US 2
    - **Pricing tier**: Free (sufficient for workshop)
 4. Click "Review + Create" → "Create"
 
@@ -129,7 +129,7 @@ Your AI Search service needs permission to use the embedding model.
 4. Click **Next**
 
 5. **Configure embeddings**:
-   - **Kind**: Azure AI Foundry (Preview) / Microsoft Foundry
+   - **Kind**: Microsoft Foundry
    - **Hub project**: Select your project (`my-first-chatbot`)
    - **Model deployment**: `text-embedding-3-small`
    - ✅ Check: "I acknowledge..."
@@ -165,7 +165,7 @@ az search service create \
   --name search-chatbot-[yourname] \
   --resource-group rg-foundry-chatbot-workshop \
   --sku free \
-  --location eastus
+  --location eastus2
 ```
 
 ### 2. Install Additional Dependencies

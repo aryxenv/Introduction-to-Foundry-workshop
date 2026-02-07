@@ -16,7 +16,7 @@ In this sub-lab, you'll deploy the GPT Realtime model in Microsoft Foundry. This
 
 ### What is GPT Realtime?
 
-GPT Realtime is different from traditional voice assistants:
+GPT Realtime is a speech-to-speech (S2S) model that went **Generally Available in August 2025**. Unlike traditional voice assistants that chain separate Speech-to-Text, LLM, and Text-to-Speech services together, GPT Realtime handles everything in a single model.
 
 | Traditional Approach | GPT Realtime |
 |---------------------|--------------|
@@ -25,13 +25,28 @@ GPT Realtime is different from traditional voice assistants:
 | No interruption handling | Natural interruptions supported |
 | Separate voice configuration | Integrated voice selection |
 
+### Key Features (GA Release)
+
+- **New Natural Voices**: Two new voices (Marin and Cedar) with improved naturalness and clarity
+- **Improved Instruction Following**: Enhanced ability to follow tone, pacing, and language instructions
+- **Higher Audio Quality**: Glitch-free output with improved alphanumeric reproduction
+- **Image Input Support**: Add images to context and discuss them via voice
+- **Improved Function Calling**: Enhanced ability to call custom code, with async function calling support
+- **Conversation Mode**: Real-world turn-taking behavior for natural phone-like interactions
+
 ### Model Variants
 
-| Model | Best For |
-|-------|----------|
-| `gpt-realtime` | Production voice applications |
-| `gpt-realtime-mini` | Cost-effective, faster responses |
-| `gpt-4o-realtime-preview` | Testing latest preview features |
+| Model | Best For | Notes |
+|-------|----------|-------|
+| `gpt-realtime` | Production voice applications | Full-featured GA model |
+| `gpt-realtime-mini` | Cost-effective, faster responses | Feature parity with full model |
+| `gpt-4o-realtime-preview` | Testing preview features | Use GA models for production |
+
+### Pricing
+
+GPT Realtime pricing is **20% lower** than the previous gpt-4o-realtime preview. Pricing is based on tokens per million:
+- Text input/output tokens
+- Audio input/output tokens (audio is tokenized)
 
 ---
 
@@ -47,33 +62,23 @@ GPT Realtime is different from traditional voice assistants:
 
 ### 2. Deploy GPT Realtime Model
 
-1. In the left menu:
-   - For **Foundry resource**: Select **Models + endpoints** under "My assets"
-   - For **Azure OpenAI resource**: Select **Deployments** under "Shared resources"
+1. In the top menu go to "Discover"
+2. Click "Models"on the left
+3. Search for `gpt-realtime` and click on it. 
+   <img src="images/foundry-models-1.png" width="800"/>
 
-2. Click **+ Deploy model** → **Deploy base model**
+4. Click Deploy -> Default settings
+5. Choose one of the available regions (e.g. East US 2) 
+6. Pick your project. Click "Continue"
 
-   <img src="images/deploy-realtime-1.png" width="800"/>
-
-3. Search for `gpt-realtime` in the model catalog
-
-4. Select the model and click **Confirm**
-
-   <img src="images/deploy-realtime-2.png" width="600"/>
-
-5. Review deployment details:
-   - **Deployment name**: `gpt-realtime` (or keep default)
-   - **Deployment type**: Global Standard
-   
-6. Click **Deploy**
 
 ### 3. Verify Deployment
 
 1. Wait for deployment to complete (1-2 minutes)
-2. Once deployed, you'll see it in your model deployments list
+2. Once deployed, you'll see it in your model deployments list under Build -> Models
 3. Note the deployment name - you'll need it for the Audio Playground
 
-   <img src="images/deploy-realtime-3.png" width="800"/>
+   <img src="images/foundry-models-2.png" width="800"/>
 
 ### ✅ Console Checkpoint
 
@@ -85,7 +90,7 @@ You should now have:
 
 ---
 
-## 💻 Option: Code
+## 💻 Option: Code - TO DO
 
 <details>
 <summary><strong>Click to expand Code instructions</strong></summary>

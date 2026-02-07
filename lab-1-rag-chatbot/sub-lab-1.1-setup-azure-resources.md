@@ -55,7 +55,7 @@ A deployment is an instance of a model that you can call via API:
 
 3. Configure:
    - **Name**: `rg-foundry-chatbot-workshop`
-   - **Region**: Choose closest to you (e.g., East US)
+   - **Region**: East US 2
 4. Click "Review + Create" → "Create"
 
    <img src="images/resource-group-console-3.png" width="500"/>
@@ -70,7 +70,7 @@ A deployment is an instance of a model that you can call via API:
 3. Configure:
    - **Resource group**: `rg-foundry-chatbot-workshop`
    - **Name**: `foundry-workshop-[yourname]`
-   - **Region**: East US
+   - **Region**: East US 2
    - **Default project name**: `my-first-chatbot`
 4. Click "Review + Create" → "Create"
 
@@ -129,7 +129,7 @@ az login
 # Create resource group
 az group create \
   --name rg-foundry-chatbot-workshop \
-  --location eastus
+  --location eastus2
 
 # Create Foundry resource
 az cognitiveservices account create \
@@ -137,7 +137,7 @@ az cognitiveservices account create \
   --resource-group rg-foundry-chatbot-workshop \
   --kind OpenAI \
   --sku S0 \
-  --location eastus
+  --location eastus2
 ```
 
 ### 2. Deploy Models via CLI

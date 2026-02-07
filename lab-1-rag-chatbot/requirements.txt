@@ -1,6 +1,6 @@
 # Requirements for Lab 1: RAG-Enabled Chatbot
 
-# Azure AI Foundry / Agent Framework
+# Microsoft Foundry / Agent Framework
 azure-ai-projects
 azure-ai-inference
 azure-identity
