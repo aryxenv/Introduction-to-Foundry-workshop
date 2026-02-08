@@ -1,23 +1,22 @@
-# Introduction Workshop to Microsoft Foundry and Micrsoft Agent Framework: Building an Intelligent RAG Chatbot with voice capabilities
+# Introduction Workshop to Microsoft Foundry: Building an Intelligent RAG Chatbot with Voice Capabilities
 
 ## 🎯 Workshop Overview
 
-Welcome to this hands-on workshop where you'll learn to build an intelligent chatbot with Retrieval-Augmented Generation (RAG) capabilities using the Microsoft Agent Framework and deploy it on Microsoft Foundry. As well as how to integrate speech capabilities with this chatbot. This workshop is designed to be educational and provides insights into modern AI application development using the newest Microsoft AI technologies
+Welcome to this hands-on workshop where you'll learn to build an intelligent chatbot with Retrieval-Augmented Generation (RAG) capabilities using Microsoft Foundry and add real-time voice conversations using GPT Realtime. This workshop is designed to be educational and provides insights into modern AI application development using Microsoft's AI platform.
 
 ### What You'll Build
 
 By the end of this workshop, you will have:
-1. **Lab 1**: A fully functional chatbot with RAG capabilities that can answer questions using your custom knowledge base
-2. **Lab 2**: Adding voice capabilities to your chatbot (Voice-enabled chatbot that supports speech-to-text input and text-to-speech output)
+1. **Lab 1**: A fully functional RAG chatbot that answers questions using your custom knowledge base, powered by Foundry IQ and Azure AI Search
+2. **Lab 2**: Voice-enabled conversations with your chatbot using GPT Realtime (speech-to-speech)
 
 ### Learning Objectives
 
-- Understand the architecture of our chatbot on Azure
-- Set up a knowledge base using Azure AI Search that will be used by our chatbot
-- Learn to use Foundry IQ for knowledge base management and indexing
-- Learn to use the Microsoft Agent Framework for building conversational AI
-- Deploy and host AI applications on Microsoft Foundry
-- Implement voice capabilities using Azure Speech Services
+- Understand the RAG (Retrieval-Augmented Generation) architecture
+- Set up a knowledge base using Azure AI Search and Azure Blob Storage
+- Learn to use Foundry IQ for knowledge base management with agentic retrieval
+- Create an AI agent in Microsoft Foundry
+- Add real-time voice capabilities using GPT Realtime
 
 ## 📋 Prerequisites
 
@@ -40,29 +39,25 @@ By the end of this workshop, you will have:
 
 ## 🗂️ Workshop Structure
 
-This workshop is divided into two progressive labs:
+This workshop is divided into two progressive labs, each with multiple sub-labs offering **Console** (portal) and **Code** (Python) paths:
 
 ### [Lab 1: Building a RAG-Enabled Chatbot](./lab-1-rag-chatbot/README.md)
-**Duration**: 40 minutes
+**Duration**: 55-75 minutes
 
-In this lab, you will:
-- Set up your Microsoft Foundry environment
-- Understand RAG architecture and its benefits
-- Build a knowledge base using Azure AI Search
-- Learn to use Foundry IQ for knowledge base management
-- Create a chatbot using Microsoft Agent Framework 
-- Deploy your chatbot to Microsoft Foundry
-- Test and validate your implementation
+| Sub-Lab | Description | Time |
+|---------|-------------|------|
+| 1.1 Set Up Azure Resources | Create Foundry project, deploy models | 15-20 min |
+| 1.2 Prepare Knowledge Base | Upload documents to Azure Blob Storage | 10-15 min |
+| 1.3 Create Vector Index | Set up Azure AI Search with embeddings | 15-20 min |
+| 1.4 Create Your Agent | Build agent with Foundry IQ | 15-20 min |
 
 ### [Lab 2: Adding Voice Capabilities](./lab-2-voice-capabilities/README.md)
-**Duration**: 20 minutes
+**Duration**: 30-45 minutes
 
-In this lab, you will:
-- Integrate Azure Speech Services
-- Add speech-to-text (STT) functionality
-- Add text-to-speech (TTS) functionality
-- Create a voice-enabled interface
-- Deploy the enhanced chatbot
+| Sub-Lab | Description | Time |
+|---------|-------------|------|
+| 2.1 Deploy GPT Realtime Model | Deploy the realtime voice model | 10-15 min |
+| 2.2 Add Voice to Your Agent | Enable voice on your RAG agent | 15-20 min |
 
 ## 🚀 Getting Started
 
@@ -89,11 +84,10 @@ If available in your org/account - no local setup needed:
 
 ## 📚 Additional Resources
 
-- [Microsoft Foundry Documentation]([https://learn.microsoft.com/en-us/azure/ai-foundry/](https://learn.microsoft.com/en-us/azure/ai-foundry/what-is-foundry?view=foundry))
-- [Microsoft Agent Framework](https://github.com/microsoft/agent-framework)
+- [Microsoft Foundry Documentation](https://learn.microsoft.com/en-us/azure/ai-foundry/what-is-foundry)
 - [Understanding RAG](https://learn.microsoft.com/en-us/azure/search/retrieval-augmented-generation-overview)
 - [Azure AI Search](https://learn.microsoft.com/en-us/azure/search/)
-- [Azure Speech Services](https://azure.microsoft.com/en-us/products/ai-services/speech-to-text)
+- [GPT Realtime API](https://learn.microsoft.com/en-us/azure/ai-foundry/openai/realtime-audio-quickstart)
 
 
 ## 📄 License
