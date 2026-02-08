@@ -74,7 +74,7 @@ User Query ──┬──→ Embedding → Vector Search → Relevant Context
 ## 📋 Sub-Labs
 
 | Sub-Lab | Time | Console | Code |
-|:-------:|-------|:----:|:-------:|:----:|
+|---------|------|:------:|:----:|
 | [1.1 Set Up Azure Resources](./sub-lab-1.1-setup-azure-resources.md) | 15-20 min | ✅ | ✅ |
 | [1.2 Prepare Your Knowledge Base](./sub-lab-1.2-prepare-knowledge-base.md) | 10-15 min | ✅ | ✅ |
 | [1.3 Create Vector Index](./sub-lab-1.3-create-vector-index.md) | 15-20 min | ✅ | ✅ |
