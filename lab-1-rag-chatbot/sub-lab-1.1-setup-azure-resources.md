@@ -115,19 +115,27 @@ You should now have:
 <details>
 <summary><strong>Click to expand Code instructions</strong></summary>
 
-> 📝 **First time using Code path?** Make sure you've completed the [Setup Guide](../SETUP.md) before continuing.
+### 1. Complete Development Environment Setup
 
-### Prerequisites
+Before proceeding, complete the development environment setup:
 
-- Azure CLI installed (`az --version`)
-- Logged in to Azure (`az login`)
+👉 **[Complete the Setup Guide](../SETUP.md)** - Choose either GitHub Codespaces or VS Code Local Setup
 
-### 1. Create Resources via CLI
+### 2. Verify Prerequisites
+
+Once your environment is ready, verify you have:
 
 ```bash
+# Check Azure CLI is installed
+az --version
+
 # Login to Azure
 az login
+```
 
+### 3. Create Resources via CLI
+
+```bash
 # Create resource group
 az group create \
   --name rg-foundry-chatbot-workshop \
@@ -142,7 +150,7 @@ az cognitiveservices account create \
   --location eastus2
 ```
 
-### 2. Deploy Models via CLI
+### 4. Deploy Models via CLI
 
 ```bash
 # Deploy GPT-4o
@@ -168,7 +176,7 @@ az cognitiveservices account deployment create \
   --sku-name Standard
 ```
 
-### 3. Configure Environment Variables
+### 5. Configure Environment Variables
 
 Create a `.env` file in the `lab-1-rag-chatbot` directory:
 
