@@ -128,7 +128,7 @@ You should now have:
 <details>
 <summary><strong>Click to expand Code instructions</strong></summary>
 
-> 📝 **First time using Code path?** Make sure you've completed the [Setup Guide](../SETUP.md) before continuing.
+> 📝 **First time using the Code option?** Make sure you've completed the [Setup Guide](../SETUP.md) before continuing.
 
 ### 1. Install Dependencies
 
@@ -137,6 +137,8 @@ pip install azure-storage-blob azure-identity python-dotenv
 ```
 
 ### 2. Create Storage Account via CLI
+
+> ✏️ Copy the code below into a text editor, **replace `[yourname]`** with your actual name, then run the commands. Storage account names must be under 24 characters.
 
 ```bash
 # Create storage account
@@ -153,9 +155,37 @@ az storage container create \
   --auth-mode login
 ```
 
-### 3. Upload Documents Programmatically
+### 3. Grant Yourself Data Permissions
 
-Create `scripts/upload_to_blob.py`:
+> ⚠️ **Important**: You need the **Storage Blob Data Contributor** role to upload files using Azure Identity.
+
+> ✏️ **Use PowerShell for this step** (Git Bash has issues with this command). Replace `[yourname]` with your actual name.
+
+```powershell
+# Make sure you're logged in first
+az login
+
+# Get your email/UPN and storage account scope
+$USER_EMAIL = az ad signed-in-user show --query userPrincipalName -o tsv
+$STORAGE_ID = az storage account show --name stchatbot[yourname] --resource-group rg-foundry-chatbot-workshop --query id -o tsv
+
+# Verify variables are set
+Write-Host "USER_EMAIL: $USER_EMAIL"
+Write-Host "STORAGE_ID: $STORAGE_ID"
+
+# Assign Storage Blob Data Contributor role
+az role assignment create \
+  --role "Storage Blob Data Contributor" \
+  --assignee-object-id $(az ad signed-in-user show --query id -o tsv) \
+  --assignee-principal-type User \
+  --scope /subscriptions/$(az account show --query id -o tsv)/resourceGroups/rg-foundry-chatbot-workshop/providers/Microsoft.Storage/storageAccounts/stchatbot[yourname]
+```
+
+> 💡 **Note**: Role assignments can take a few minutes to propagate. If you still get permission errors, wait 2-3 minutes and try again.
+
+### 4. Upload Documents Programmatically
+
+Create a folder `scripts` under lab-1-rag-chatbot. in this folder create the following file: `upload_to_blob.py`
 
 ```python
 """
@@ -211,7 +241,7 @@ if __name__ == "__main__":
     upload_documents()
 ```
 
-### 4. Update Environment Variables
+### 5. Update Environment Variables
 
 Add to your `.env` file:
 
@@ -221,7 +251,8 @@ AZURE_STORAGE_ACCOUNT_NAME=stchatbot[yourname]
 AZURE_STORAGE_CONTAINER_NAME=knowledge-base-container
 ```
 
-### 5. Run the Upload Script
+### 6. Run the Upload Script
+Make sure you are in the lab-1-rag-chatbot folder. If not: `cd lab-1-rag-chatbot`
 
 ```bash
 python scripts/upload_to_blob.py

@@ -8,10 +8,11 @@ This guide helps you set up your development environment for the Code path of th
 
 ### Option A: GitHub Codespaces (Fastest)
 
-If available in your org/account - no local setup needed:
+If available in your org/account. No local setup needed:
 
-1. Click the green **"Code"** button on this GitHub repo
-2. Select **"Codespaces"** → **"Create codespace on main"**
+1. Go to the [main page](https://github.com/LauraVerghote/Introduction-to-Foundry-workshop/tree/main) of this workshop 
+2. Click the green **"Code"** button on the top right of this GitHub repo
+3. Select **"Codespaces"** on the top→ **"Create codespace on main"**
 3. Wait 2-3 minutes - everything is pre-installed!
 4. Start with [Lab 1](./lab-1-rag-chatbot/README.md)
 
@@ -38,6 +39,12 @@ Ensure you have installed:
 ---
 
 ## Step 1: Clone the Repository
+
+1. Go to VS Code, create an empty project. 
+2. Open a terminal window (view -> Terminal) 
+3. Open a git bash terminal. ('+'sign on the top right of the terminal window) 
+4. Go to the desired file location ( `cd [location]` )
+4. Execute the command below to clone the repo
 
 ```bash
 git clone https://github.com/LauraVerghote/Introduction-to-Foundry-workshop.git
@@ -76,10 +83,9 @@ pip install -r requirements.txt
 
 ## Step 5: Create Environment File
 
-Create a `.env` file in the `lab-1-rag-chatbot` folder:
+1. Executing the code below to create a `.env` file in the `lab-1-rag-chatbot` folder (make sure you are still in folder **lab-1-rag-chatbot**)
 
 ```bash
-cd lab-1-rag-chatbot
 copy .env.example .env
 ```
 
@@ -89,7 +95,7 @@ You'll fill in the values during Lab 1.
 
 ## Step 6: Set Up Lab 2 (When Needed)
 
-When you reach Lab 2, run:
+If you are planning on doing Lab 2 as well. Go back to the main folder (`cd ..`) and run:
 
 ```bash
 cd lab-2-voice-capabilities
@@ -100,7 +106,7 @@ pip install -r requirements.txt
 
 ## ✅ Verification
 
-To verify your setup is working:
+To verify your setup is working (make sure your terminal is a git bash one)
 
 ```bash
 python --version

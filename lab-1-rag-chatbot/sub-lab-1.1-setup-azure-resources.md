@@ -123,7 +123,7 @@ Before proceeding, complete the development environment setup:
 
 ### 2. Verify Prerequisites
 
-Once your environment is ready, verify you have:
+Once your environment is ready. Go to the main folder and verify you have (make sure to use the git bash terminal):
 
 ```bash
 # Check Azure CLI is installed
@@ -134,6 +134,7 @@ az login
 ```
 
 ### 3. Create Resources via CLI
+Copy the instructions below in a text editor, fill in the placeholders and execute in your Git Bash terminal
 
 ```bash
 # Create resource group
@@ -141,16 +142,32 @@ az group create \
   --name rg-foundry-chatbot-workshop \
   --location eastus2
 
-# Create Foundry resource
+# Create Foundry resource (with project management enabled)
 az cognitiveservices account create \
   --name foundry-workshop-[yourname] \
   --resource-group rg-foundry-chatbot-workshop \
-  --kind OpenAI \
-  --sku S0 \
+  --kind AIServices \
+  --sku s0 \
+  --location eastus2 \
+  --allow-project-management
+
+# Create custom subdomain (must be globally unique)
+az cognitiveservices account update \
+  --name foundry-workshop-[yourname] \
+  --resource-group rg-foundry-chatbot-workshop \
+  --custom-domain foundry-workshop-[yourname]
+
+# Create project within the Foundry resource
+az cognitiveservices account project create \
+  --name foundry-workshop-[yourname] \
+  --resource-group rg-foundry-chatbot-workshop \
+  --project-name my-first-chatbot \
   --location eastus2
 ```
 
 ### 4. Deploy Models via CLI
+
+> ✏️ Copy the code below into a text editor, **replace `[yourname]`** with your actual name, then run the commands.
 
 ```bash
 # Deploy GPT-4o
@@ -159,7 +176,7 @@ az cognitiveservices account deployment create \
   --resource-group rg-foundry-chatbot-workshop \
   --deployment-name gpt-4o \
   --model-name gpt-4o \
-  --model-version "2024-05-13" \
+  --model-version "2024-11-20" \
   --model-format OpenAI \
   --sku-capacity 10 \
   --sku-name Standard
@@ -174,29 +191,44 @@ az cognitiveservices account deployment create \
   --model-format OpenAI \
   --sku-capacity 10 \
   --sku-name Standard
+
+# Verify deployments
+az cognitiveservices account deployment show \
+  --name foundry-workshop-[yourname] \
+  --resource-group rg-foundry-chatbot-workshop \
+  --deployment-name gpt-4o
+
+az cognitiveservices account deployment show \
+  --name foundry-workshop-[yourname] \
+  --resource-group rg-foundry-chatbot-workshop \
+  --deployment-name text-embedding-3-small
 ```
 
 ### 5. Configure Environment Variables
 
-Create a `.env` file in the `lab-1-rag-chatbot` directory:
+If you haven't done so yet during the initial set-up: Create a `.env` file in the `lab-1-rag-chatbot` directory:
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` with your credentials:
+Get your endpoint (found in Foundry Portal on the project welcome screen, or construct it):
+
+```
+https://foundry-workshop-[yourname].cognitiveservices.azure.com/
+```
+
+Edit `.env` with your endpoint:
 
 ```properties
-# Foundry Configuration
-AZURE_OPENAI_ENDPOINT=https://foundry-workshop-[yourname].openai.azure.com/
-AZURE_OPENAI_API_KEY=your-api-key-here
+# Foundry Configuration (using Azure Identity - no API key needed)
+AZURE_OPENAI_ENDPOINT=https://foundry-workshop-[yourname].cognitiveservices.azure.com/
 AZURE_OPENAI_CHAT_DEPLOYMENT=gpt-4o
 AZURE_OPENAI_EMBEDDING_DEPLOYMENT=text-embedding-3-small
 AZURE_OPENAI_API_VERSION=2024-02-15-preview
 
 # Azure AI Search Configuration (will be added in Sub-Lab 1.3)
 AZURE_SEARCH_ENDPOINT=
-AZURE_SEARCH_API_KEY=
 AZURE_SEARCH_INDEX_NAME=chatbot-knowledge-base
 
 # Azure Storage Configuration (will be added in Sub-Lab 1.2)
@@ -204,13 +236,16 @@ AZURE_STORAGE_ACCOUNT_NAME=
 AZURE_STORAGE_CONTAINER_NAME=knowledge-base-container
 ```
 
+> 💡 **Note**: We're using Azure Identity (DefaultAzureCredential) for authentication instead of API keys. This is more secure and uses your `az login` credentials automatically.
+
 > ⚠️ **Important**: Never commit `.env` file to version control!
 
 ### ✅ Code Checkpoint
 
 You should now have:
 - [ ] Resource group created
-- [ ] Foundry resource with deployed models
+- [ ] Foundry resource with project: `my-first-chatbot`
+- [ ] Models deployed: `gpt-4o` and `text-embedding-3-small`
 - [ ] `.env` file configured with Foundry credentials
 
 </details>

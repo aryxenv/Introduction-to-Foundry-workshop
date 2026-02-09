@@ -157,9 +157,11 @@ You should now have:
 <details>
 <summary><strong>Click to expand Code instructions</strong></summary>
 
-> 📝 **First time using Code path?** Make sure you've completed the [Setup Guide](../SETUP.md) before continuing.
+> 📝 **First time using the Code option?** Make sure you've completed the [Setup Guide](../SETUP.md) before continuing.
 
 ### 1. Create AI Search Service via CLI
+
+> ✏️ Copy the code below into a text editor, **replace `[yourname]`** with your actual name, then run the command.
 
 ```bash
 # Create Azure AI Search service

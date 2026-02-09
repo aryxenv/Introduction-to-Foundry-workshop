@@ -62,7 +62,7 @@ The Foundry Agent Web App is an open-source template that provides:
 ---
 
 ## 📋 Prerequisites
-> 📝 **First time using Code path?** Make sure you've completed the [Setup Guide](../SETUP.md) before continuing.
+> 📝 **First time using the Code option?** Make sure you've completed the [Setup Guide](../SETUP.md) before continuing.
 Before starting this sub-lab, ensure you have:
 
 - ✅ Completed Sub-Lab 1.4 (agent created and tested)
