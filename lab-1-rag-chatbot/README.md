@@ -56,7 +56,7 @@ User Query ──┬──→ Embedding → Vector Search → Relevant Context
 ### Microsoft Services Used
 
 | Component | Microsoft Service | Purpose |
-|-----------|------------------|---------|
+|:----------|:------------------|:--------|
 | **AI Platform** | Microsoft Foundry | Unified platform for building, deploying, and managing AI applications |
 | **Knowledge Layer** | Foundry IQ | Manages knowledge bases with agentic retrieval and permission-aware responses |
 | **Document Storage** | Azure Blob Storage | Stores your source documents (PDFs, text files, etc.) |
