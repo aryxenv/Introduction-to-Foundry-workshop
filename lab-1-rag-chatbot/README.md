@@ -4,7 +4,7 @@
 
 In this lab, you'll build a chatbot with Retrieval-Augmented Generation (RAG) capabilities using Microsoft Foundry. By the end of this lab, you'll have a production-ready chatbot that can answer questions based on your custom knowledge base.
 
-**Estimated Time**: 55-75 minutes (depending on path chosen)
+**Estimated Time**: 75-105 minutes (depending on path chosen)
 
 ---
 
@@ -79,6 +79,7 @@ User Query ──┬──→ Embedding → Vector Search → Relevant Context
 | [1.2 Prepare Your Knowledge Base](./sub-lab-1.2-prepare-knowledge-base.md) | 10-15 min | ✅ | ✅ |
 | [1.3 Create Vector Index](./sub-lab-1.3-create-vector-index.md) | 15-20 min | ✅ | ✅ |
 | [1.4 Create Your Agent in Foundry](./sub-lab-1.4-create-agent.md) | 15-20 min | ✅ | ✅ |
+| [1.5 Host Agent as Web App](./sub-lab-1.5-host-agent-webapp.md) | 20-30 min | ❌ | ✅ |
 
 ---
 

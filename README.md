@@ -39,25 +39,26 @@ By the end of this workshop, you will have:
 
 ## 🗂️ Workshop Structure
 
-This workshop is divided into two progressive labs, each with multiple sub-labs offering **Console** (portal) and **Code** (Python) paths:
+This workshop is divided into two progressive labs, each with multiple sub-labs offering **Console** (portal) and **Code** paths:
 
 ### [Lab 1: Building a RAG-Enabled Chatbot](./lab-1-rag-chatbot/README.md)
-**Duration**: 55-75 minutes
+**Duration**: 75-105 minutes
 
-| Sub-Lab | Description | Time |
-|---------|-------------|------|
-| 1.1 Set Up Azure Resources | Create Foundry project, deploy models | 15-20 min |
-| 1.2 Prepare Knowledge Base | Upload documents to Azure Blob Storage | 10-15 min |
-| 1.3 Create Vector Index | Set up Azure AI Search with embeddings | 15-20 min |
-| 1.4 Create Your Agent | Build agent with Foundry IQ | 15-20 min |
+| Sub-Lab | Description | Time | Console | Code |
+|---------|-------------|------|:------:|:----:|
+| 1.1 Set Up Azure Resources | Create Foundry project, deploy models | 15-20 min | ✅ | ✅ |
+| 1.2 Prepare Knowledge Base | Upload documents to Azure Blob Storage | 10-15 min | ✅ | ✅ |
+| 1.3 Create Vector Index | Set up Azure AI Search with embeddings | 15-20 min | ✅ | ✅ |
+| 1.4 Create Your Agent | Build agent with Foundry IQ | 15-20 min | ✅ | ✅ |
+| 1.5 Host Agent as Web App | Deploy using Foundry Agent Web App | 20-30 min | ❌ | ✅ |
 
 ### [Lab 2: Adding Voice Capabilities](./lab-2-voice-capabilities/README.md)
-**Duration**: 30-45 minutes
+**Duration**: 25-35 minutes
 
-| Sub-Lab | Description | Time |
-|---------|-------------|------|
-| 2.1 Deploy GPT Realtime Model | Deploy the realtime voice model | 10-15 min |
-| 2.2 Add Voice to Your Agent | Enable voice on your RAG agent | 15-20 min |
+| Sub-Lab | Description | Time | Console | Code |
+|---------|-------------|------|:------:|:----:|
+| 2.1 Deploy GPT Realtime Model | Deploy the realtime voice model | 10-15 min | ✅ | ✅ |
+| 2.2 Add Voice to Your Agent | Integrate voice using GPT Realtime API | 15-20 min | ❌ | ✅ |
 
 ## 🚀 Getting Started
 

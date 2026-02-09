@@ -1,6 +1,6 @@
 # Sub-Lab 1.4: Create Your Agent in Foundry
 
-[← Back to Lab 1 Overview](./README.md) | [← Previous: Sub-Lab 1.3](./sub-lab-1.3-create-vector-index.md) | [Next: Lab 2 →](../lab-2-voice-capabilities/README.md)
+[← Back to Lab 1 Overview](./README.md) | [← Previous: Sub-Lab 1.3](./sub-lab-1.3-create-vector-index.md) | [Next: Sub-Lab 1.5 →](./sub-lab-1.5-host-agent-webapp.md)
 
 ---
 
@@ -61,7 +61,7 @@ When a user asks a question:
 
 1. In the top menu, go to Build
 2. Go to "Knowledge" on the left
-3. Connect to an AI Search resource by selecting your index at the bottom. This allows Foundry IQ to intelligently search between different knowlege sources in the knowledge base
+3. Connect to an AI Search resource by selecting your index at the bottom. This allows Foundry IQ to intelligently search between different knowledge sources in the knowledge base
 4. choose API Key as the Auth Type. 
 5. Press connect
 
@@ -379,24 +379,24 @@ You've completed Lab 1! You now have a fully functional RAG chatbot that:
 ### What You Built
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                     Microsoft Foundry                           │
+┌────────────────────────────────────────────────────────────────┐
+│                     Microsoft Foundry                          │
 │  ┌─────────────────────────────────────────────────────────┐   │
-│  │                    Your Agent                            │   │
+│  │                    Your Agent                           │   │
 │  │  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐  │   │
 │  │  │   GPT-4o    │ ←→ │  AI Search  │ ←→ │Blob Storage │  │   │
 │  │  │  (answers)  │    │  (search)   │    │  (docs)     │  │   │
 │  │  └─────────────┘    └─────────────┘    └─────────────┘  │   │
 │  └─────────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────────┘
+└────────────────────────────────────────────────────────────────┘
 ```
 
 ### Next Steps
 
-Ready to add voice capabilities to your chatbot? Continue to:
+Ready to deploy your agent as a web app? Continue to:
 
-**[Lab 2: Voice Capabilities →](../lab-2-voice-capabilities/README.md)**
+**[Sub-Lab 1.5: Host Agent as Web App →](./sub-lab-1.5-host-agent-webapp.md)**
 
 ---
 
-[← Back to Lab 1 Overview](./README.md) | [← Previous: Sub-Lab 1.3](./sub-lab-1.3-create-vector-index.md) | [Next: Lab 2 →](../lab-2-voice-capabilities/README.md)
+[← Back to Lab 1 Overview](./README.md) | [← Previous: Sub-Lab 1.3](./sub-lab-1.3-create-vector-index.md) | [Next: Sub-Lab 1.5 →](./sub-lab-1.5-host-agent-webapp.md)
