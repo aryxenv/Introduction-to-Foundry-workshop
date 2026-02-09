@@ -57,7 +57,9 @@ User Query ──┬──→ Embedding → Vector Search → Relevant Context
 
 | Component | Microsoft Service | Purpose |
 |-----------|------------------|---------|
-| **AI Platform** | Microsoft Foundry | Unified platform for building, deploying, and managing AI applications || **Knowledge Layer** | Foundry IQ | Manages knowledge bases with agentic retrieval and permission-aware responses || **Document Storage** | Azure Blob Storage | Stores your source documents (PDFs, text files, etc.) |
+| **AI Platform** | Microsoft Foundry | Unified platform for building, deploying, and managing AI applications |
+| **Knowledge Layer** | Foundry IQ | Manages knowledge bases with agentic retrieval and permission-aware responses |
+| **Document Storage** | Azure Blob Storage | Stores your source documents (PDFs, text files, etc.) |
 | **Vector Search** | Azure AI Search | Stores embeddings and performs semantic search |
 | **Embedding Model** | Microsoft Foundry Model (text-embedding-3-small) | Converts text into numerical vectors |
 | **LLM** | Microsoft Foundry Model (GPT-4o) | Generates natural language responses |
@@ -85,38 +87,7 @@ User Query ──┬──→ Embedding → Vector Search → Relevant Context
 
 Complete these individual labs before continuing to Lab 2. 
 
-## 🔍 Troubleshooting
-
-### Common Issues
-
-**Issue**: "Authentication failed" when connecting to Azure services
-
-**Solution**: 
-- Ensure you're logged in: `az login`
-- Check your `.env` file has correct values
-- Verify role assignments are in place
-
----
-
-**Issue**: Search returns no results
-
-**Solution**:
-- Verify documents were uploaded to Blob Storage
-- Check the indexing job completed successfully
-- Ensure embedding model deployment is correct
-
----
-
-**Issue**: Responses are not relevant
-
-**Solution**:
-- Add more context to your documents
-- Adjust chunk size (try 300-800 characters)
-- Increase `top_k` in retrieval
-
----
-
-## 📚 Additional Resources
+##  Additional Resources
 
 - [Microsoft Foundry Documentation](https://learn.microsoft.com/en-us/azure/ai-foundry/)
 - [Azure AI Search RAG Tutorial](https://learn.microsoft.com/en-us/azure/search/search-get-started-rag)

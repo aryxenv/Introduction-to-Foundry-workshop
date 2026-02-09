@@ -438,37 +438,6 @@ You've successfully added voice capabilities to your RAG chatbot! Your agent can
 
 ---
 
-## 🔍 Troubleshooting
-
-### Common Issues
-
-**Issue**: "Microphone permission denied"
-
-**Solution**:
-- Check browser settings for microphone access
-- Use HTTPS (required for microphone in browsers)
-- Try a different browser
-
----
-
-**Issue**: "WebSocket connection failed"
-
-**Solution**:
-- Verify `AZURE_OPENAI_ENDPOINT` is set correctly
-- Check that GPT Realtime model is deployed (Sub-Lab 2.1)
-- Ensure WebSocket support is enabled in backend
-
----
-
-**Issue**: "No audio output"
-
-**Solution**:
-- Check browser audio permissions
-- Verify volume is not muted
-- Check browser console for errors
-
----
-
 ## ➡️ Next Steps
 
 - **Customize voices**: Try different voices for different use cases

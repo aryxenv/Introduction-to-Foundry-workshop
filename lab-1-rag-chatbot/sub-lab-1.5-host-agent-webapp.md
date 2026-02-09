@@ -242,51 +242,6 @@ azd provision
 
 ---
 
-## 🔍 Troubleshooting
-
-### Common Issues
-
-**Issue**: "AI_AGENT_ID required" error
-
-**Solution**:
-```powershell
-azd env set AI_AGENT_ID "Your-Agent-Name"
-azd up
-```
-
----
-
-**Issue**: Authentication fails after deployment
-
-**Solution**:
-- Clear browser cache and cookies
-- Try an incognito/private window
-- Verify Entra app redirect URIs include your deployment URL
-
----
-
-**Issue**: Agent not responding
-
-**Solution**:
-- Check the agent exists in Foundry portal
-- Verify the agent name matches exactly (case-sensitive)
-- Check Container App logs in Azure Portal
-
----
-
-**Issue**: Deployment fails
-
-**Solution**:
-```powershell
-# Check deployment status
-az deployment sub show -n <deployment-name>
-
-# View Container App logs
-az containerapp logs show -n <app-name> -g <resource-group>
-```
-
----
-
 ## 🧹 Cleanup
 
 To remove all Azure resources created by this sub-lab:

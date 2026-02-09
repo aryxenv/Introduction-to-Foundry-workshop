@@ -121,38 +121,7 @@ GPT Realtime supports multiple voices:
 
 ---
 
-## 🔍 Troubleshooting
-
-### Common Issues
-
-**Issue**: "Microphone permission denied"
-
-**Solution**:
-- Check browser settings for microphone access
-- Use HTTPS (required for microphone in browsers)
-- Try a different browser
-
----
-
-**Issue**: "Model not responding to voice"
-
-**Solution**:
-- Verify `gpt-realtime` model is deployed
-- Check agent configuration
-- Ensure microphone is working and selected
-
----
-
-**Issue**: "High latency in responses"
-
-**Solution**:
-- Use WebRTC instead of WebSockets for client apps
-- Check network connection
-- Try a region closer to your location
-
----
-
-## 📚 Additional Resources
+##  Additional Resources
 
 - [GPT Realtime API Documentation](https://learn.microsoft.com/en-us/azure/ai-foundry/openai/realtime-audio-quickstart)
 - [WebRTC Integration Guide](https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/realtime-audio-webrtc)

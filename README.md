@@ -31,8 +31,8 @@ By the end of this workshop, you will have:
 - **Python 3.9+** installed on your machine
 - **Visual Studio Code** or another code editor
 - **Git** for version control
-- **Azure subscription** (free tier available at https://azure.microsoft.com/free/)
-- **Microsoft Foundry access** (included with Azure subscription)
+- **Azure subscription** 
+- **Microsoft Foundry access** 
 
 ## 🗂️ Workshop Structure
 

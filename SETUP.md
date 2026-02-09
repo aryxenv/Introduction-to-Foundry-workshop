@@ -112,24 +112,4 @@ pip list | grep azure
 
 ---
 
-## 🔍 Troubleshooting
-
-### Python not found
-
-- Ensure Python is added to PATH
-- Restart VS Code after installing Python
-
-### Permission errors on Windows
-
-Run VS Code as Administrator, or use:
-```bash
-pip install --user -r requirements.txt
-```
-
-### Module not found errors
-
-Ensure you're in the correct directory and have activated the right Python interpreter.
-
----
-
 **You're ready to start!** 🎉 Head to [Lab 1](./lab-1-rag-chatbot/README.md) to begin.
