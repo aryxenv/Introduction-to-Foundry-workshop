@@ -47,10 +47,10 @@ The `data/knowledge_base/` folder contains sample documents:
 
 ---
 
-## 🖥️ Option: Console
+## 🖥️ Option: Portal
 
 <details>
-<summary><strong>Click to expand Console instructions</strong></summary>
+<summary><strong>Click to expand Portal instructions</strong></summary>
 
 ### 1. Create a Storage Account
 
@@ -112,7 +112,7 @@ The `data/knowledge_base/` folder contains sample documents:
    <img src="images/storage-account-5.png" width="1000"/>
 
 
-### ✅ Console Checkpoint
+### ✅ Portal Checkpoint
 
 You should now have:
 - [ ] Storage account: `stchatbot[yourname]`
@@ -123,10 +123,12 @@ You should now have:
 
 ---
 
-## 💻 Option: Code - TO DO
+## 💻 Option: Code
 
 <details>
 <summary><strong>Click to expand Code instructions</strong></summary>
+
+> 📝 **First time using Code path?** Make sure you've completed the [Setup Guide](../SETUP.md) before continuing.
 
 ### 1. Install Dependencies
 

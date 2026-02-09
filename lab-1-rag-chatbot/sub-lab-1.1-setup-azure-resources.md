@@ -40,10 +40,10 @@ A deployment is an instance of a model that you can call via API:
 
 ---
 
-## 🖥️ Option: Console
+## 🖥️ Option: Portal
 
 <details>
-<summary><strong>Click to expand Console instructions</strong></summary>
+<summary><strong>Click to expand Portal instructions</strong></summary>
 
 ### 1. Create a Resource Group
 
@@ -99,7 +99,7 @@ A deployment is an instance of a model that you can call via API:
    - Repeat for `text-embedding-3-small`
    - Discovery → Models → Search → Deploy → "Default settings"
 
-### ✅ Console Checkpoint
+### ✅ Portal Checkpoint
 
 You should now have:
 - [ ] Resource group: `rg-foundry-chatbot-workshop`
@@ -110,10 +110,12 @@ You should now have:
 
 ---
 
-## 💻 Option: Code - TO DO
+## 💻 Option: Code
 
 <details>
 <summary><strong>Click to expand Code instructions</strong></summary>
+
+> 📝 **First time using Code path?** Make sure you've completed the [Setup Guide](../SETUP.md) before continuing.
 
 ### Prerequisites
 

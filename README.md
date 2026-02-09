@@ -7,7 +7,7 @@ Welcome to this hands-on workshop where you'll learn to build an intelligent cha
 ### What You'll Build
 
 By the end of this workshop, you will have:
-1. **Lab 1**: A fully functional RAG chatbot that answers questions using your custom knowledge base, powered by Foundry IQ and Azure AI Search
+1. **Lab 1**: A fully functional RAG chatbot that answers questions using your custom knowledge base, powered by Foundry IQ and Azure AI Search, deployed as a web application
 2. **Lab 2**: Voice-enabled conversations with your chatbot using GPT Realtime (speech-to-speech)
 
 ### Learning Objectives
@@ -16,6 +16,7 @@ By the end of this workshop, you will have:
 - Set up a knowledge base using Azure AI Search and Azure Blob Storage
 - Learn to use Foundry IQ for knowledge base management with agentic retrieval
 - Create an AI agent in Microsoft Foundry
+- Deploy your agent as a web app using the Foundry Agent Web App template
 - Add real-time voice capabilities using GPT Realtime
 
 ## 📋 Prerequisites
@@ -30,21 +31,17 @@ By the end of this workshop, you will have:
 - **Python 3.9+** installed on your machine
 - **Visual Studio Code** or another code editor
 - **Git** for version control
-- **Azure subscription** (free tier available)
-- **Microsoft Foundry access** (your instructor will provide details)
-
-### Required Accounts
-- Microsoft Azure account (sign up for free at https://azure.microsoft.com/free/ or in case of an event, ask your Microsoft representative for account access)
-- Access to Microsoft Foundry (included with Azure subscription)
+- **Azure subscription** (free tier available at https://azure.microsoft.com/free/)
+- **Microsoft Foundry access** (included with Azure subscription)
 
 ## 🗂️ Workshop Structure
 
-This workshop is divided into two progressive labs, each with multiple sub-labs offering **Console** (portal) and **Code** paths:
+This workshop is divided into two progressive labs, each with multiple sub-labs offering **Portal** and **Code** paths:
 
 ### [Lab 1: Building a RAG-Enabled Chatbot](./lab-1-rag-chatbot/README.md)
 **Duration**: 75-105 minutes
 
-| Sub-Lab | Description | Time | Console | Code |
+| Sub-Lab | Description | Time | Portal | Code |
 |---------|-------------|------|:------:|:----:|
 | 1.1 Set Up Azure Resources | Create Foundry project, deploy models | 15-20 min | ✅ | ✅ |
 | 1.2 Prepare Knowledge Base | Upload documents to Azure Blob Storage | 10-15 min | ✅ | ✅ |
@@ -55,35 +52,12 @@ This workshop is divided into two progressive labs, each with multiple sub-labs 
 ### [Lab 2: Adding Voice Capabilities](./lab-2-voice-capabilities/README.md)
 **Duration**: 25-35 minutes
 
-| Sub-Lab | Description | Time | Console | Code |
+| Sub-Lab | Description | Time | Portal | Code |
 |---------|-------------|------|:------:|:----:|
 | 2.1 Deploy GPT Realtime Model | Deploy the realtime voice model | 10-15 min | ✅ | ✅ |
 | 2.2 Add Voice to Your Agent | Integrate voice using GPT Realtime API | 15-20 min | ❌ | ✅ |
 
-## 🚀 Getting Started
-
-Choose one of the following options:
-
-### Option A: GitHub Codespaces (Fastest)
-
-If available in your org/account - no local setup needed:
-1. Click the green "Code" button on this GitHub repo
-2. Select "Codespaces" → "Create codespace on main"
-3. Wait 2-3 minutes - everything is pre-installed!
-4. Start with [Lab 1](./lab-1-rag-chatbot/README.md)
-
-### Option B: VS Code Local Setup
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/LauraVerghote/Introduction-to-Foundry-workshop.git
-   cd Introduction-to-Foundry-workshop
-   ```
-2. Follow the [Setup Guide](./SETUP.md)
-3. Start with [Lab 1](./lab-1-rag-chatbot/README.md)
-
-
-## 📚 Additional Resources
+##  Additional Resources
 
 - [Microsoft Foundry Documentation](https://learn.microsoft.com/en-us/azure/ai-foundry/what-is-foundry)
 - [Understanding RAG](https://learn.microsoft.com/en-us/azure/search/retrieval-augmented-generation-overview)

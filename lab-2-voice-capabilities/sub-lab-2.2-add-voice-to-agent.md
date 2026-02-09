@@ -56,6 +56,8 @@ The GPT Realtime model provides **native speech-to-speech** capabilities:
 
 ## 📝 Prerequisites
 
+> 📝 **First time using Code path?** Make sure you've completed the [Setup Guide](../SETUP.md) before continuing.
+
 - ✅ Completed [Sub-Lab 1.5](../lab-1-rag-chatbot/sub-lab-1.5-host-agent-webapp.md) - Foundry Agent Web App deployed
 - ✅ Completed [Sub-Lab 2.1](./sub-lab-2.1-deploy-realtime-model.md) - GPT Realtime model deployed
 - ✅ Your Foundry Agent Web App running locally or deployed to Azure

@@ -62,10 +62,10 @@ Our index has these fields:
 
 ---
 
-## 🖥️ Option: Console
+## 🖥️ Option: Portal
 
 <details>
-<summary><strong>Click to expand Console instructions</strong></summary>
+<summary><strong>Click to expand Portal instructions</strong></summary>
 
 ### 1. Create Azure AI Search Service
 
@@ -141,7 +141,7 @@ Your AI Search service needs permission to use the embedding model.
 - Monitor progress in the Search service → Indexes section
 - Once complete, you'll see document count and status
 
-### ✅ Console Checkpoint
+### ✅ Portal Checkpoint
 
 You should now have:
 - [ ] Azure AI Search service: `search-chatbot-[yourname]`
@@ -152,10 +152,12 @@ You should now have:
 
 ---
 
-## 💻 Option: Code - TO DO
+## 💻 Option: Code
 
 <details>
 <summary><strong>Click to expand Code instructions</strong></summary>
+
+> 📝 **First time using Code path?** Make sure you've completed the [Setup Guide](../SETUP.md) before continuing.
 
 ### 1. Create AI Search Service via CLI
 

@@ -18,7 +18,7 @@ In this lab, you'll add voice capabilities to your chatbot using the GPT Realtim
 
 | Path | Description | Best For |
 |------|-------------|----------|
-| **🖥️ Console Path** | Deploy model via Foundry portal | Sub-Lab 2.1 only |
+| **🖥️ Portal Path** | Deploy model via Foundry portal | Sub-Lab 2.1 only |
 | **💻 Code Path** | Integrate voice into your web app | Full voice integration |
 
 > **Note**: Sub-Lab 2.2 (voice integration) is **Code only** and builds on the Foundry Agent Web App from Sub-Lab 1.5.
@@ -114,7 +114,7 @@ GPT Realtime supports multiple voices:
 
 ## 📋 Sub-Labs
 
-| Sub-Lab | Time | Console | Code |
+| Sub-Lab | Time | Portal | Code |
 |---------|------|:------:|:----:|
 | [2.1 Deploy GPT Realtime Model](./sub-lab-2.1-deploy-realtime-model.md) | 10-15 min | ✅ | ✅ |
 | [2.2 Add Voice to Your Agent](./sub-lab-2.2-add-voice-to-agent.md) | 15-20 min | ❌ | ✅ |

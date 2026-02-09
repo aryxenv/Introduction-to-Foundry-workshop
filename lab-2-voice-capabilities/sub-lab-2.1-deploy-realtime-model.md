@@ -50,10 +50,10 @@ GPT Realtime pricing is **20% lower** than the previous gpt-4o-realtime preview.
 
 ---
 
-## 🖥️ Option: Console
+## 🖥️ Option: Portal
 
 <details>
-<summary><strong>Click to expand Console instructions</strong></summary>
+<summary><strong>Click to expand Portal instructions</strong></summary>
 
 ### 1. Navigate to Foundry Portal
 
@@ -80,7 +80,7 @@ GPT Realtime pricing is **20% lower** than the previous gpt-4o-realtime preview.
 
    <img src="images/foundry-models-2.png" width="800"/>
 
-### ✅ Console Checkpoint
+### ✅ Portal Checkpoint
 
 You should now have:
 - [ ] GPT Realtime model deployed in your Foundry project
@@ -90,10 +90,12 @@ You should now have:
 
 ---
 
-## 💻 Option: Code - TO DO
+## 💻 Option: Code
 
 <details>
 <summary><strong>Click to expand Code instructions</strong></summary>
+
+> 📝 **First time using Code path?** Make sure you've completed the [Setup Guide](../SETUP.md) before continuing.
 
 ### 1. Deploy via Azure CLI
 

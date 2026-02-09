@@ -14,10 +14,10 @@ This lab offers two parallel paths. Choose the one that best fits your learning 
 
 | Path | Description | Best For |
 |------|-------------|----------|
-| **🖥️ Console Path** | Use Azure Portal and Foundry UI exclusively | Quick setup, visual learners, no coding required |
+| **🖥️ Portal Path** | Use Azure Portal and Foundry UI exclusively | Quick setup, visual learners, no coding required |
 | **💻 Code Path** | Build everything programmatically with Python | Developers, automation, deeper understanding |
 
-> **Tip**: You can mix and match! Start with Console to understand concepts, then try Code for specific sections.
+> **Tip**: You can mix and match! Start with Portal to understand concepts, then try Code for specific sections.
 
 ---
 
@@ -73,7 +73,7 @@ User Query ──┬──→ Embedding → Vector Search → Relevant Context
 
 ## 📋 Sub-Labs
 
-| Sub-Lab | Time | Console | Code |
+| Sub-Lab | Time | Portal | Code |
 |---------|------|:------:|:----:|
 | [1.1 Set Up Azure Resources](./sub-lab-1.1-setup-azure-resources.md) | 15-20 min | ✅ | ✅ |
 | [1.2 Prepare Your Knowledge Base](./sub-lab-1.2-prepare-knowledge-base.md) | 10-15 min | ✅ | ✅ |

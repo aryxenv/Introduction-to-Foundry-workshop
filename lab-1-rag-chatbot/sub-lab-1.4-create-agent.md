@@ -47,10 +47,10 @@ When a user asks a question:
 
 ---
 
-## 🖥️ Option: Console
+## 🖥️ Option: Portal
 
 <details>
-<summary><strong>Click to expand Console instructions</strong></summary>
+<summary><strong>Click to expand Portal instructions</strong></summary>
 
 ### 1. Navigate to Foundry Portal
 
@@ -147,7 +147,7 @@ Once you're satisfied with the agent's responses:
 When you publish an agent, Microsoft Foundry creates an Agent Application resource with a dedicated invocation URL and its own Microsoft Entra agent identity blueprint and agent identity. A deployment is created under the application that references your agent version and registers it in the Entra Agent Registry for discovery and governance.
 
 Publishing enables you to share agents with teammates, your organization, or customers without granting access to your Foundry project or source code. The stable endpoint remains consistent as you iterate and deploy new agent versions.
-### ✅ Console Checkpoint
+### ✅ Portal Checkpoint
 
 You should now have:
 - [ ] Agent created in Foundry
@@ -163,6 +163,8 @@ You should now have:
 
 <details>
 <summary><strong>Click to expand Code instructions</strong></summary>
+
+> 📝 **First time using Code path?** Make sure you've completed the [Setup Guide](../SETUP.md) before continuing.
 
 ### 1. Install Microsoft Agent Framework
 
