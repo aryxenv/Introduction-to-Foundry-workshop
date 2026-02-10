@@ -174,7 +174,39 @@ In this option, you'll create a **Foundry IQ knowledge base** that wraps your Az
 pip install azure-ai-projects azure-search-documents azure-identity python-dotenv requests --pre
 ```
 
-### 2. Get Your Project Endpoint and Resource ID
+### 2. Configure Role Assignment for MCP (Critical!)
+
+The Foundry project has a **managed identity** that needs permission to read from your AI Search index. Without this role, the MCP endpoint returns a `405 Method Not Allowed` error when the agent tries to use the knowledge base.
+
+**Get the project's managed identity:**
+
+```bash
+# Before running: Replace [yourname] with your actual value from sub-lab 1.1
+az cognitiveservices account project show \
+  --name foundry-workshop-[yourname] \
+  --resource-group rg-foundry-chatbot-workshop \
+  --project-name my-first-chatbot \
+  --query "identity.principalId" \
+  --output tsv
+```
+
+**Assign the Search Index Data Reader role:**
+
+```bash
+# Before running: Replace the placeholders with your actual values
+# - [principal-id]: The output from the command above
+# - [your-subscription-id]: Your Azure subscription ID
+# - [yourname]: Your name suffix from sub-lab 1.1
+
+az role assignment create \
+  --role "Search Index Data Reader" \
+  --assignee [principal-id] \
+  --scope "/subscriptions/[your-subscription-id]/resourceGroups/rg-foundry-chatbot-workshop/providers/Microsoft.Search/searchServices/search-chatbot-[yourname]"
+```
+
+> **⏱️ Note:** Role assignments can take 1-2 minutes to propagate. If you get a 405 error when running the script, wait a moment and try again.
+
+### 3. Get Your Project Endpoint and Resource ID
 
 You need two values for this lab:
 
@@ -202,7 +234,7 @@ az cognitiveservices account project show \
   --output tsv
 ```
 
-### 3. Update Environment Variables
+### 4. Update Environment Variables
 
 Add to your `.env` file:
 
@@ -226,7 +258,7 @@ KNOWLEDGE_SOURCE_NAME=techcorp-docs
 MCP_CONNECTION_NAME=kb-mcp-connection
 ```
 
-### 4. Create the RAG Agent with Foundry IQ
+### 5. Create the RAG Agent with Foundry IQ
 
 Create a new file `rag_agent.py` in the folder `src`:
 
@@ -594,7 +626,7 @@ if __name__ == "__main__":
     main()
 ```
 
-### 5. Run the Agent
+### 6. Run the Agent
 
 ```bash
 python src/rag_agent.py
@@ -623,7 +655,7 @@ python src/rag_agent.py
 📝 Created conversation: conv_abc123...
 ```
 
-### 6. Test Your Agent
+### 7. Test Your Agent
 
 Once the chatbot is running, test it with the same questions used in the Portal option:
 
@@ -672,7 +704,7 @@ The agent should:
 - ✅ Acknowledge when information isn't available
 - ✅ Stay within the scope of your knowledge base
 
-### 7. Verify in the Portal (Optional)
+### 8. Verify in the Portal (Optional)
 
 After running the script, you can verify your agent was created correctly:
 
