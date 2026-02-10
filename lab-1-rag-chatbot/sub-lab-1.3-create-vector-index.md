@@ -152,7 +152,7 @@ You should now have:
 
 ---
 
-## 💻 Option: Code - TO DO
+## 💻 Option: Code
 
 <details>
 <summary><strong>Click to expand Code instructions</strong></summary>
@@ -161,7 +161,7 @@ You should now have:
 
 ### 1. Create AI Search Service via CLI
 
-> ✏️ Copy the code below into a text editor, **replace `[yourname]`** with your actual name, then run the command.
+> ✏️ Copy the code below into a text editor, **replace `[yourname]`** with your actual name, then run the command **in Git Bash**.
 
 ```bash
 # Create Azure AI Search service
@@ -172,36 +172,127 @@ az search service create \
   --location eastus2
 ```
 
-### 2. Install Additional Dependencies
+> 💡 **Note**: If you get an error about free tier quota being exhausted, use `--sku basic` instead. Basic tier has a small cost but offers more capacity.
 
-```bash
-pip install azure-search-documents openai
+### 2. Enable Managed Identity and RBAC on AI Search
+
+> ✏️ **Use PowerShell for this step.** Replace `[yourname]` with your actual name.
+
+AI Search needs a managed identity to access other Azure resources, and RBAC authentication must be enabled for Azure AD-based access.
+
+```powershell
+# Enable system-assigned managed identity
+az search service update `
+  --name search-chatbot-[yourname] `
+  --resource-group rg-foundry-chatbot-workshop `
+  --identity-type SystemAssigned
+
+# Enable RBAC authentication (required for Azure AD/managed identity access)
+az search service update `
+  --name search-chatbot-[yourname] `
+  --resource-group rg-foundry-chatbot-workshop `
+  --auth-options aadOrApiKey `
+  --aad-auth-failure-mode http401WithBearerChallenge
 ```
 
-### 3. Create Vector Index Programmatically
+> 💡 **Important**: By default, AI Search only allows API key authentication. The second command enables Azure AD authentication which is required for the Python script to work.
 
-Create `scripts/create_vector_index.py`:
+### 3. Grant AI Search Access to Storage
+
+Your AI Search service needs permission to read documents from Blob Storage.
+
+```powershell
+# Get the AI Search managed identity principal ID
+$SEARCH_IDENTITY = az search service show `
+  --name search-chatbot-[yourname] `
+  --resource-group rg-foundry-chatbot-workshop `
+  --query identity.principalId -o tsv
+
+# Verify the identity is set
+Write-Host "SEARCH_IDENTITY: $SEARCH_IDENTITY"
+
+# Get the storage account resource ID
+$STORAGE_ID = az storage account show `
+  --name stchatbot[yourname] `
+  --resource-group rg-foundry-chatbot-workshop `
+  --query id -o tsv
+
+# Assign Storage Blob Data Reader role to AI Search
+az role assignment create `
+  --assignee "$SEARCH_IDENTITY" `
+  --role "Storage Blob Data Reader" `
+  --scope "$STORAGE_ID"
+```
+
+### 4. Grant AI Search Access to Foundry
+
+Your AI Search service needs permission to use the embedding model.
+
+```powershell
+# Get the Foundry resource ID
+$FOUNDRY_ID = az cognitiveservices account show `
+  --name foundry-workshop-[yourname] `
+  --resource-group rg-foundry-chatbot-workshop `
+  --query id -o tsv
+
+# Assign Cognitive Services OpenAI User role to AI Search
+az role assignment create `
+  --assignee "$SEARCH_IDENTITY" `
+  --role "Cognitive Services OpenAI User" `
+  --scope "$FOUNDRY_ID"
+```
+
+### 5. Grant Yourself Access to Manage AI Search
+
+Your user account needs permission to create indexes, data sources, skillsets, and indexers via the REST API.
+
+```powershell
+# Get your user ID
+$USER_ID = az ad signed-in-user show --query id -o tsv
+
+# Get the AI Search resource ID
+$SEARCH_ID = az search service show `
+  --name search-chatbot-[yourname] `
+  --resource-group rg-foundry-chatbot-workshop `
+  --query id -o tsv
+
+# Assign Search Service Contributor role (manage service resources)
+az role assignment create `
+  --assignee "$USER_ID" `
+  --role "Search Service Contributor" `
+  --scope "$SEARCH_ID"
+
+# Assign Search Index Data Contributor role (manage index data)
+az role assignment create `
+  --assignee "$USER_ID" `
+  --role "Search Index Data Contributor" `
+  --scope "$SEARCH_ID"
+```
+
+> 💡 **Note**: Role assignments can take 1-2 minutes to propagate. Wait before running the indexing script.
+
+### 6. Install Additional Dependencies
+
+Run this in Git Bash:
+
+```bash
+pip install azure-search-documents requests
+```
+
+### 7. Create Vector Index with Integrated Vectorization
+
+This approach uses AI Search's built-in vectorization - the same as the Portal "Import data" wizard.
+
+Create a new file `create_vector_index.py` in the `scripts` folder:
 
 ```python
 """
-Create and populate a vector index in Azure AI Search
+Create a vector index with integrated vectorization in Azure AI Search
+This matches the Portal 'Import data (new)' approach
 """
 import os
+import requests
 from azure.identity import DefaultAzureCredential
-from azure.search.documents.indexes import SearchIndexClient
-from azure.search.documents.indexes.models import (
-    SearchIndex,
-    SearchField,
-    SearchFieldDataType,
-    VectorSearch,
-    HnswAlgorithmConfiguration,
-    VectorSearchProfile,
-    SearchableField,
-    SimpleField,
-)
-from azure.search.documents import SearchClient
-from azure.storage.blob import BlobServiceClient
-from openai import AzureOpenAI
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -210,123 +301,184 @@ load_dotenv()
 SEARCH_ENDPOINT = os.getenv("AZURE_SEARCH_ENDPOINT")
 INDEX_NAME = os.getenv("AZURE_SEARCH_INDEX_NAME", "chatbot-knowledge-base")
 STORAGE_ACCOUNT_NAME = os.getenv("AZURE_STORAGE_ACCOUNT_NAME")
-CONTAINER_NAME = os.getenv("AZURE_STORAGE_CONTAINER_NAME")
+CONTAINER_NAME = os.getenv("AZURE_STORAGE_CONTAINER_NAME", "knowledge-base-container")
 AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
-EMBEDDING_DEPLOYMENT = os.getenv("AZURE_OPENAI_EMBEDDING_DEPLOYMENT")
+EMBEDDING_DEPLOYMENT = os.getenv("AZURE_OPENAI_EMBEDDING_DEPLOYMENT", "text-embedding-3-small")
+RESOURCE_GROUP = os.getenv("AZURE_RESOURCE_GROUP", "rg-foundry-chatbot-workshop")
+
+API_VERSION = "2024-07-01"
+
+def get_auth_header():
+    """Get authorization header using DefaultAzureCredential"""
+    credential = DefaultAzureCredential()
+    token = credential.get_token("https://search.azure.com/.default").token
+    return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+
+def get_subscription_id():
+    """Get current subscription ID"""
+    credential = DefaultAzureCredential()
+    token = credential.get_token("https://management.azure.com/.default").token
+    headers = {"Authorization": f"Bearer {token}"}
+    response = requests.get(
+        "https://management.azure.com/subscriptions?api-version=2022-01-01",
+        headers=headers
+    )
+    return response.json()["value"][0]["subscriptionId"]
 
 def create_index():
     """Create the vector search index"""
-    credential = DefaultAzureCredential()
-    index_client = SearchIndexClient(SEARCH_ENDPOINT, credential)
+    index = {
+        "name": INDEX_NAME,
+        "fields": [
+            {"name": "chunk_id", "type": "Edm.String", "key": True, "analyzer": "keyword"},
+            {"name": "parent_id", "type": "Edm.String", "filterable": True},
+            {"name": "chunk", "type": "Edm.String", "searchable": True},
+            {"name": "title", "type": "Edm.String", "searchable": True, "filterable": True},
+            {
+                "name": "vector",
+                "type": "Collection(Edm.Single)",
+                "searchable": True,
+                "dimensions": 1536,
+                "vectorSearchProfile": "myHnswProfile"
+            }
+        ],
+        "vectorSearch": {
+            "algorithms": [{"name": "myHnsw", "kind": "hnsw"}],
+            "profiles": [{"name": "myHnswProfile", "algorithm": "myHnsw"}]
+        }
+    }
     
-    fields = [
-        SimpleField(name="id", type=SearchFieldDataType.String, key=True),
-        SearchableField(name="content", type=SearchFieldDataType.String),
-        SimpleField(name="source", type=SearchFieldDataType.String, filterable=True),
-        SearchField(
-            name="embedding",
-            type=SearchFieldDataType.Collection(SearchFieldDataType.Single),
-            searchable=True,
-            vector_search_dimensions=1536,
-            vector_search_profile_name="myHnswProfile",
-        ),
-    ]
+    url = f"{SEARCH_ENDPOINT}/indexes/{INDEX_NAME}?api-version={API_VERSION}"
+    response = requests.put(url, json=index, headers=get_auth_header())
     
-    vector_search = VectorSearch(
-        algorithms=[HnswAlgorithmConfiguration(name="myHnsw")],
-        profiles=[VectorSearchProfile(name="myHnswProfile", algorithm_configuration_name="myHnsw")],
-    )
-    
-    index = SearchIndex(name=INDEX_NAME, fields=fields, vector_search=vector_search)
-    result = index_client.create_or_update_index(index)
-    print(f"✅ Created index: {result.name}")
-    return result
+    if response.status_code in [200, 201, 204]:
+        print(f"✅ Created index: {INDEX_NAME}")
+    else:
+        print(f"❌ Error creating index ({response.status_code}): {response.text or response.reason}")
 
-def download_and_chunk_documents():
-    """Download documents from Blob Storage and split into chunks"""
-    credential = DefaultAzureCredential()
-    account_url = f"https://{STORAGE_ACCOUNT_NAME}.blob.core.windows.net"
-    blob_service_client = BlobServiceClient(account_url, credential=credential)
-    container_client = blob_service_client.get_container_client(CONTAINER_NAME)
+def create_data_source():
+    """Create a data source connection to Blob Storage"""
+    subscription_id = get_subscription_id()
+    data_source = {
+        "name": "chatbot-datasource",
+        "type": "azureblob",
+        "credentials": {
+            "connectionString": f"ResourceId=/subscriptions/{subscription_id}/resourceGroups/{RESOURCE_GROUP}/providers/Microsoft.Storage/storageAccounts/{STORAGE_ACCOUNT_NAME}"
+        },
+        "container": {"name": CONTAINER_NAME}
+    }
     
-    chunks = []
-    chunk_size = 500
-    overlap = 50
+    url = f"{SEARCH_ENDPOINT}/datasources/chatbot-datasource?api-version={API_VERSION}"
+    response = requests.put(url, json=data_source, headers=get_auth_header())
     
-    for blob in container_client.list_blobs():
-        blob_client = container_client.get_blob_client(blob.name)
-        content = blob_client.download_blob().readall().decode('utf-8')
-        
-        for i in range(0, len(content), chunk_size - overlap):
-            chunk_text = content[i:i + chunk_size]
-            if chunk_text.strip():
-                chunks.append({
-                    "id": f"{blob.name}_{i}",
-                    "content": chunk_text,
-                    "source": blob.name
-                })
-        
-        print(f"📄 Processed: {blob.name}")
-    
-    print(f"🧩 Created {len(chunks)} chunks")
-    return chunks
+    if response.status_code in [200, 201, 204]:
+        print(f"✅ Created data source: chatbot-datasource")
+    else:
+        print(f"❌ Error creating data source ({response.status_code}): {response.text or response.reason}")
 
-def generate_embeddings(chunks):
-    """Generate embeddings for each chunk"""
-    credential = DefaultAzureCredential()
-    client = AzureOpenAI(
-        azure_endpoint=AZURE_OPENAI_ENDPOINT,
-        azure_ad_token=credential.get_token("https://cognitiveservices.azure.com/.default").token,
-        api_version="2024-02-15-preview"
-    )
+def create_skillset():
+    """Create a skillset with text splitting and embedding skills"""
+    skillset = {
+        "name": "chatbot-skillset",
+        "skills": [
+            {
+                "@odata.type": "#Microsoft.Skills.Text.SplitSkill",
+                "name": "splitSkill",
+                "textSplitMode": "pages",
+                "maximumPageLength": 2000,
+                "pageOverlapLength": 500,
+                "inputs": [{"name": "text", "source": "/document/content"}],
+                "outputs": [{"name": "textItems", "targetName": "chunks"}]
+            },
+            {
+                "@odata.type": "#Microsoft.Skills.Text.AzureOpenAIEmbeddingSkill",
+                "name": "embeddingSkill",
+                "resourceUri": AZURE_OPENAI_ENDPOINT.rstrip('/'),
+                "deploymentId": EMBEDDING_DEPLOYMENT,
+                "modelName": "text-embedding-3-small",
+                "inputs": [{"name": "text", "source": "/document/chunks/*"}],
+                "outputs": [{"name": "embedding", "targetName": "vector"}]
+            }
+        ],
+        "indexProjections": {
+            "selectors": [{
+                "targetIndexName": INDEX_NAME,
+                "parentKeyFieldName": "parent_id",
+                "sourceContext": "/document/chunks/*",
+                "mappings": [
+                    {"name": "chunk", "source": "/document/chunks/*"},
+                    {"name": "vector", "source": "/document/chunks/*/vector"},
+                    {"name": "title", "source": "/document/metadata_storage_name"}
+                ]
+            }],
+            "parameters": {"projectionMode": "skipIndexingParentDocuments"}
+        }
+    }
     
-    for chunk in chunks:
-        response = client.embeddings.create(
-            input=chunk["content"],
-            model=EMBEDDING_DEPLOYMENT
-        )
-        chunk["embedding"] = response.data[0].embedding
+    url = f"{SEARCH_ENDPOINT}/skillsets/chatbot-skillset?api-version={API_VERSION}"
+    response = requests.put(url, json=skillset, headers=get_auth_header())
     
-    print(f"🔢 Generated embeddings for {len(chunks)} chunks")
-    return chunks
+    if response.status_code in [200, 201, 204]:
+        print(f"✅ Created skillset: chatbot-skillset")
+    else:
+        print(f"❌ Error creating skillset ({response.status_code}): {response.text or response.reason}")
 
-def upload_to_index(chunks):
-    """Upload chunks with embeddings to Azure AI Search"""
-    credential = DefaultAzureCredential()
-    search_client = SearchClient(SEARCH_ENDPOINT, INDEX_NAME, credential)
+def create_indexer():
+    """Create an indexer to process documents"""
+    indexer = {
+        "name": "chatbot-indexer",
+        "dataSourceName": "chatbot-datasource",
+        "targetIndexName": INDEX_NAME,
+        "skillsetName": "chatbot-skillset",
+        "parameters": {
+            "configuration": {
+                "dataToExtract": "contentAndMetadata",
+                "parsingMode": "default"
+            }
+        }
+    }
     
-    result = search_client.upload_documents(documents=chunks)
-    print(f"📤 Uploaded {len(result)} documents to index")
-    return result
+    url = f"{SEARCH_ENDPOINT}/indexers/chatbot-indexer?api-version={API_VERSION}"
+    response = requests.put(url, json=indexer, headers=get_auth_header())
+    
+    if response.status_code in [200, 201, 204]:
+        print(f"✅ Created indexer: chatbot-indexer")
+        print("⏳ Indexing in progress... (this may take a few minutes)")
+    else:
+        print(f"❌ Error creating indexer ({response.status_code}): {response.text or response.reason}")
 
 def main():
     print("🚀 Starting indexing pipeline...\n")
     
     create_index()
-    chunks = download_and_chunk_documents()
-    chunks = generate_embeddings(chunks)
-    upload_to_index(chunks)
+    create_data_source()
+    create_skillset()
+    create_indexer()
     
-    print("\n🎉 Indexing complete!")
+    print("\n🎉 Indexing pipeline created!")
+    print("📊 Monitor progress in Azure Portal → AI Search → Indexers")
 
 if __name__ == "__main__":
     main()
 ```
 
-### 4. Update Environment Variables
+### 8. Update Environment Variables
 
 Add to your `.env` file:
 
 ```properties
 # Azure AI Search Configuration
 AZURE_SEARCH_ENDPOINT=https://search-chatbot-[yourname].search.windows.net
-AZURE_SEARCH_API_KEY=your-search-admin-key
 AZURE_SEARCH_INDEX_NAME=chatbot-knowledge-base
+
+# Azure Resource Group (must match your actual resource group name)
+AZURE_RESOURCE_GROUP=rg-foundry-chatbot-workshop
 ```
 
-### 5. Run the Indexing Script
+### 9. Run the Indexing Script
 
 ```bash
+cd lab-1-rag-chatbot
 python scripts/create_vector_index.py
 ```
 
@@ -335,21 +487,23 @@ python scripts/create_vector_index.py
 🚀 Starting indexing pipeline...
 
 ✅ Created index: chatbot-knowledge-base
-📄 Processed: company_info.txt
-📄 Processed: policies.txt
-🧩 Created 7 chunks
-🔢 Generated embeddings for 7 chunks
-📤 Uploaded 7 documents to index
+✅ Created data source: chatbot-datasource
+✅ Created skillset: chatbot-skillset
+✅ Created indexer: chatbot-indexer
+⏳ Indexing in progress... (this may take a few minutes)
 
-🎉 Indexing complete!
+🎉 Indexing pipeline created!
+📊 Monitor progress in Azure Portal → AI Search → Indexers
 ```
 
 ### ✅ Code Checkpoint
 
 You should now have:
-- [ ] Azure AI Search service created
-- [ ] Vector index with embedded documents
-- [ ] `.env` updated with Search credentials
+- [ ] Azure AI Search service created with managed identity and RBAC enabled
+- [ ] Role assignments for AI Search to access Storage and Foundry
+- [ ] Role assignments for your user to manage AI Search (Search Service Contributor, Search Index Data Contributor)
+- [ ] Vector index with integrated vectorization (matching Portal approach)
+- [ ] `.env` updated with Search endpoint and resource group
 
 </details>
 
