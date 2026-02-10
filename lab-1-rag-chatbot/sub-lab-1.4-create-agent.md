@@ -512,7 +512,6 @@ def create_agent_with_mcp(credential, mcp_endpoint, connection_name):
         server_label="knowledge-base",
         server_url=mcp_endpoint,
         require_approval="never",  # Agent can call without user approval
-        allowed_tools=["knowledge_base_retrieve"],  # The only supported tool
         project_connection_id=connection_name
     )
     

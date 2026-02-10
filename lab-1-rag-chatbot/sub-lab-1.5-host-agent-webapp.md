@@ -238,10 +238,47 @@ Web endpoint: https://ca-web-xxxxx.azurecontainerapps.io
 ```
 
 ---
+### Step 6: Assign Project-Level Permissions
 
-### Step 6: Test Your Deployed App
+The `azd up` command assigns roles at the Foundry **resource** level, but the web app also needs the `Cognitive Services User` role at the **project** level to invoke agents.
 
-1. Your browser should automatically open to the deployed URL
+**Get the web app's managed identity:**
+
+```powershell
+azd env get-values | Select-String "WEB_IDENTITY_PRINCIPAL_ID"
+```
+
+**Assign the role at project level:**
+
+```powershell
+# Replace the placeholders with your actual values:
+# - [principal-id]: The value from above (e.g., 0530fde3-8bd4-4d25-abb7-c73195c59411)
+# - [your-subscription-id]: Your Azure subscription ID
+# - [yourname]: Your name suffix from sub-lab 1.1
+
+az role assignment create `
+  --role "Cognitive Services User" `
+  --assignee [principal-id] `
+  --scope "/subscriptions/[your-subscription-id]/resourceGroups/rg-foundry-chatbot-workshop/providers/Microsoft.CognitiveServices/accounts/foundry-workshop-[yourname]/projects/my-first-chatbot"
+```
+
+> **⏱️ Note:** Role assignments can take 1-2 minutes to propagate.
+
+---
+
+### Step 7: Test Your Deployed App
+
+**Get your deployed URL:**
+
+If your browser didn't open automatically, you can get the URL with:
+
+```powershell
+azd env get-values | Select-String "WEB_ENDPOINT"
+```
+
+**Test the app:**
+
+1. Open the URL in your browser
 2. Sign in with your Microsoft account
 3. You should see a chat interface connected to your RAG agent
 4. Try asking questions about your knowledge base:
@@ -252,7 +289,6 @@ Web endpoint: https://ca-web-xxxxx.azurecontainerapps.io
 The responses should be the same as when you tested in the Foundry portal, but now in a professional web interface!
 
 ---
-
 
 
 ## 🧹 Cleanup
