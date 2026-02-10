@@ -71,7 +71,7 @@ Before starting this sub-lab, ensure you have:
 
 | Tool | Installation |
 |------|--------------|
-| **PowerShell 7+** | `winget install Microsoft.PowerShell` |
+| **PowerShell 7+** | See instructions below |
 | **Azure Developer CLI (azd)** | `winget install microsoft.azd` |
 | **Azure CLI** | `winget install Microsoft.AzureCLI` |
 | **.NET 9 SDK** | https://dot.net |
@@ -80,32 +80,71 @@ Before starting this sub-lab, ensure you have:
 
 > 💡 **Note**: Docker is optional. If not installed, `azd` automatically uses Azure Container Registry cloud build.
 
+#### Installing PowerShell 7 (Required)
+
+The deployment scripts require PowerShell 7 (`pwsh`). Windows comes with PowerShell 5.1 by default, but you need to install PowerShell 7 separately.
+
+**1. Install PowerShell 7:**
+
+```powershell
+winget install Microsoft.PowerShell
+```
+
+**2. Close and reopen VS Code** (or your terminal) for `pwsh` to be available in your PATH.
+
+**3. Verify the installation:**
+
+```powershell
+pwsh --version
+```
+
+You should see output like `PowerShell 7.x.x`. If you get "command not found", restart VS Code again.
+
 ---
 
 ## 💻 Code Instructions
 
-### Step 1: Clone the Template
+### Step 1: Create the Web App Folder
+
+Create a `webapp` folder inside the `lab-1-rag-chatbot` directory to hold your web application code:
 
 ```powershell
-# Create a new directory for the web app
-cd c:\Users\lverghote\source\repos
+# Navigate to the lab folder
+cd c:\Users\lverghote\source\repos\Intro-to-Foundry-workshop\Introduction-to-Foundry-workshop\lab-1-rag-chatbot
 
-# Initialize from the template
+# Create the webapp folder
+mkdir webapp
+cd webapp
+```
+
+Your folder structure should now look like:
+```
+lab-1-rag-chatbot/
+├── src/
+│   └── rag_agent.py
+├── webapp/              # <-- New folder for the web app
+│   ├── (files will be added here)
+├── data/
+├── README.md
+└── ...
+```
+
+### Step 2: Initialize from the Template
+
+Use the Azure Developer CLI to download the template files (this does NOT create a nested git repo):
+
+```powershell
+# Initialize from the template (inside the webapp folder)
 azd init -t microsoft-foundry/foundry-agent-webapp
 
-# When prompted, enter an environment name (e.g., "rag-chatbot-app")
+# When prompted for an environment name, enter: rag-chatbot-app
 ```
 
-**Or clone directly:**
-
-```powershell
-git clone https://github.com/microsoft-foundry/foundry-agent-webapp.git
-cd foundry-agent-webapp
-```
+This downloads the template files into your `webapp/` folder without any git history conflicts.
 
 ---
 
-### Step 2: Configure Your Agent
+### Step 3: Configure Your Agent
 
 Set the agent ID to connect to your RAG chatbot from Sub-Lab 1.4:
 
@@ -119,15 +158,51 @@ azd env set AI_AGENT_ID "RAG-Chatbot"
 > .\deployment\scripts\list-agents.ps1
 > ```
 
+**If you have multiple AI Foundry resources**, you must also specify which one to use. Otherwise the script will pick a random one and fail:
+
+```powershell
+# Replace with your actual resource name and resource group from sub-lab 1.1
+azd env set AI_FOUNDRY_RESOURCE_NAME "foundry-workshop-[yourname]"
+azd env set AI_FOUNDRY_RESOURCE_GROUP "rg-foundry-chatbot-workshop"
+```
+
 ---
 
-### Step 3: Deploy to Azure
+### Step 4: Configure PowerShell Execution Policy (Windows Only)
+
+On Windows, PowerShell scripts are blocked by default. The `azd up` command runs pre-provision hooks that require script execution. If you skip this step, you'll see an error like:
+
+```
+ERROR: 'preprovision' hook failed... running scripts is disabled on this system
+```
+
+**Fix it by running (in PowerShell):**
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+```
+
+**Or if you're using Git Bash:**
+
+```bash
+powershell -Command "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force"
+```
+
+This allows locally-created scripts to run while still protecting against unsigned scripts from the internet.
+
+---
+
+### Step 5: Deploy to Azure
 
 Run a single command to deploy everything:
 
 ```powershell
 azd up
 ```
+
+**When prompted:**
+1. **Select your Azure subscription** - Choose the same subscription where your Foundry resources are deployed
+2. **Select a location** - Choose `East US 2` (to match your other resources and important for Lab 2)
 
 This command will:
 1. ✅ Create an Entra ID app registration (for authentication)
@@ -164,7 +239,7 @@ Web endpoint: https://ca-web-xxxxx.azurecontainerapps.io
 
 ---
 
-### Step 4: Test Your Deployed App
+### Step 6: Test Your Deployed App
 
 1. Your browser should automatically open to the deployed URL
 2. Sign in with your Microsoft account
@@ -178,73 +253,13 @@ The responses should be the same as when you tested in the Foundry portal, but n
 
 ---
 
-### Step 5: (Optional) Run Locally for Development
 
-For local development and testing:
-
-```powershell
-# Start both frontend and backend
-.\deployment\scripts\start-local-dev.ps1
-```
-
-**Local URLs:**
-- Frontend: http://localhost:5173
-- Backend API: http://localhost:8080
-
-**Hot Reload:**
-- React changes update instantly in the browser
-- C# changes auto-compile on save
-
----
-
-### Step 6: (Optional) Update and Redeploy
-
-When you make code changes:
-
-```powershell
-# Deploy code changes only (faster than azd up)
-azd deploy
-```
-
-**Expected duration**: 3-5 minutes
-
----
-
-## 🔧 Configuration Options
-
-### Change the Agent
-
-To switch to a different agent:
-
-```powershell
-# List available agents
-.\deployment\scripts\list-agents.ps1
-
-# Set a different agent
-azd env set AI_AGENT_ID "My-Other-Agent"
-
-# Redeploy (no infrastructure changes needed)
-azd deploy
-```
-
-### Change the AI Foundry Resource
-
-If you have multiple AI Foundry resources:
-
-```powershell
-# Manually set the resource
-azd env set AI_FOUNDRY_RESOURCE_GROUP "my-resource-group"
-azd env set AI_FOUNDRY_RESOURCE_NAME "my-foundry-resource"
-
-# Re-provision to update RBAC
-azd provision
-```
-
----
 
 ## 🧹 Cleanup
 
-To remove all Azure resources created by this sub-lab:
+> ⚠️ **Planning to continue to Lab 2?** Skip this section for now! The resources created here are reused in Lab 2.
+
+When you're ready to remove all Azure resources created by this sub-lab, run:
 
 ```powershell
 azd down --force --purge
