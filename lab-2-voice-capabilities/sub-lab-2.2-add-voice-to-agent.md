@@ -1,6 +1,6 @@
 # Sub-Lab 2.2: Add Voice to Your Agent
 
-[← Back to Lab 2 Overview](./README.md) | [← Previous: Sub-Lab 2.1](./sub-lab-2.1-deploy-realtime-model.md)
+[← Back to Lab 2 Overview](./README.md) | [← Previous: Sub-Lab 2.1](./sub-lab-2.1-deploy-realtime-model.md) | [Next: Sub-Lab 2.3 →](./sub-lab-2.3-cleanup.md)
 
 ---
 
@@ -1067,4 +1067,4 @@ You've successfully added voice capabilities to your chatbot! Your agent can now
 
 ---
 
-[← Back to Lab 2 Overview](./README.md) | [← Previous: Sub-Lab 2.1](./sub-lab-2.1-deploy-realtime-model.md) | [Back to Lab 1 →](../lab-1-rag-chatbot/README.md)
+[← Back to Lab 2 Overview](./README.md) | [← Previous: Sub-Lab 2.1](./sub-lab-2.1-deploy-realtime-model.md) | [Next: Sub-Lab 2.3 →](./sub-lab-2.3-cleanup.md)

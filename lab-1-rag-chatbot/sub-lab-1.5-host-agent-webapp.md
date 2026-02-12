@@ -295,9 +295,11 @@ The responses should be the same as when you tested in the Foundry portal, but n
 
 ## 🧹 Cleanup
 
-> ⚠️ **Planning to continue to Lab 2?** Skip this section for now! The resources created here are reused in Lab 2.
+> ⚠️ **Planning to continue to Lab 2?** Skip this section! The resources created here are reused in Lab 2.
 
-When you're ready to remove all Azure resources created by this sub-lab, run:
+> 💡 **Full cleanup instructions** are available in [Sub-Lab 2.3: Cleanup Resources](../lab-2-voice-capabilities/sub-lab-2.3-cleanup.md), which covers deleting all resources from both Labs 1 and 2.
+
+If you only want to remove the web app resources (and keep your Foundry resources for other projects):
 
 ```powershell
 azd down --force --purge

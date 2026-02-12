@@ -118,6 +118,7 @@ GPT Realtime supports multiple voices:
 |---------|------|:------:|:----:|
 | [2.1 Deploy GPT Realtime Model](./sub-lab-2.1-deploy-realtime-model.md) | 10-15 min | ✅ | ✅ |
 | [2.2 Add Voice to Your Agent](./sub-lab-2.2-add-voice-to-agent.md) | 15-20 min | ❌ | ✅ |
+| [2.3 Cleanup Resources](./sub-lab-2.3-cleanup.md) | 5-10 min | ✅ | ✅ |
 
 ---
 
