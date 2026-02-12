@@ -45,6 +45,8 @@ A deployment is an instance of a model that you can call via API:
 <details>
 <summary><strong>Click to expand Portal instructions</strong></summary>
 
+> ✏️ **Replace [yourname]** with your actual name or identifier (e.g., `jsmith`) throughout these instructions. This ensures your resources are uniquely named.
+
 ### 1. Create a Resource Group
 
 1. Go to [Azure Portal](https://portal.azure.com)
@@ -54,7 +56,7 @@ A deployment is an instance of a model that you can call via API:
    <img src="images/resource-group-console-2.png" width="800"/>
 
 3. Configure:
-   - **Name**: `rg-foundry-chatbot-workshop`
+   - **Name**: `rg-foundry-workshop-[yourname]`
    - **Region**: East US 2
 4. Click "Review + Create" → "Create"
 
@@ -68,7 +70,7 @@ A deployment is an instance of a model that you can call via API:
    <img src="images/foundry-resource-1.png" width="500"/>
 
 3. Configure:
-   - **Resource group**: `rg-foundry-chatbot-workshop`
+   - **Resource group**: `rg-foundry-workshop-[yourname]`
    - **Name**: `foundry-workshop-[yourname]`
    - **Region**: East US 2
    - **Default project name**: `my-first-chatbot`
@@ -102,7 +104,7 @@ A deployment is an instance of a model that you can call via API:
 ### ✅ Portal Checkpoint
 
 You should now have:
-- [ ] Resource group: `rg-foundry-chatbot-workshop`
+- [ ] Resource group: `rg-foundry-workshop-[yourname]`
 - [ ] Foundry resource with project: `my-first-chatbot`
 - [ ] Deployed models: `gpt-4o` and `text-embedding-3-small`
 
@@ -110,7 +112,7 @@ You should now have:
 
 ---
 
-## 💻 Option: Code - TO DO
+## 💻 Option: Code 
 
 <details>
 <summary><strong>Click to expand Code instructions</strong></summary>
@@ -139,13 +141,13 @@ Copy the instructions below in a text editor, fill in the placeholders and execu
 ```bash
 # Create resource group
 az group create \
-  --name rg-foundry-chatbot-workshop \
+  --name rg-foundry-workshop-[yourname] \
   --location eastus2
 
 # Create Foundry resource (with project management enabled)
 az cognitiveservices account create \
   --name foundry-workshop-[yourname] \
-  --resource-group rg-foundry-chatbot-workshop \
+  --resource-group rg-foundry-workshop-[yourname] \
   --kind AIServices \
   --sku s0 \
   --location eastus2 \
@@ -154,13 +156,13 @@ az cognitiveservices account create \
 # Create custom subdomain (must be globally unique)
 az cognitiveservices account update \
   --name foundry-workshop-[yourname] \
-  --resource-group rg-foundry-chatbot-workshop \
+  --resource-group rg-foundry-workshop-[yourname] \
   --custom-domain foundry-workshop-[yourname]
 
 # Create project within the Foundry resource
 az cognitiveservices account project create \
   --name foundry-workshop-[yourname] \
-  --resource-group rg-foundry-chatbot-workshop \
+  --resource-group rg-foundry-workshop-[yourname] \
   --project-name my-first-chatbot \
   --location eastus2
 ```
@@ -173,7 +175,7 @@ az cognitiveservices account project create \
 # Deploy GPT-4o
 az cognitiveservices account deployment create \
   --name foundry-workshop-[yourname] \
-  --resource-group rg-foundry-chatbot-workshop \
+  --resource-group rg-foundry-workshop-[yourname] \
   --deployment-name gpt-4o \
   --model-name gpt-4o \
   --model-version "2024-11-20" \
@@ -184,7 +186,7 @@ az cognitiveservices account deployment create \
 # Deploy embedding model
 az cognitiveservices account deployment create \
   --name foundry-workshop-[yourname] \
-  --resource-group rg-foundry-chatbot-workshop \
+  --resource-group rg-foundry-workshop-[yourname] \
   --deployment-name text-embedding-3-small \
   --model-name text-embedding-3-small \
   --model-version "1" \
@@ -195,12 +197,12 @@ az cognitiveservices account deployment create \
 # Verify deployments
 az cognitiveservices account deployment show \
   --name foundry-workshop-[yourname] \
-  --resource-group rg-foundry-chatbot-workshop \
+  --resource-group rg-foundry-workshop-[yourname] \
   --deployment-name gpt-4o
 
 az cognitiveservices account deployment show \
   --name foundry-workshop-[yourname] \
-  --resource-group rg-foundry-chatbot-workshop \
+  --resource-group rg-foundry-workshop-[yourname] \
   --deployment-name text-embedding-3-small
 ```
 

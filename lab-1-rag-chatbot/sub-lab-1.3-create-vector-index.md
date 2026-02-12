@@ -67,6 +67,8 @@ Our index has these fields:
 <details>
 <summary><strong>Click to expand Portal instructions</strong></summary>
 
+> ✏️ **Replace [yourname]** with your actual name or identifier (e.g., `jsmith`) throughout these instructions. Use the same value you chose in sub-lab 1.1.
+
 ### 1. Create Azure AI Search Service
 
 1. Go to [Azure Portal](https://portal.azure.com)
@@ -75,7 +77,7 @@ Our index has these fields:
    <img src="images/ai-search-1.png" width="800"/>
 
 3. Configure:
-   - **Resource group**: `rg-foundry-chatbot-workshop`
+   - **Resource group**: `rg-foundry-workshop-[yourname]`
    - **Service name**: `search-chatbot-[yourname]` (must be globally unique)
    - **Location**: East US 2
    - **Pricing tier**: Free (sufficient for workshop)
@@ -167,7 +169,7 @@ You should now have:
 # Create Azure AI Search service
 az search service create \
   --name search-chatbot-[yourname] \
-  --resource-group rg-foundry-chatbot-workshop \
+  --resource-group rg-foundry-workshop-[yourname] \
   --sku free \
   --location eastus2
 ```
@@ -184,13 +186,13 @@ AI Search needs a managed identity to access other Azure resources, and RBAC aut
 # Enable system-assigned managed identity
 az search service update `
   --name search-chatbot-[yourname] `
-  --resource-group rg-foundry-chatbot-workshop `
+  --resource-group rg-foundry-workshop-[yourname] `
   --identity-type SystemAssigned
 
 # Enable RBAC authentication (required for Azure AD/managed identity access)
 az search service update `
   --name search-chatbot-[yourname] `
-  --resource-group rg-foundry-chatbot-workshop `
+  --resource-group rg-foundry-workshop-[yourname] `
   --auth-options aadOrApiKey `
   --aad-auth-failure-mode http401WithBearerChallenge
 ```
@@ -205,7 +207,7 @@ Your AI Search service needs permission to read documents from Blob Storage.
 # Get the AI Search managed identity principal ID
 $SEARCH_IDENTITY = az search service show `
   --name search-chatbot-[yourname] `
-  --resource-group rg-foundry-chatbot-workshop `
+  --resource-group rg-foundry-workshop-[yourname] `
   --query identity.principalId -o tsv
 
 # Verify the identity is set
@@ -214,7 +216,7 @@ Write-Host "SEARCH_IDENTITY: $SEARCH_IDENTITY"
 # Get the storage account resource ID
 $STORAGE_ID = az storage account show `
   --name stchatbot[yourname] `
-  --resource-group rg-foundry-chatbot-workshop `
+  --resource-group rg-foundry-workshop-[yourname] `
   --query id -o tsv
 
 # Assign Storage Blob Data Reader role to AI Search
@@ -232,7 +234,7 @@ Your AI Search service needs permission to use the embedding model.
 # Get the Foundry resource ID
 $FOUNDRY_ID = az cognitiveservices account show `
   --name foundry-workshop-[yourname] `
-  --resource-group rg-foundry-chatbot-workshop `
+  --resource-group rg-foundry-workshop-[yourname] `
   --query id -o tsv
 
 # Assign Cognitive Services OpenAI User role to AI Search
@@ -253,7 +255,7 @@ $USER_ID = az ad signed-in-user show --query id -o tsv
 # Get the AI Search resource ID
 $SEARCH_ID = az search service show `
   --name search-chatbot-[yourname] `
-  --resource-group rg-foundry-chatbot-workshop `
+  --resource-group rg-foundry-workshop-[yourname] `
   --query id -o tsv
 
 # Assign Search Service Contributor role (manage service resources)
@@ -304,7 +306,7 @@ STORAGE_ACCOUNT_NAME = os.getenv("AZURE_STORAGE_ACCOUNT_NAME")
 CONTAINER_NAME = os.getenv("AZURE_STORAGE_CONTAINER_NAME", "knowledge-base-container")
 AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
 EMBEDDING_DEPLOYMENT = os.getenv("AZURE_OPENAI_EMBEDDING_DEPLOYMENT", "text-embedding-3-small")
-RESOURCE_GROUP = os.getenv("AZURE_RESOURCE_GROUP", "rg-foundry-chatbot-workshop")
+RESOURCE_GROUP = os.getenv("AZURE_RESOURCE_GROUP", "rg-foundry-workshop-[yourname]")
 
 API_VERSION = "2024-07-01"
 
@@ -472,7 +474,7 @@ AZURE_SEARCH_ENDPOINT=https://search-chatbot-[yourname].search.windows.net
 AZURE_SEARCH_INDEX_NAME=chatbot-knowledge-base
 
 # Azure Resource Group (must match your actual resource group name)
-AZURE_RESOURCE_GROUP=rg-foundry-chatbot-workshop
+AZURE_RESOURCE_GROUP=rg-foundry-workshop-[yourname]
 ```
 
 ### 9. Run the Indexing Script

@@ -52,6 +52,8 @@ The `data/knowledge_base/` folder contains sample documents:
 <details>
 <summary><strong>Click to expand Portal instructions</strong></summary>
 
+> ✏️ **Replace [yourname]** with your actual name or identifier (e.g., `jsmith`) throughout these instructions. Use the same value you chose in sub-lab 1.1.
+
 ### 1. Create a Storage Account
 
 1. Go to [Azure Portal](https://portal.azure.com)
@@ -60,7 +62,7 @@ The `data/knowledge_base/` folder contains sample documents:
    <img src="images/storage-account-1.png" width="800"/>
 
 3. Configure:
-   - **Resource group**: `rg-foundry-chatbot-workshop`
+   - **Resource group**: `rg-foundry-workshop-[yourname]`
    - **Storage account name**: `stchatbot[yourname]` (must be globally unique, lowercase, no special characters)
    - **Region**: East US 2
    - **Performance**: Standard
@@ -144,7 +146,7 @@ pip install azure-storage-blob azure-identity python-dotenv
 # Create storage account
 az storage account create \
   --name stchatbot[yourname] \
-  --resource-group rg-foundry-chatbot-workshop \
+  --resource-group rg-foundry-workshop-[yourname] \
   --location eastus2 \
   --sku Standard_LRS
 
@@ -167,7 +169,7 @@ az login
 
 # Get your email/UPN and storage account scope
 $USER_EMAIL = az ad signed-in-user show --query userPrincipalName -o tsv
-$STORAGE_ID = az storage account show --name stchatbot[yourname] --resource-group rg-foundry-chatbot-workshop --query id -o tsv
+$STORAGE_ID = az storage account show --name stchatbot[yourname] --resource-group rg-foundry-workshop-[yourname] --query id -o tsv
 
 # Verify variables are set
 Write-Host "USER_EMAIL: $USER_EMAIL"
@@ -178,7 +180,7 @@ az role assignment create \
   --role "Storage Blob Data Contributor" \
   --assignee-object-id $(az ad signed-in-user show --query id -o tsv) \
   --assignee-principal-type User \
-  --scope /subscriptions/$(az account show --query id -o tsv)/resourceGroups/rg-foundry-chatbot-workshop/providers/Microsoft.Storage/storageAccounts/stchatbot[yourname]
+  --scope /subscriptions/$(az account show --query id -o tsv)/resourceGroups/rg-foundry-workshop-[yourname]/providers/Microsoft.Storage/storageAccounts/stchatbot[yourname]
 ```
 
 > 💡 **Note**: Role assignments can take a few minutes to propagate. If you still get permission errors, wait 2-3 minutes and try again.

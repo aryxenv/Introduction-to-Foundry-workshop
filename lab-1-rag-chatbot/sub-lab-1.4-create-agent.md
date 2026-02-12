@@ -184,7 +184,7 @@ The Foundry project has a **managed identity** that needs permission to read fro
 # Before running: Replace [yourname] with your actual value from sub-lab 1.1
 az cognitiveservices account project show \
   --name foundry-workshop-[yourname] \
-  --resource-group rg-foundry-chatbot-workshop \
+  --resource-group rg-foundry-workshop-[yourname] \
   --project-name my-first-chatbot \
   --query "identity.principalId" \
   --output tsv
@@ -201,7 +201,7 @@ az cognitiveservices account project show \
 az role assignment create \
   --role "Search Index Data Reader" \
   --assignee [principal-id] \
-  --scope "/subscriptions/[your-subscription-id]/resourceGroups/rg-foundry-chatbot-workshop/providers/Microsoft.Search/searchServices/search-chatbot-[yourname]"
+  --scope "/subscriptions/[your-subscription-id]/resourceGroups/rg-foundry-workshop-[yourname]/providers/Microsoft.Search/searchServices/search-chatbot-[yourname]"
 ```
 
 > **⏱️ Note:** Role assignments can take 1-2 minutes to propagate. If you get a 405 error when running the script, wait a moment and try again.
@@ -216,7 +216,7 @@ You need two values for this lab:
 # Before running: Replace [yourname] with your actual value from sub-lab 1.1
 az cognitiveservices account project show \
   --name foundry-workshop-[yourname] \
-  --resource-group rg-foundry-chatbot-workshop \
+  --resource-group rg-foundry-workshop-[yourname] \
   --project-name my-first-chatbot \
   --query "properties.endpoints.\"AI Foundry API\"" \
   --output tsv
@@ -228,7 +228,7 @@ az cognitiveservices account project show \
 # Before running: Replace [yourname] with your actual value from sub-lab 1.1
 az cognitiveservices account project show \
   --name foundry-workshop-[yourname] \
-  --resource-group rg-foundry-chatbot-workshop \
+  --resource-group rg-foundry-workshop-[yourname] \
   --project-name my-first-chatbot \
   --query "id" \
   --output tsv
@@ -246,7 +246,7 @@ AZURE_AI_PROJECT_ENDPOINT=https://foundry-workshop-[yourname].services.ai.azure.
 
 # Project Resource ID (for creating the MCP connection). 
 # Get this from the CLI command above, or construct it:
-AZURE_AI_PROJECT_RESOURCE_ID=/subscriptions/[your-subscription-id]/resourceGroups/rg-foundry-chatbot-workshop/providers/Microsoft.CognitiveServices/accounts/foundry-workshop-[yourname]/projects/my-first-chatbot
+AZURE_AI_PROJECT_RESOURCE_ID=/subscriptions/[your-subscription-id]/resourceGroups/rg-foundry-workshop-[yourname]/providers/Microsoft.CognitiveServices/accounts/foundry-workshop-[yourname]/projects/my-first-chatbot
 
 # Azure AI Search (from sub-lab 1.3)
 AZURE_SEARCH_ENDPOINT=https://search-chatbot-[yourname].search.windows.net

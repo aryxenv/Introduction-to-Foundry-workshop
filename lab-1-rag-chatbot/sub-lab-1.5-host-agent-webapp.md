@@ -110,7 +110,7 @@ Create a `webapp` folder inside the `lab-1-rag-chatbot` directory to hold your w
 
 ```powershell
 # Navigate to the lab folder
-cd c:\Users\lverghote\source\repos\Intro-to-Foundry-workshop\Introduction-to-Foundry-workshop\lab-1-rag-chatbot
+cd lab-1-rag-chatbot
 
 # Create the webapp folder
 mkdir webapp
@@ -160,10 +160,12 @@ azd env set AI_AGENT_ID "RAG-Chatbot"
 
 **If you have multiple AI Foundry resources**, you must also specify which one to use. Otherwise the script will pick a random one and fail:
 
+> ✏️ **Replace [yourname]** with the same value you used in sub-lab 1.1 (e.g., `jsmith`).
+
 ```powershell
 # Replace with your actual resource name and resource group from sub-lab 1.1
 azd env set AI_FOUNDRY_RESOURCE_NAME "foundry-workshop-[yourname]"
-azd env set AI_FOUNDRY_RESOURCE_GROUP "rg-foundry-chatbot-workshop"
+azd env set AI_FOUNDRY_RESOURCE_GROUP "rg-foundry-workshop-[yourname]"
 ```
 
 ---
@@ -259,7 +261,7 @@ azd env get-values | Select-String "WEB_IDENTITY_PRINCIPAL_ID"
 az role assignment create `
   --role "Cognitive Services User" `
   --assignee [principal-id] `
-  --scope "/subscriptions/[your-subscription-id]/resourceGroups/rg-foundry-chatbot-workshop/providers/Microsoft.CognitiveServices/accounts/foundry-workshop-[yourname]/projects/my-first-chatbot"
+  --scope "/subscriptions/[your-subscription-id]/resourceGroups/rg-foundry-workshop-[yourname]/providers/Microsoft.CognitiveServices/accounts/foundry-workshop-[yourname]/projects/my-first-chatbot"
 ```
 
 > **⏱️ Note:** Role assignments can take 1-2 minutes to propagate.

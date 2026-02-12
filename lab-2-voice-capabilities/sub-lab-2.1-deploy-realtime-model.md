@@ -1,6 +1,6 @@
 # Sub-Lab 2.1: Deploy GPT Realtime Model
 
-[← Back to Lab 2 Overview](./README.md) | [Next: Sub-Lab 2.2 →](./sub-lab-2.2-audio-playground.md)
+[← Back to Lab 2 Overview](./README.md) | [Next: Sub-Lab 2.2 →](./sub-lab-2.2-add-voice-to-agent.md)
 
 ---
 
@@ -25,28 +25,30 @@ GPT Realtime is a speech-to-speech (S2S) model that went **Generally Available i
 | No interruption handling | Natural interruptions supported |
 | Separate voice configuration | Integrated voice selection |
 
-### Key Features (GA Release)
+### Key Features
 
-- **New Natural Voices**: Two new voices (Marin and Cedar) with improved naturalness and clarity
-- **Improved Instruction Following**: Enhanced ability to follow tone, pacing, and language instructions
-- **Higher Audio Quality**: Glitch-free output with improved alphanumeric reproduction
+- **Natural Voices**: Multiple voice options including Alloy, Ash, Coral, Echo, Sage, and Shimmer
+- **Instruction Following**: Ability to follow tone, pacing, and language instructions in the system prompt
+- **High Audio Quality**: Clear, glitch-free output with accurate alphanumeric reproduction
 - **Image Input Support**: Add images to context and discuss them via voice
-- **Improved Function Calling**: Enhanced ability to call custom code, with async function calling support
-- **Conversation Mode**: Real-world turn-taking behavior for natural phone-like interactions
+- **Function Calling**: Call custom code during conversations, with async function calling support
+- **Natural Turn-Taking**: Real-world conversation flow with automatic voice activity detection (VAD)
 
 ### Model Variants
 
 | Model | Best For | Notes |
 |-------|----------|-------|
 | `gpt-realtime` | Production voice applications | Full-featured GA model |
-| `gpt-realtime-mini` | Cost-effective, faster responses | Feature parity with full model |
-| `gpt-4o-realtime-preview` | Testing preview features | Use GA models for production |
+| `gpt-mini-realtime` | Cost-effective, faster responses | Feature parity with full model |
+| `gpt-realtime-preview` | Testing preview features | Use GA models for production |
 
 ### Pricing
 
-GPT Realtime pricing is **20% lower** than the previous gpt-4o-realtime preview. Pricing is based on tokens per million:
+GPT Realtime is priced based on tokens per million:
 - Text input/output tokens
 - Audio input/output tokens (audio is tokenized)
+
+> 💡 For this workshop, usage will be minimal and well within free tier or trial credits.
 
 ---
 
@@ -63,13 +65,16 @@ GPT Realtime pricing is **20% lower** than the previous gpt-4o-realtime preview.
 ### 2. Deploy GPT Realtime Model
 
 1. In the top menu go to "Discover"
-2. Click "Models"on the left
-3. Search for `gpt-realtime` and click on it. 
+2. Click "Models" on the left
+3. Search for `gpt-realtime` and click on it
+
    <img src="images/foundry-models-1.png" width="800"/>
 
-4. Click Deploy -> Default settings
-5. Choose one of the available regions (e.g. East US 2) 
-6. Pick your project. Click "Continue"
+4. Click Deploy -> Custom settings
+    - Deployment name: `gpt-realtime`
+    - Deployment type: Global Standard
+    - Tokens per Minute Rate Limit: choose the minimum (=10 000)
+5. Pick your project. Click "Deploy"
 
 
 ### 3. Verify Deployment
@@ -90,69 +95,115 @@ You should now have:
 
 ---
 
-## 💻 Option: Code - TO DO
+## 💻 Option: Code
 
 <details>
 <summary><strong>Click to expand Code instructions</strong></summary>
 
 > 📝 **First time using the Code option?** Make sure you've completed the [Setup Guide](../SETUP.md) before continuing.
 
-### 1. Deploy via Azure CLI
+### 1. Verify Prerequisites
 
-```bash
+Ensure you're logged into Azure and have the Foundry resource from Lab 1.
+
+> ✏️ **Replace `[yourname]`** with your actual name (same as Lab 1.1) in all commands below.
+
+```powershell
+# Check Azure CLI is installed
+az --version
+
 # Login to Azure (if not already)
 az login
 
-# Deploy GPT Realtime model
-az cognitiveservices account deployment create \
-  --name foundry-workshop-[yourname] \
-  --resource-group rg-foundry-chatbot-workshop \
-  --deployment-name gpt-realtime \
-  --model-name gpt-realtime \
-  --model-version "2025-08-28" \
-  --model-format OpenAI \
-  --sku-capacity 1 \
-  --sku-name GlobalStandard
-```
-
-### 2. Verify Deployment
-
-```bash
-# List deployments
-az cognitiveservices account deployment list \
-  --name foundry-workshop-[yourname] \
-  --resource-group rg-foundry-chatbot-workshop \
-  --output table
+# Verify your Foundry resource exists
+az cognitiveservices account show `
+  --name foundry-workshop-[yourname] `
+  --resource-group rg-foundry-workshop-[yourname] `
+  --query "name" -o tsv
 ```
 
 **Expected Output:**
 ```
-Name          Model              Version      ProvisioningState
-------------  -----------------  -----------  ------------------
-gpt-4o        gpt-4o             2024-05-13   Succeeded
-gpt-realtime  gpt-realtime       2025-08-28   Succeeded
-...
+foundry-workshop-[yourname]
 ```
 
-### 3. Update Environment Variables
+If you see an error like "ResourceNotFound", double-check your resource name from Lab 1.1.
 
-Add to your `.env` file:
+### 2. Deploy GPT Realtime Model
 
-```properties
-# GPT Realtime Configuration
-AZURE_OPENAI_REALTIME_DEPLOYMENT=gpt-realtime
-AZURE_OPENAI_REALTIME_VOICE=alloy
+> ✏️ **Replace `[yourname]`** with your actual name (same as Lab 1.1).
+
+```powershell
+# Deploy GPT Realtime model
+az cognitiveservices account deployment create `
+  --name foundry-workshop-[yourname] `
+  --resource-group rg-foundry-workshop-[yourname] `
+  --deployment-name gpt-realtime `
+  --model-name gpt-realtime `
+  --model-version "2025-08-28" `
+  --model-format OpenAI `
+  --sku-capacity 1 `
+  --sku-name GlobalStandard
 ```
+
+> 💡 **Note**: The GPT Realtime model uses `GlobalStandard` SKU which provides global availability. Capacity of 1 is sufficient for workshop purposes.
+
+### 3. Verify Deployment
+
+> ✏️ **Replace `[yourname]`** with your actual name (same as Lab 1.1).
+
+```powershell
+# Verify the deployment was created
+az cognitiveservices account deployment show `
+  --name foundry-workshop-[yourname] `
+  --resource-group rg-foundry-workshop-[yourname] `
+  --deployment-name gpt-realtime `
+  --query "{Name:name, Model:properties.model.name, Status:properties.provisioningState}" `
+  -o table
+```
+
+**Expected Output:**
+```
+Name          Model            Status
+------------  ---------------  -----------
+gpt-realtime  gpt-realtime     Succeeded
+```
+
+You can also list all deployments to see the complete picture:
+
+> ✏️ **Replace `[yourname]`** with your actual name (same as Lab 1.1).
+
+```powershell
+# List all deployments
+az cognitiveservices account deployment list `
+  --name foundry-workshop-[yourname] `
+  --resource-group rg-foundry-workshop-[yourname] `
+  --query "[].{Name:name, Model:properties.model.name, Status:properties.provisioningState}" `
+  -o table
+```
+
+**Expected Output:**
+```
+Name                     Model                   Status
+-----------------------  ----------------------  -----------
+gpt-4o                   gpt-4o                  Succeeded
+text-embedding-3-small   text-embedding-3-small  Succeeded
+gpt-realtime             gpt-realtime            Succeeded
+```
+
+### 4. Note the Deployment Name
+
+Your deployment name is `gpt-realtime`. You'll use this in the Audio Playground to test your deployment.
 
 ### ✅ Code Checkpoint
 
 You should now have:
 - [ ] GPT Realtime model deployed via CLI
-- [ ] Deployment verified in the list
-- [ ] `.env` updated with realtime configuration
+- [ ] Deployment verified with `Succeeded` status
+- [ ] Deployment name noted for next steps
 
 </details>
 
 ---
 
-[← Back to Lab 2 Overview](./README.md) | [Next: Sub-Lab 2.2 →](./sub-lab-2.2-audio-playground.md)
+[← Back to Lab 2 Overview](./README.md) | [Next: Sub-Lab 2.2 →](./sub-lab-2.2-add-voice-to-agent.md)

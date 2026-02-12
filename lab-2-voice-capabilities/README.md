@@ -65,7 +65,7 @@ Unlike traditional pipelines (STT → LLM → TTS), GPT Realtime handles everyth
 |-------|-------------|
 | `gpt-realtime` | Full-featured realtime audio model |
 | `gpt-realtime-mini` | Smaller, faster variant |
-| `gpt-4o-realtime-preview` | Preview version with latest features |
+| `gpt-realtime-preview` | Preview version with latest features |
 
 ### Voice Options
 
