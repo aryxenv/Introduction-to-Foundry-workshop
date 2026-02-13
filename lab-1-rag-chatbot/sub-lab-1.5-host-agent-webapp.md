@@ -132,13 +132,18 @@ lab-1-rag-chatbot/
 ### Step 2: Initialize from the Template
 
 Use the Azure Developer CLI to download the template files (this does NOT create a nested git repo):
+> ✏️ **Replace [yourname]** with the same value you used in sub-lab 1.1 (e.g., `jsmith`).
 
 ```powershell
 # Initialize from the template (inside the webapp folder)
 azd init -t microsoft-foundry/foundry-agent-webapp
 
-# When prompted for an environment name, enter: rag-chatbot-app
+# When prompted for an environment name, enter: rag-chatbot-[yourname]
+# Example: rag-chatbot-jsmith
 ```
+
+> ⚠️ **Important**: Use a **unique** environment name! The environment name determines the Azure resource group name (e.g., `rag-chatbot-jsmith` creates resource group `rg-rag-chatbot-jsmith`). If multiple users use the same environment name, they will overwrite each other's deployments.
+
 
 This downloads the template files into your `webapp/` folder without any git history conflicts.
 
@@ -275,7 +280,7 @@ az role assignment create `
 
 **Get your deployed URL:**
 
-If your browser didn't open automatically, you can get the URL with:
+If your browser didn't open automatically, you can get the URL with the command below. Make sure you are in the correct folder (webapp)
 
 ```powershell
 azd env get-values | Select-String "WEB_ENDPOINT"
