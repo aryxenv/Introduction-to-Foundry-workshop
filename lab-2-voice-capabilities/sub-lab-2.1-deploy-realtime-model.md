@@ -186,7 +186,7 @@ az cognitiveservices account deployment list `
 ```
 Name                     Model                   Status
 -----------------------  ----------------------  -----------
-gpt-4o                   gpt-4o                  Succeeded
+gpt-4.1-mini             gpt-4.1-mini            Succeeded
 text-embedding-3-small   text-embedding-3-small  Succeeded
 gpt-realtime             gpt-realtime            Succeeded
 ```

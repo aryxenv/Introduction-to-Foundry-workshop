@@ -8,7 +8,7 @@
 
 ## Overview
 
-In this sub-lab, you'll create an AI agent in Microsoft Foundry that uses your vector index to answer questions. The agent combines GPT-4o with your indexed documents to provide accurate, context-aware responses.
+In this sub-lab, you'll create an AI agent in Microsoft Foundry that uses your vector index to answer questions. The agent combines your chat model (e.g., GPT-4.1-mini) with your indexed documents to provide accurate, context-aware responses.
 
 ---
 
@@ -43,7 +43,7 @@ When a user asks a question:
 1. The agent sends the question to Foundry IQ
 2. Foundry IQ uses agentic retrieval to search your indexed content
 3. Relevant chunks are returned with citations
-4. GPT-4o generates a response grounded in your documents
+4. Your chat model generates a response grounded in your documents
 
 ---
 
@@ -73,7 +73,7 @@ When a user asks a question:
 2. Choose Azure AI Search Index (under "Configure a knowledge base")
 3. Give a description: e.g. `Contains company info and policies`
 4. Select the `rag-XXXX` option you see under "Select search index"
-5. Select a chat completions model; gpt-4o
+5. Select a chat completions model: `gpt-4.1-mini` (or `gpt-4.1`, `gpt-4o` if you deployed a different model in Sub-Lab 1.1)
 5. Click Save "knowledge base"  on the top right
 
 ### 4. Create an agent
@@ -319,7 +319,7 @@ MCP_CONNECTION_NAME = os.getenv("MCP_CONNECTION_NAME", "kb-mcp-connection")
 
 # Agent settings
 AGENT_NAME = "RAG-Chatbot"
-AGENT_MODEL = "gpt-4o"
+AGENT_MODEL = "gpt-4.1-mini"  # Alternatives: "gpt-4.1", "gpt-4o"
 
 # =============================================================================
 # AGENT INSTRUCTIONS (SYSTEM PROMPT)
@@ -742,7 +742,7 @@ You've completed Lab 1! You now have a fully functional RAG chatbot that:
 
 - 📚 Uses your custom knowledge base (stored in Blob Storage)
 - 🔍 Performs intelligent retrieval (powered by Foundry IQ)
-- 🤖 Generates accurate responses with citations (using GPT-4o)
+- 🤖 Generates accurate responses with citations (using your chat model)
 
 ### What You Built
 
@@ -752,7 +752,7 @@ You've completed Lab 1! You now have a fully functional RAG chatbot that:
 │  ┌─────────────────────────────────────────────────────────┐   │
 │  │                    Your Agent                           │   │
 │  │  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐  │   │
-│  │  │   GPT-4o    │ ←→ │ Foundry IQ  │ ←→ │  AI Search  │  │   │
+│  │  │ Chat Model │ ↔→ │ Foundry IQ  │ ↔→ │  AI Search  │  │   │
 │  │  │  (answers)  │    │ (retrieval) │    │  (index)    │  │   │
 │  │  └─────────────┘    └─────────────┘    └─────────────┘  │   │
 │  └─────────────────────────────────────────────────────────┘   │

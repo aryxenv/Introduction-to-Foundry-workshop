@@ -25,7 +25,7 @@ In this sub-lab, you'll clean up all Azure resources created during Labs 1 and 2
 | Foundry Project | `my-first-chatbot` |
 | Storage Account | `stchatbot[yourname]` |
 | Azure AI Search | `search-chatbot-[yourname]` |
-| Model Deployments | `gpt-4o`, `text-embedding-3-small` |
+| Model Deployments | Chat model (e.g., `gpt-4.1-mini`) and embedding model (e.g., `text-embedding-3-small`) |
 
 ### From Lab 1.5 (Web App)
 

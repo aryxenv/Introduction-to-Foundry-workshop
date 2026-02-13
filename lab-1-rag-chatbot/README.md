@@ -61,8 +61,8 @@ User Query ──┬──→ Embedding → Vector Search → Relevant Context
 | **Knowledge Layer** | Foundry IQ | Manages knowledge bases with agentic retrieval and permission-aware responses |
 | **Document Storage** | Azure Blob Storage | Stores your source documents (PDFs, text files, etc.) |
 | **Vector Search** | Azure AI Search | Stores embeddings and performs semantic search |
-| **Embedding Model** | Microsoft Foundry Model (text-embedding-3-small) | Converts text into numerical vectors |
-| **LLM** | Microsoft Foundry Model (GPT-4o) | Generates natural language responses |
+| **Embedding Model** | Microsoft Foundry Model (text-embedding-3-small, text-embedding-ada-002, etc.) | Converts text into numerical vectors |
+| **LLM** | Microsoft Foundry Model (GPT-4.1-mini, GPT-4.1, GPT-4o, etc.) | Generates natural language responses |
 
 ### How It All Fits Together
 

@@ -9,8 +9,32 @@
 ## Overview
 
 In this sub-lab, you'll set up Microsoft Foundry and deploy the AI models that power your chatbot:
-- **GPT-4o** – generates responses to user questions
-- **text-embedding-3-small** – converts text into vectors for semantic search
+- **Chat/Reasoning Model** – generates responses to user questions
+- **Embedding Model** – converts text into vectors for semantic search
+
+---
+
+## 🎯 Model Options
+
+You can choose from the following models based on your needs:
+
+### Chat/Reasoning Models
+
+| Model | Description | Best For |
+|-------|-------------|----------|
+| `gpt-4.1-mini` | Fast, cost-effective GPT-4.1 variant | General use (recommended) |
+| `gpt-4.1` | Latest GPT-4 with improved reasoning | Complex reasoning tasks |
+| `gpt-4o` | Multimodal model with vision support | Multimodal applications |
+
+### Embedding Models
+
+| Model | Dimensions | Best For |
+|-------|------------|----------|
+| `text-embedding-3-small` | 1536 | General use (recommended) |
+| `text-embedding-3-large` | 3072 | Higher accuracy, larger index |
+| `text-embedding-ada-002` | 1536 | Legacy compatibility |
+
+> 💡 **Note**: This workshop uses `gpt-4.1-mini` and `text-embedding-3-small` by default. If you choose different models, update the model names in all subsequent steps.
 
 ---
 
@@ -27,8 +51,8 @@ Microsoft Foundry is a unified AI platform that provides:
 ### What are Model Deployments?
 
 A deployment is an instance of a model that you can call via API:
-- **GPT-4o**: For generating natural language responses
-- **text-embedding-3-small**: For converting text to vectors (embeddings)
+- **Chat/Reasoning Models** (e.g., `gpt-4.1-mini`, `gpt-4.1`, `gpt-4o`): For generating natural language responses
+- **Embedding Models** (e.g., `text-embedding-3-small`, `text-embedding-ada-002`): For converting text to vectors
 
 ---
 
@@ -36,7 +60,7 @@ A deployment is an instance of a model that you can call via API:
 
 - **Resource Group**: Container for all your Azure resources
 - **Microsoft Foundry**: AI platform hub and project
-- **Models in Microsoft Foundry**: GPT-4o (chat) and text-embedding-3-small (embeddings)
+- **Model Deployments**: Chat model (default: `gpt-4.1-mini`) and embedding model (default: `text-embedding-3-small`)
 
 ---
 
@@ -89,16 +113,16 @@ A deployment is an instance of a model that you can call via API:
 
    <img src="images/select-project.png" width="500"/>
 
-4. **Deploy GPT-4o**:
+4. **Deploy Chat Model** (default: `gpt-4.1-mini`):
    - Go to Discovery → Models
-   - Search for `gpt-4o`
+   - Search for `gpt-4.1-mini` (or your chosen model from the Model Options section)
    - Click the model → Deploy → "Default settings"
 
    <img src="images/foundry-models-1.png" width="800"/>
    <img src="images/foundry-models-2.png" width="800"/>
 
-5. **Deploy Embedding Model**:
-   - Repeat for `text-embedding-3-small`
+5. **Deploy Embedding Model** (default: `text-embedding-3-small`):
+   - Repeat for `text-embedding-3-small` (or `text-embedding-ada-002`)
    - Discovery → Models → Search → Deploy → "Default settings"
 
 ### ✅ Portal Checkpoint
@@ -106,7 +130,7 @@ A deployment is an instance of a model that you can call via API:
 You should now have:
 - [ ] Resource group: `rg-foundry-workshop-[yourname]`
 - [ ] Foundry resource with project: `my-first-chatbot`
-- [ ] Deployed models: `gpt-4o` and `text-embedding-3-small`
+- [ ] Deployed models: chat model (e.g., `gpt-4.1-mini`) and embedding model (e.g., `text-embedding-3-small`)
 
 </details>
 
@@ -171,19 +195,23 @@ az cognitiveservices account project create \
 
 > ✏️ Copy the code below into a text editor, **replace `[yourname]`** with your actual name, then run the commands.
 
+> 💡 **Using different models?** Replace `gpt-4.1-mini` with `gpt-4.1` or `gpt-4o`, and/or replace `text-embedding-3-small` with `text-embedding-ada-002`.
+
 ```bash
-# Deploy GPT-4o
+# Deploy Chat Model (default: gpt-4.1-mini)
+# Alternatives: gpt-4.1, gpt-4o
 az cognitiveservices account deployment create \
   --name foundry-workshop-[yourname] \
   --resource-group rg-foundry-workshop-[yourname] \
-  --deployment-name gpt-4o \
-  --model-name gpt-4o \
-  --model-version "2024-11-20" \
+  --deployment-name gpt-4.1-mini \
+  --model-name gpt-4.1-mini \
+  --model-version "2025-04-14" \
   --model-format OpenAI \
   --sku-capacity 10 \
   --sku-name Standard
 
-# Deploy embedding model
+# Deploy Embedding Model (default: text-embedding-3-small)
+# Alternative: text-embedding-ada-002
 az cognitiveservices account deployment create \
   --name foundry-workshop-[yourname] \
   --resource-group rg-foundry-workshop-[yourname] \
@@ -198,7 +226,7 @@ az cognitiveservices account deployment create \
 az cognitiveservices account deployment show \
   --name foundry-workshop-[yourname] \
   --resource-group rg-foundry-workshop-[yourname] \
-  --deployment-name gpt-4o
+  --deployment-name gpt-4.1-mini
 
 az cognitiveservices account deployment show \
   --name foundry-workshop-[yourname] \
@@ -225,7 +253,7 @@ Edit `.env` with your endpoint:
 ```properties
 # Foundry Configuration (using Azure Identity - no API key needed)
 AZURE_OPENAI_ENDPOINT=https://foundry-workshop-[yourname].cognitiveservices.azure.com/
-AZURE_OPENAI_CHAT_DEPLOYMENT=gpt-4o
+AZURE_OPENAI_CHAT_DEPLOYMENT=gpt-4.1-mini
 AZURE_OPENAI_EMBEDDING_DEPLOYMENT=text-embedding-3-small
 AZURE_OPENAI_API_VERSION=2024-02-15-preview
 
@@ -247,7 +275,7 @@ AZURE_STORAGE_CONTAINER_NAME=knowledge-base-container
 You should now have:
 - [ ] Resource group created
 - [ ] Foundry resource with project: `my-first-chatbot`
-- [ ] Models deployed: `gpt-4o` and `text-embedding-3-small`
+- [ ] Models deployed: `gpt-4.1-mini` and `text-embedding-3-small`
 - [ ] `.env` file configured with Foundry credentials
 
 </details>

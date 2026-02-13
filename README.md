@@ -50,12 +50,13 @@ This workshop is divided into two progressive labs, each with multiple sub-labs 
 | 1.5 Host Agent as Web App | Deploy using Foundry Agent Web App | 20-30 min | ❌ | ✅ |
 
 ### [Lab 2: Adding Voice Capabilities](./lab-2-voice-capabilities/README.md)
-**Duration**: 25-35 minutes
+**Duration**: 30-45 minutes
 
 | Sub-Lab | Description | Time | Portal | Code |
 |---------|-------------|------|:------:|:----:|
 | 2.1 Deploy GPT Realtime Model | Deploy the realtime voice model | 10-15 min | ✅ | ✅ |
 | 2.2 Add Voice to Your Agent | Integrate voice using GPT Realtime API | 15-20 min | ❌ | ✅ |
+| 2.3 Cleanup Resources | Delete all Azure resources | 5-10 min | ✅ | ✅ |
 
 ##  Additional Resources
 
