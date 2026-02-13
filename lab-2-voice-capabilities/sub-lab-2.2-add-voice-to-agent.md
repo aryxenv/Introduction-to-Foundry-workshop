@@ -107,27 +107,25 @@ cd lab-1-rag-chatbot/webapp
 
 ### Step 2: Configure Realtime Model Settings
 
-Set the environment variables for the GPT Realtime model:
+Add the GPT Realtime configuration to your existing `.env` file in the `lab-1-rag-chatbot` folder. Open the file and add these lines at the end:
 
-```powershell
-# Set the Azure OpenAI endpoint (your AI Foundry services endpoint)
-# Get this from your AI Foundry resource - it's the services URL without the project path
-azd env set AZURE_OPENAI_ENDPOINT "https://<your-ai-foundry-resource>.services.ai.azure.com"
-
-# Set the realtime model deployment name (from Sub-Lab 2.1)
-azd env set AZURE_OPENAI_REALTIME_DEPLOYMENT "gpt-realtime"
-
-# Set the voice (optional - defaults to shimmer)
-azd env set AZURE_OPENAI_REALTIME_VOICE "shimmer"
+```properties
+# GPT Realtime Configuration (for Lab 2)
+AZURE_OPENAI_REALTIME_DEPLOYMENT=gpt-realtime
+AZURE_OPENAI_REALTIME_VOICE=shimmer  # Options: alloy, ash, coral, echo, sage, shimmer
 ```
 
-> 💡 **Tip**: Your `AZURE_OPENAI_ENDPOINT` is your AI Foundry services URL without the `/api/projects/...` path. For example, if your `AI_AGENT_ENDPOINT` is `https://my-foundry.services.ai.azure.com/api/projects/my-project`, then your `AZURE_OPENAI_ENDPOINT` is `https://my-foundry.services.ai.azure.com`.
+> ✅ **What you're adding:**
+> - **AZURE_OPENAI_REALTIME_DEPLOYMENT**: The name of your realtime model deployment (from Sub-Lab 2.1)
+> - **AZURE_OPENAI_REALTIME_VOICE**: The voice to use for responses (shimmer is a soft, gentle voice)
+>
+> The `AZURE_OPENAI_ENDPOINT` is already in your `.env` file from Lab 1.
 
 ---
 
 ### Step 3: Add Backend Voice Endpoint
 
-Create a new folder and file in the `lab-1-rag-chatbot/webapp/backendWebApp.Api` folder 
+Create a new folder and file in the `lab-1-rag-chatbot/webapp/backend/WebApp.Api` folder 
 Create a folder named `Endpoints`and a file `VoiceEndpoints.cs` inside that folder:
 
 ```csharp

@@ -102,6 +102,8 @@ You should now have:
 
 > 📝 **First time using the Code option?** Make sure you've completed the [Setup Guide](../SETUP.md) before continuing.
 
+> ✏️ **Use PowerShell for all commands in this sub-lab.**
+
 ### 1. Verify Prerequisites
 
 Ensure you're logged into Azure and have the Foundry resource from Lab 1.
