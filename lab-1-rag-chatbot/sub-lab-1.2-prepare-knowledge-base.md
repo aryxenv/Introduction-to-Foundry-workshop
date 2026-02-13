@@ -184,6 +184,18 @@ Write-Host "SUBSCRIPTION_ID: $SUBSCRIPTION_ID"
 # Assign Storage Blob Data Contributor role (single line command)
 az role assignment create --role "Storage Blob Data Contributor" --assignee-object-id $USER_OBJECT_ID --assignee-principal-type User --scope "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/rg-foundry-workshop-[yourname]/providers/Microsoft.Storage/storageAccounts/stchatbot[yourname]"
 ```
+ ⚠️ **Troubleshooting: "Continuous access evaluation" Error**
+>
+> If you see an error like:
+> ```
+> ERROR: Continuous access evaluation resulted in challenge with result: InteractionRequired and code: TokenCreatedWithOutdatedPolicies
+> ```
+>
+> **Solution**: Clear the cached tokens and re-login:
+> ```powershell
+> az account clear
+> ```
+> Then re-run the commands above.
 
 > 💡 **Note**: Role assignments can take a few minutes to propagate. If you still get permission errors, wait 2-3 minutes and try again.
 
@@ -245,6 +257,13 @@ if __name__ == "__main__":
     upload_documents()
 ```
 
+> 📖 **What this script does:**
+> 1. **Connects to Azure** using your logged-in credentials (`DefaultAzureCredential` uses your `az login` session)
+> 2. **Creates the container** if it doesn't already exist
+> 3. **Scans the `data/knowledge_base/` folder** for supported file types (`.txt`, `.pdf`, `.docx`, `.md`)
+> 4. **Uploads each file** to Azure Blob Storage, overwriting if a file with the same name exists
+> 5. **Reports progress** showing which files were uploaded
+
 ### 5. Update Environment Variables
 
 Add to your `.env` file:
@@ -270,6 +289,20 @@ python scripts/upload_to_blob.py
 
 🎉 Successfully uploaded 2 documents!
 ```
+
+⚠️ **Troubleshooting: "AuthorizationPermissionMismatch" Error**
+>
+> If you see an error like:
+> ```
+> azure.core.exceptions.HttpResponseError: This request is not authorized to perform this operation using this permission.
+> ErrorCode:AuthorizationPermissionMismatch
+> ```
+>
+> **Solution**: This means the role assignment hasn't fully propagated yet. Wait 2-3 minutes after assigning the role, then try again. You can also clear your Azure CLI token cache and re-login:
+> ```powershell
+> az account clear
+> az login
+> ```
 
 ### ✅ Code Checkpoint
 
