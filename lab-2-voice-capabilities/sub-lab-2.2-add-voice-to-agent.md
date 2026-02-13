@@ -889,7 +889,7 @@ Add the new parameter near the existing parameters (around line 20-30):
 param azureOpenAiEndpoint string = ''
 ```
 
-Then, in the module call to `main-app.bicep` (around line 90), add the parameter:
+Then, in the same file in the module call to `main-app.bicep` (around line 75), add the parameter:
 
 ```bicep
 module app 'main-app.bicep' = {
@@ -910,27 +910,46 @@ Add the parameter at the top:
 param azureOpenAiEndpoint string = ''
 ```
 
-Then in the `appEnv` variable (where environment variables are defined), add:
+Then find the `env: [...]` array inside the `webApp` module (around line 28-52) and add these three environment variables at the end of the array, before the closing `]`:
 
 ```bicep
-var appEnv = [
-  // ... existing env vars ...
-  {
-    name: 'AZURE_OPENAI_ENDPOINT'
-    value: azureOpenAiEndpoint
-  }
-  {
-    name: 'AZURE_OPENAI_REALTIME_DEPLOYMENT'
-    value: 'gpt-realtime'
-  }
-  {
-    name: 'AZURE_OPENAI_REALTIME_VOICE'
-    value: 'shimmer'
-  }
-]
+    env: [
+      // ... existing env vars like ASPNETCORE_ENVIRONMENT, AI_AGENT_ENDPOINT, etc. ...
+      {
+        name: 'AZURE_OPENAI_ENDPOINT'
+        value: azureOpenAiEndpoint
+      }
+      {
+        name: 'AZURE_OPENAI_REALTIME_DEPLOYMENT'
+        value: 'gpt-realtime'
+      }
+      {
+        name: 'AZURE_OPENAI_REALTIME_VOICE'
+        value: 'shimmer'
+      }
+    ]
+```
+**8c. Update `infra/main.parameters.json`**
+
+Add the mapping so azd passes the environment variable to Bicep. Find the `parameters` section and add:
+
+```json
+"azureOpenAiEndpoint": {
+  "value": "${AZURE_OPENAI_ENDPOINT=}"
+}
 ```
 
-> 💡 **Tip**: If you're using `azd`, the environment variables you set in Step 2 will be automatically picked up during deployment.
+**8d. Set the endpoint value in azd environment**
+
+The Bicep templates reference the parameter, but you need to provide the actual value. Run this command to set the Azure OpenAI endpoint:
+
+> ✏️ **Replace [yourname]** with the same value you used in sub-lab 1.1 (e.g., `jsmith`).
+
+```powershell
+azd env set AZURE_OPENAI_ENDPOINT "https://foundry-workshop-[yourname].openai.azure.com/"
+```
+
+> ⚠️ **Important**: The `.env` file is for local development only. When deploying to Azure Container Apps, environment variables must be set via `azd env set` so they're passed through the Bicep templates.
 
 ---
 
@@ -956,11 +975,14 @@ ingress: enableIngress ? {
 
 ### Step 10: Deploy to Azure
 
-Deploy your updated app with voice capabilities:
+Deploy your updated app with voice capabilities. Use `azd up` (not `azd deploy`) to update both the infrastructure (environment variables) and the application code:
 
 ```powershell
-azd deploy
+azd up
 ```
+
+> ⚠️ **Important**: `azd deploy` only updates the container image. To apply new environment variables from the Bicep templates, you must run `azd up` which provisions infrastructure AND deploys the app.
+
 
 **Get your deployed URL:**
 
@@ -973,10 +995,24 @@ azd env get-values | Select-String "WEB_ENDPOINT"
 **Test voice chat:**
 
 1. Open the URL in your browser
-2. Sign in with your Microsoft account
-3. Click **"Start Voice Chat"** to connect
+2. Sign in with your Microsoft account. You should see the screen below
+
+3. Click the Microphone button on the bottom right.
+
+    <img src="images/UI1.png" width="800"/>
+
+4. Click **"Start"** to connect
+
+    <img src="images/UI2.png" width="800"/>
+
 4. Click **"Talk"** and ask a question about your knowledge base
+
+    <img src="images/UI3.png" width="800"/>
+
 5. Release to let the server detect end of speech
+
+    <img src="images/UI4.png" width="400"/>
+
 6. Listen to the spoken response!
 
 **Try these questions:**
