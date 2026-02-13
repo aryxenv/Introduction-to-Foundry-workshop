@@ -26,7 +26,7 @@ Ensure you have installed:
 
 1. Go to VS Code, create an empty project. 
 2. Open a terminal window (view -> Terminal) 
-3. Open a git bash terminal. ('+'sign on the top right of the terminal window) 
+3. Open a git bash terminal. (arrow next to the '+'sign on the top right of the terminal window) 
 4. Go to the desired file location ( `cd [location]` )
 4. Execute the command below to clone the repo
 
@@ -48,7 +48,7 @@ Press `Ctrl+Shift+X` and install:
 
 ## Step 3: Set Up Lab 1 Environment
 
-In VS Code, open a terminal (`` Ctrl+` ``) and run:
+In VS Code, use your bash terminal and run:
 
 ```bash
 cd lab-1-rag-chatbot
@@ -70,7 +70,7 @@ pip install -r requirements.txt
 1. Executing the code below to create a `.env` file in the `lab-1-rag-chatbot` folder (make sure you are still in folder **lab-1-rag-chatbot**)
 
 ```bash
-copy .env.example .env
+cp .env.example .env
 ```
 
 You'll fill in the values during Lab 1.
