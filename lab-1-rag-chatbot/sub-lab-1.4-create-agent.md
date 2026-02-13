@@ -210,6 +210,8 @@ az role assignment create `
 
 ### 3. Get Your Project Endpoint and Resource ID
 
+> ✏️ **Switch back to Git Bash for this step and the remaining steps.**
+
 You need two values for this lab:
 
 **Get the Project Endpoint via CLI:**
@@ -238,26 +240,16 @@ az cognitiveservices account project show \
 
 ### 4. Update Environment Variables
 
-Add to your `.env` file:
+Add to your `.env` file with the values you got as output in the step above:
 
 ```properties
-# Before saving: Replace [yourname] and [your-subscription-id] with your actual values
 
 # Foundry Project Configuration (see also the result of the *Get the Project Endpoint via CLI*:)
 AZURE_AI_PROJECT_ENDPOINT=https://foundry-workshop-[yourname].services.ai.azure.com/api/projects/my-first-chatbot
 
 # Project Resource ID (for creating the MCP connection). 
-# Get this from the CLI command above, or construct it:
 AZURE_AI_PROJECT_RESOURCE_ID=/subscriptions/[your-subscription-id]/resourceGroups/rg-foundry-workshop-[yourname]/providers/Microsoft.CognitiveServices/accounts/foundry-workshop-[yourname]/projects/my-first-chatbot
 
-# Azure AI Search (from sub-lab 1.3)
-AZURE_SEARCH_ENDPOINT=https://search-chatbot-[yourname].search.windows.net
-AZURE_SEARCH_INDEX_NAME=chatbot-knowledge-base
-
-# Knowledge Base Configuration
-KNOWLEDGE_BASE_NAME=techcorp-kb
-KNOWLEDGE_SOURCE_NAME=techcorp-docs
-MCP_CONNECTION_NAME=kb-mcp-connection
 ```
 
 ### 5. Create the RAG Agent with Foundry IQ
@@ -626,6 +618,13 @@ def main():
 if __name__ == "__main__":
     main()
 ```
+
+> 📖 **What this script does:**
+> 1. **Creates a Knowledge Source** (`techcorp-docs`): Wraps your AI Search index so Foundry IQ knows where to find your documents
+> 2. **Creates a Knowledge Base** (`techcorp-kb`): Orchestrates intelligent retrieval with query decomposition and semantic reranking
+> 3. **Creates a Project Connection** (`kb-mcp-connection`): Enables secure authentication between your agent and the knowledge base using the project's managed identity
+> 4. **Creates an Agent with MCP Tool** (`RAG-Chatbot`): Configures the agent to use your knowledge base via Model Context Protocol (MCP)
+> 5. **Starts a chat loop**: Lets you interact with the agent, which automatically retrieves relevant context from your knowledge base and generates grounded answers with citations
 
 ### 6. Run the Agent
 

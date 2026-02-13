@@ -329,6 +329,19 @@ This matches the Portal 'Import data (new)' approach
 import os
 import requests
 from azure.identity import DefaultAzureCredential
+from azure.search.documents.indexes import SearchIndexClient
+from azure.search.documents.indexes.models import (
+    SearchIndex,
+    SearchField,
+    SearchFieldDataType,
+    VectorSearch,
+    HnswAlgorithmConfiguration,
+    VectorSearchProfile,
+    SemanticConfiguration,
+    SemanticField,
+    SemanticPrioritizedFields,
+    SemanticSearch,
+)
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -362,35 +375,50 @@ def get_subscription_id():
     return response.json()["value"][0]["subscriptionId"]
 
 def create_index():
-    """Create the vector search index"""
-    index = {
-        "name": INDEX_NAME,
-        "fields": [
-            {"name": "chunk_id", "type": "Edm.String", "key": True, "analyzer": "keyword"},
-            {"name": "parent_id", "type": "Edm.String", "filterable": True},
-            {"name": "chunk", "type": "Edm.String", "searchable": True},
-            {"name": "title", "type": "Edm.String", "searchable": True, "filterable": True},
-            {
-                "name": "vector",
-                "type": "Collection(Edm.Single)",
-                "searchable": True,
-                "dimensions": 1536,
-                "vectorSearchProfile": "myHnswProfile"
-            }
-        ],
-        "vectorSearch": {
-            "algorithms": [{"name": "myHnsw", "kind": "hnsw"}],
-            "profiles": [{"name": "myHnswProfile", "algorithm": "myHnsw"}]
-        }
-    }
+    """Create the vector search index using Azure SDK"""
+    credential = DefaultAzureCredential()
+    index_client = SearchIndexClient(endpoint=SEARCH_ENDPOINT, credential=credential)
     
-    url = f"{SEARCH_ENDPOINT}/indexes/{INDEX_NAME}?api-version={API_VERSION}"
-    response = requests.put(url, json=index, headers=get_auth_header())
+    fields = [
+        SearchField(name="chunk_id", type=SearchFieldDataType.String, key=True, analyzer_name="keyword"),
+        SearchField(name="parent_id", type=SearchFieldDataType.String, filterable=True),
+        SearchField(name="chunk", type=SearchFieldDataType.String, searchable=True),
+        SearchField(name="title", type=SearchFieldDataType.String, searchable=True, filterable=True),
+        SearchField(
+            name="vector",
+            type=SearchFieldDataType.Collection(SearchFieldDataType.Single),
+            searchable=True,
+            vector_search_dimensions=1536,
+            vector_search_profile_name="myHnswProfile"
+        )
+    ]
     
-    if response.status_code in [200, 201, 204]:
+    vector_search = VectorSearch(
+        algorithms=[HnswAlgorithmConfiguration(name="myHnsw")],
+        profiles=[VectorSearchProfile(name="myHnswProfile", algorithm_configuration_name="myHnsw")]
+    )
+    
+    semantic_config = SemanticConfiguration(
+        name="my-semantic-config",
+        prioritized_fields=SemanticPrioritizedFields(
+            title_field=SemanticField(field_name="title"),
+            content_fields=[SemanticField(field_name="chunk")]
+        )
+    )
+    semantic_search = SemanticSearch(configurations=[semantic_config])
+    
+    index = SearchIndex(
+        name=INDEX_NAME,
+        fields=fields,
+        vector_search=vector_search,
+        semantic_search=semantic_search
+    )
+    
+    try:
+        index_client.create_or_update_index(index)
         print(f"✅ Created index: {INDEX_NAME}")
-    else:
-        print(f"❌ Error creating index ({response.status_code}): {response.text or response.reason}")
+    except Exception as e:
+        print(f"❌ Error creating index: {e}")
 
 def create_data_source():
     """Create a data source connection to Blob Storage"""
