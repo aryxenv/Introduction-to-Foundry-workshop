@@ -178,31 +178,33 @@ pip install azure-ai-projects azure-search-documents azure-identity python-doten
 
 The Foundry project has a **managed identity** that needs permission to read from your AI Search index. Without this role, the MCP endpoint returns a `405 Method Not Allowed` error when the agent tries to use the knowledge base.
 
-**Get the project's managed identity:**
+> ✏️ **Use PowerShell for this step.** Replace `[yourname]` with your actual name.
 
-```bash
-# Before running: Replace [yourname] with your actual value from sub-lab 1.1
-az cognitiveservices account project show \
-  --name foundry-workshop-[yourname] \
-  --resource-group rg-foundry-workshop-[yourname] \
-  --project-name my-first-chatbot \
-  --query "identity.principalId" \
+```powershell
+# Get the project's managed identity principal ID
+$PRINCIPAL_ID = az cognitiveservices account project show `
+  --name foundry-workshop-[yourname] `
+  --resource-group rg-foundry-workshop-[yourname] `
+  --project-name my-first-chatbot `
+  --query "identity.principalId" `
   --output tsv
+
+# Get your subscription ID
+$SUBSCRIPTION_ID = az account show --query id -o tsv
+
+# Verify the values are set
+Write-Host "PRINCIPAL_ID: $PRINCIPAL_ID"
+Write-Host "SUBSCRIPTION_ID: $SUBSCRIPTION_ID"
+
+# Assign the Search Index Data Reader role
+az role assignment create `
+  --role "Search Index Data Reader" `
+  --assignee "$PRINCIPAL_ID" `
+  --scope "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/rg-foundry-workshop-[yourname]/providers/Microsoft.Search/searchServices/search-chatbot-[yourname]"
 ```
 
-**Assign the Search Index Data Reader role:**
-
-```bash
-# Before running: Replace the placeholders with your actual values
-# - [principal-id]: The output from the command above
-# - [your-subscription-id]: Your Azure subscription ID
-# - [yourname]: Your name suffix from sub-lab 1.1
-
-az role assignment create \
-  --role "Search Index Data Reader" \
-  --assignee [principal-id] \
-  --scope "/subscriptions/[your-subscription-id]/resourceGroups/rg-foundry-workshop-[yourname]/providers/Microsoft.Search/searchServices/search-chatbot-[yourname]"
-```
+> ✅ **What you just configured:**
+> - **Search Index Data Reader** role: Allows the Foundry project's managed identity to read from your AI Search index. This is required for the MCP tool to retrieve knowledge base content.
 
 > **⏱️ Note:** Role assignments can take 1-2 minutes to propagate. If you get a 405 error when running the script, wait a moment and try again.
 
@@ -752,7 +754,7 @@ You've completed Lab 1! You now have a fully functional RAG chatbot that:
 │  ┌─────────────────────────────────────────────────────────┐   │
 │  │                    Your Agent                           │   │
 │  │  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐  │   │
-│  │  │ Chat Model │ ↔→ │ Foundry IQ  │ ↔→ │  AI Search  │  │   │
+│  │  │ Chat Model  │ ↔→ │ Foundry IQ  │ ↔→ │  AI Search  │  │   │
 │  │  │  (answers)  │    │ (retrieval) │    │  (index)    │  │   │
 │  │  └─────────────┘    └─────────────┘    └─────────────┘  │   │
 │  └─────────────────────────────────────────────────────────┘   │
