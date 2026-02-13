@@ -209,22 +209,29 @@ az search service update \
 Your AI Search service needs permission to read documents from Blob Storage.
 
 ```bash
-# Get the AI Search managed identity principal ID
+# Step 3a: Get the AI Search managed identity principal ID
 SEARCH_IDENTITY=$(az search service show \
   --name search-chatbot-[yourname] \
   --resource-group rg-foundry-workshop-[yourname] \
   --query identity.principalId -o tsv)
 
-# Verify the identity is set
+# Verify - you should see a GUID like 17242751-f675-4de6-9a39-2b12467ba3cf
 echo "SEARCH_IDENTITY: $SEARCH_IDENTITY"
+```
 
-# Get the storage account resource ID
+```bash
+# Step 3b: Get the storage account resource ID
 STORAGE_ID=$(az storage account show \
   --name stchatbot[yourname] \
   --resource-group rg-foundry-workshop-[yourname] \
   --query id -o tsv)
 
-# Assign Storage Blob Data Reader role to AI Search
+# Verify - you should see a path like /subscriptions/.../storageAccounts/stchatbot...
+echo "STORAGE_ID: $STORAGE_ID"
+```
+
+```bash
+# Step 3c: Assign Storage Blob Data Reader role to AI Search
 az role assignment create \
   --assignee "$SEARCH_IDENTITY" \
   --role "Storage Blob Data Reader" \
@@ -239,13 +246,18 @@ az role assignment create \
 Your AI Search service needs permission to use the embedding model.
 
 ```bash
-# Get the Foundry resource ID
+# Step 4a: Get the Foundry resource ID
 FOUNDRY_ID=$(az cognitiveservices account show \
   --name foundry-workshop-[yourname] \
   --resource-group rg-foundry-workshop-[yourname] \
   --query id -o tsv)
 
-# Assign Cognitive Services OpenAI User role to AI Search
+# Verify - you should see a path like /subscriptions/.../cognitiveservices/foundry-workshop...
+echo "FOUNDRY_ID: $FOUNDRY_ID"
+```
+
+```bash
+# Step 4b: Assign Cognitive Services OpenAI User role to AI Search
 az role assignment create \
   --assignee "$SEARCH_IDENTITY" \
   --role "Cognitive Services OpenAI User" \
@@ -260,22 +272,34 @@ az role assignment create \
 Your user account needs permission to create indexes, data sources, skillsets, and indexers via the REST API.
 
 ```bash
-# Get your user ID
+# Step 5a: Get your user ID
 USER_ID=$(az ad signed-in-user show --query id -o tsv)
 
-# Get the AI Search resource ID
+# Verify - you should see a GUID
+echo "USER_ID: $USER_ID"
+```
+
+```bash
+# Step 5b: Get the AI Search resource ID
 SEARCH_ID=$(az search service show \
   --name search-chatbot-[yourname] \
   --resource-group rg-foundry-workshop-[yourname] \
   --query id -o tsv)
 
-# Assign Search Service Contributor role (manage service resources)
+# Verify - you should see a path like /subscriptions/.../searchServices/search-chatbot...
+echo "SEARCH_ID: $SEARCH_ID"
+```
+
+```bash
+# Step 5c: Assign Search Service Contributor role (manage service resources)
 az role assignment create \
   --assignee "$USER_ID" \
   --role "Search Service Contributor" \
   --scope "$SEARCH_ID"
+```
 
-# Assign Search Index Data Contributor role (manage index data)
+```bash
+# Step 5d: Assign Search Index Data Contributor role (manage index data)
 az role assignment create \
   --assignee "$USER_ID" \
   --role "Search Index Data Contributor" \
