@@ -4,23 +4,7 @@ This guide helps you set up your development environment for the Code path of th
 
 ---
 
-## 🚀 Choose Your Setup Option
-
-### Option A: GitHub Codespaces (Fastest)
-
-If available in your org/account. No local setup needed:
-
-1. Go to the [main page](https://github.com/LauraVerghote/Introduction-to-Foundry-workshop/tree/main) of this workshop 
-2. Click the green **"Code"** button on the top right of this GitHub repo
-3. Select **"Codespaces"** on the top→ **"Create codespace on main"**
-3. Wait 2-3 minutes - everything is pre-installed!
-4. Start with [Lab 1](./lab-1-rag-chatbot/README.md)
-
-> ✅ **Done!** You can skip the rest of this guide if using Codespaces.
-
----
-
-### Option B: VS Code Local Setup
+## VS Code Local Setup
 
 Follow the steps below to set up your local development environment.
 

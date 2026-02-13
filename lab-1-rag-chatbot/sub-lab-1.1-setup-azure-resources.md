@@ -16,7 +16,7 @@ In this sub-lab, you'll set up Microsoft Foundry and deploy the AI models that p
 
 ## 🎯 Model Options
 
-You can choose from the following models based on your needs:
+You can choose from the following models based on your preferences:
 
 ### Chat/Reasoning Models
 
@@ -145,7 +145,7 @@ You should now have:
 
 Before proceeding, complete the development environment setup:
 
-👉 **[Complete the Setup Guide](../SETUP.md)** - Choose either GitHub Codespaces or VS Code Local Setup
+👉 **[Complete the Setup Guide](../SETUP.md)**
 
 ### 2. Verify Prerequisites
 

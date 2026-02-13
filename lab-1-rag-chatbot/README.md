@@ -15,7 +15,7 @@ This lab offers two parallel paths. Choose the one that best fits your learning 
 | Path | Description | Best For |
 |------|-------------|----------|
 | **🖥️ Portal Path** | Use Azure Portal and Foundry UI exclusively | Quick setup, visual learners, no coding required |
-| **💻 Code Path** | Build everything programmatically with Python | Developers, automation, deeper understanding |
+| **💻 Code Path** | Build everything programmatically with Python and CLI | Developers, automation, deeper understanding |
 
 > **Tip**: You can mix and match! Start with Portal to understand concepts, then try Code for specific sections.
 
