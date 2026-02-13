@@ -210,19 +210,19 @@ Your AI Search service needs permission to read documents from Blob Storage.
 
 ```bash
 # Get the AI Search managed identity principal ID
-$SEARCH_IDENTITY = az search service show \
+SEARCH_IDENTITY=$(az search service show \
   --name search-chatbot-[yourname] \
   --resource-group rg-foundry-workshop-[yourname] \
-  --query identity.principalId -o tsv
+  --query identity.principalId -o tsv)
 
 # Verify the identity is set
-Write-Host "SEARCH_IDENTITY: $SEARCH_IDENTITY"
+echo "SEARCH_IDENTITY: $SEARCH_IDENTITY"
 
 # Get the storage account resource ID
-$STORAGE_ID = az storage account show \
+STORAGE_ID=$(az storage account show \
   --name stchatbot[yourname] \
   --resource-group rg-foundry-workshop-[yourname] \
-  --query id -o tsv
+  --query id -o tsv)
 
 # Assign Storage Blob Data Reader role to AI Search
 az role assignment create \
@@ -240,10 +240,10 @@ Your AI Search service needs permission to use the embedding model.
 
 ```bash
 # Get the Foundry resource ID
-$FOUNDRY_ID = az cognitiveservices account show \
+FOUNDRY_ID=$(az cognitiveservices account show \
   --name foundry-workshop-[yourname] \
   --resource-group rg-foundry-workshop-[yourname] \
-  --query id -o tsv
+  --query id -o tsv)
 
 # Assign Cognitive Services OpenAI User role to AI Search
 az role assignment create \
@@ -261,13 +261,13 @@ Your user account needs permission to create indexes, data sources, skillsets, a
 
 ```bash
 # Get your user ID
-$USER_ID = az ad signed-in-user show --query id -o tsv
+USER_ID=$(az ad signed-in-user show --query id -o tsv)
 
 # Get the AI Search resource ID
-$SEARCH_ID = az search service show \
+SEARCH_ID=$(az search service show \
   --name search-chatbot-[yourname] \
   --resource-group rg-foundry-workshop-[yourname] \
-  --query id -o tsv
+  --query id -o tsv)
 
 # Assign Search Service Contributor role (manage service resources)
 az role assignment create \
