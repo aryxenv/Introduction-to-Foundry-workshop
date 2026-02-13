@@ -43,7 +43,7 @@ The Foundry Agent Web App is an open-source template that provides:
 │  ┌─────────────────────────────────────────────────────────────┐ │
 │  │  Your RAG Agent (from Sub-Lab 1.4)                          │ │
 │  │  ┌─────────────┐    ┌─────────────┐    ┌─────────────────┐  │ │
-│  │  │ Chat Model │ ↔→ │ Foundry IQ  │ ↔→ │ AI Search Index │  │ │
+│  │  │ Chat Model  │ ↔→ │ Foundry IQ  │ ↔→ │ AI Search Index │  │ │
 │  │  └─────────────┘    └─────────────┘    └─────────────────┘  │ │
 │  └─────────────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────────┘
@@ -242,27 +242,30 @@ Web endpoint: https://ca-web-xxxxx.azurecontainerapps.io
 ---
 ### Step 6: Assign Project-Level Permissions
 
+> ✏️ **Use PowerShell for this step.** Replace `[yourname]` with your actual name.
+
 The `azd up` command assigns roles at the Foundry **resource** level, but the web app also needs the `Cognitive Services User` role at the **project** level to invoke agents.
 
-**Get the web app's managed identity:**
-
 ```powershell
-azd env get-values | Select-String "WEB_IDENTITY_PRINCIPAL_ID"
-```
+# Get the web app's managed identity principal ID
+$PRINCIPAL_ID = (azd env get-values | Select-String "WEB_IDENTITY_PRINCIPAL_ID").ToString().Split("=")[1].Trim('"')
 
-**Assign the role at project level:**
+# Get your subscription ID
+$SUBSCRIPTION_ID = az account show --query id -o tsv
 
-```powershell
-# Replace the placeholders with your actual values:
-# - [principal-id]: The value from above (e.g., 0530fde3-8bd4-4d25-abb7-c73195c59411)
-# - [your-subscription-id]: Your Azure subscription ID
-# - [yourname]: Your name suffix from sub-lab 1.1
+# Verify the values are set
+Write-Host "PRINCIPAL_ID: $PRINCIPAL_ID"
+Write-Host "SUBSCRIPTION_ID: $SUBSCRIPTION_ID"
 
+# Assign the Cognitive Services User role at project level
 az role assignment create `
   --role "Cognitive Services User" `
-  --assignee [principal-id] `
-  --scope "/subscriptions/[your-subscription-id]/resourceGroups/rg-foundry-workshop-[yourname]/providers/Microsoft.CognitiveServices/accounts/foundry-workshop-[yourname]/projects/my-first-chatbot"
+  --assignee "$PRINCIPAL_ID" `
+  --scope "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/rg-foundry-workshop-[yourname]/providers/Microsoft.CognitiveServices/accounts/foundry-workshop-[yourname]/projects/my-first-chatbot"
 ```
+
+> ✅ **What you just configured:**
+> - **Cognitive Services User** role at the project level: Allows the web app's managed identity to invoke agents in your Foundry project.
 
 > **⏱️ Note:** Role assignments can take 1-2 minutes to propagate.
 
