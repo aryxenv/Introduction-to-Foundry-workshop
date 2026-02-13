@@ -157,30 +157,32 @@ az storage container create \
   --auth-mode login
 ```
 
+> ✅ **What you just created:**
+> - **Storage Account** (`stchatbot[yourname]`): A cloud storage service that holds your files. Think of it as a hard drive in Azure.
+> - **Blob Container** (`knowledge-base-container`): A folder-like structure inside the storage account where your documents will be stored. This is where your chatbot's knowledge base lives.
+
 ### 3. Grant Yourself Data Permissions
 
 > ⚠️ **Important**: You need the **Storage Blob Data Contributor** role to upload files using Azure Identity.
 
-> ✏️ **Use PowerShell for this step** (Git Bash has issues with this command). Replace `[yourname]` with your actual name.
+> ✏️ **Use a PowerShell terminal for this step**. Replace `[yourname]` with your actual name.
 
 ```powershell
 # Make sure you're logged in first
 az login
 
-# Get your email/UPN and storage account scope
-$USER_EMAIL = az ad signed-in-user show --query userPrincipalName -o tsv
-$STORAGE_ID = az storage account show --name stchatbot[yourname] --resource-group rg-foundry-workshop-[yourname] --query id -o tsv
+# Get your user object ID
+$USER_OBJECT_ID = az ad signed-in-user show --query id -o tsv
+
+# Get your subscription ID
+$SUBSCRIPTION_ID = az account show --query id -o tsv
 
 # Verify variables are set
-Write-Host "USER_EMAIL: $USER_EMAIL"
-Write-Host "STORAGE_ID: $STORAGE_ID"
+Write-Host "USER_OBJECT_ID: $USER_OBJECT_ID"
+Write-Host "SUBSCRIPTION_ID: $SUBSCRIPTION_ID"
 
-# Assign Storage Blob Data Contributor role
-az role assignment create \
-  --role "Storage Blob Data Contributor" \
-  --assignee-object-id $(az ad signed-in-user show --query id -o tsv) \
-  --assignee-principal-type User \
-  --scope /subscriptions/$(az account show --query id -o tsv)/resourceGroups/rg-foundry-workshop-[yourname]/providers/Microsoft.Storage/storageAccounts/stchatbot[yourname]
+# Assign Storage Blob Data Contributor role (single line command)
+az role assignment create --role "Storage Blob Data Contributor" --assignee-object-id $USER_OBJECT_ID --assignee-principal-type User --scope "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/rg-foundry-workshop-[yourname]/providers/Microsoft.Storage/storageAccounts/stchatbot[yourname]"
 ```
 
 > 💡 **Note**: Role assignments can take a few minutes to propagate. If you still get permission errors, wait 2-3 minutes and try again.
