@@ -149,15 +149,30 @@ Before proceeding, complete the development environment setup:
 
 ### 2. Verify Prerequisites
 
-Once your environment is ready. Go to the main folder and verify you have (make sure to use the git bash terminal):
+Once your environment is ready, open a **Git Bash terminal** and navigate to the main folder. Then verify your setup:
 
 ```bash
 # Check Azure CLI is installed
 az --version
+```
 
+> ✅ You should see Azure CLI version **2.50.0 or higher**. If you see a lower version or "command not found", revisit the [Setup Guide](../SETUP.md) to install/update the Azure CLI.
+
+```bash
 # Login to Azure
 az login
 ```
+
+> 🔐 **What happens when you run `az login`:**
+> 1. A browser window will open automatically
+> 2. Sign in with your Azure account credentials
+> 3. Once authenticated, return to your terminal
+> 4. If you have multiple subscriptions, you'll see a list—note the one you want to use
+> 5. (Optional) Set your default subscription:
+>    ```bash
+>    az account set --subscription "Your Subscription Name or ID"
+>    ```
+> 6. Verify you're logged in with: `az account show`
 
 ### 3. Create Resources via CLI
 Copy the instructions below in a text editor, fill in the placeholders and execute in your Git Bash terminal
@@ -190,6 +205,12 @@ az cognitiveservices account project create \
   --project-name my-first-chatbot \
   --location eastus2
 ```
+
+> ✅ **What you just created:**
+> - **Resource Group** (`rg-foundry-workshop-[yourname]`): A container that holds all related Azure resources together
+> - **AI Services Account** (`foundry-workshop-[yourname]`): The Microsoft Foundry resource that hosts your AI models
+> - **Custom Subdomain**: A unique URL endpoint for accessing your AI services
+> - **Project** (`my-first-chatbot`): A workspace within Foundry to organize your deployments and configurations
 
 ### 4. Deploy Models via CLI
 
@@ -234,6 +255,12 @@ az cognitiveservices account deployment show \
   --deployment-name text-embedding-3-small
 ```
 
+> ✅ **What you just deployed:**
+> - **Chat Model** (`gpt-4.1-mini`): Generates natural language responses to user questions—this is the "brain" of your chatbot
+> - **Embedding Model** (`text-embedding-3-small`): Converts text into numerical vectors (embeddings) that enable semantic search—this helps the chatbot find relevant information in your knowledge base
+>
+> The verification commands at the end should return JSON with `"provisioningState": "Succeeded"` for each model.
+
 ### 5. Configure Environment Variables
 
 If you haven't done so yet during the initial set-up: Create a `.env` file in the `lab-1-rag-chatbot` directory:
@@ -248,7 +275,7 @@ Get your endpoint (found in Foundry Portal on the project welcome screen, or con
 https://foundry-workshop-[yourname].cognitiveservices.azure.com/
 ```
 
-Edit `.env` with your endpoint:
+Edit `.env` with your endpoint and with your model-names if you didn't pick the default:
 
 ```properties
 # Foundry Configuration (using Azure Identity - no API key needed)
@@ -256,14 +283,6 @@ AZURE_OPENAI_ENDPOINT=https://foundry-workshop-[yourname].cognitiveservices.azur
 AZURE_OPENAI_CHAT_DEPLOYMENT=gpt-4.1-mini
 AZURE_OPENAI_EMBEDDING_DEPLOYMENT=text-embedding-3-small
 AZURE_OPENAI_API_VERSION=2024-02-15-preview
-
-# Azure AI Search Configuration (will be added in Sub-Lab 1.3)
-AZURE_SEARCH_ENDPOINT=
-AZURE_SEARCH_INDEX_NAME=chatbot-knowledge-base
-
-# Azure Storage Configuration (will be added in Sub-Lab 1.2)
-AZURE_STORAGE_ACCOUNT_NAME=
-AZURE_STORAGE_CONTAINER_NAME=knowledge-base-container
 ```
 
 > 💡 **Note**: We're using Azure Identity (DefaultAzureCredential) for authentication instead of API keys. This is more secure and uses your `az login` credentials automatically.
