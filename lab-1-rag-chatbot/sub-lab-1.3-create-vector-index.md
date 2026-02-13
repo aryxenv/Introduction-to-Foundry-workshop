@@ -264,40 +264,36 @@ az role assignment create `
 
 ### 5. Grant Yourself Access to Manage AI Search
 
+> ✏️ **Continue in PowerShell.** Replace `[yourname]` with your actual name.
+
 Your user account needs permission to create indexes, data sources, skillsets, and indexers via the REST API.
 
-```bash
-# Step 5a: Get your user ID
-USER_ID=$(az ad signed-in-user show --query id -o tsv)
+```powershell
+# Get your user ID
+$USER_ID = az ad signed-in-user show --query id -o tsv
 
-# Verify - you should see a GUID
-echo "USER_ID: $USER_ID"
-```
+# Verify the user ID is set
+Write-Host "USER_ID: $USER_ID"
 
-```bash
-# Step 5b: Get the AI Search resource ID
-SEARCH_ID=$(az search service show \
-  --name search-chatbot-[yourname] \
-  --resource-group rg-foundry-workshop-[yourname] \
-  --query id -o tsv)
+# Get the AI Search resource ID
+$SEARCH_ID = az search service show `
+  --name search-chatbot-[yourname] `
+  --resource-group rg-foundry-workshop-[yourname] `
+  --query id -o tsv
 
-# Verify - you should see a path like /subscriptions/.../searchServices/search-chatbot...
-echo "SEARCH_ID: $SEARCH_ID"
-```
+# Verify the search ID is set
+Write-Host "SEARCH_ID: $SEARCH_ID"
 
-```bash
-# Step 5c: Assign Search Service Contributor role (manage service resources)
-az role assignment create \
-  --assignee "$USER_ID" \
-  --role "Search Service Contributor" \
+# Assign Search Service Contributor role (manage service resources)
+az role assignment create `
+  --assignee "$USER_ID" `
+  --role "Search Service Contributor" `
   --scope "$SEARCH_ID"
-```
 
-```bash
-# Step 5d: Assign Search Index Data Contributor role (manage index data)
-az role assignment create \
-  --assignee "$USER_ID" \
-  --role "Search Index Data Contributor" \
+# Assign Search Index Data Contributor role (manage index data)
+az role assignment create `
+  --assignee "$USER_ID" `
+  --role "Search Index Data Contributor" `
   --scope "$SEARCH_ID"
 ```
 
