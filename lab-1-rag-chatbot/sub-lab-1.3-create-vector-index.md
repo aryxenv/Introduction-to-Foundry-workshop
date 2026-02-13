@@ -206,35 +206,30 @@ az search service update \
 
 ### 3. Grant AI Search Access to Storage
 
+> ✏️ **Use PowerShell for this step.** Replace `[yourname]` with your actual name.
+
 Your AI Search service needs permission to read documents from Blob Storage.
 
-```bash
-# Step 3a: Get the AI Search managed identity principal ID
-SEARCH_IDENTITY=$(az search service show \
-  --name search-chatbot-[yourname] \
-  --resource-group rg-foundry-workshop-[yourname] \
-  --query identity.principalId -o tsv)
+```powershell
+# Get the AI Search managed identity principal ID
+$SEARCH_IDENTITY = az search service show `
+  --name search-chatbot-[yourname] `
+  --resource-group rg-foundry-workshop-[yourname] `
+  --query identity.principalId -o tsv
 
-# Verify - you should see a GUID like 17242751-f675-4de6-9a39-2b12467ba3cf
-echo "SEARCH_IDENTITY: $SEARCH_IDENTITY"
-```
+# Verify the identity is set
+Write-Host "SEARCH_IDENTITY: $SEARCH_IDENTITY"
 
-```bash
-# Step 3b: Get the storage account resource ID
-STORAGE_ID=$(az storage account show \
-  --name stchatbot[yourname] \
-  --resource-group rg-foundry-workshop-[yourname] \
-  --query id -o tsv)
+# Get the storage account resource ID
+$STORAGE_ID = az storage account show `
+  --name stchatbot[yourname] `
+  --resource-group rg-foundry-workshop-[yourname] `
+  --query id -o tsv
 
-# Verify - you should see a path like /subscriptions/.../storageAccounts/stchatbot...
-echo "STORAGE_ID: $STORAGE_ID"
-```
-
-```bash
-# Step 3c: Assign Storage Blob Data Reader role to AI Search
-az role assignment create \
-  --assignee "$SEARCH_IDENTITY" \
-  --role "Storage Blob Data Reader" \
+# Assign Storage Blob Data Reader role to AI Search
+az role assignment create `
+  --assignee "$SEARCH_IDENTITY" `
+  --role "Storage Blob Data Reader" `
   --scope "$STORAGE_ID"
 ```
 
@@ -243,24 +238,24 @@ az role assignment create \
 
 ### 4. Grant AI Search Access to Foundry
 
+> ✏️ **Continue in PowerShell.** Replace `[yourname]` with your actual name.
+
 Your AI Search service needs permission to use the embedding model.
 
-```bash
-# Step 4a: Get the Foundry resource ID
-FOUNDRY_ID=$(az cognitiveservices account show \
-  --name foundry-workshop-[yourname] \
-  --resource-group rg-foundry-workshop-[yourname] \
-  --query id -o tsv)
+```powershell
+# Get the Foundry resource ID
+$FOUNDRY_ID = az cognitiveservices account show `
+  --name foundry-workshop-[yourname] `
+  --resource-group rg-foundry-workshop-[yourname] `
+  --query id -o tsv
 
-# Verify - you should see a path like /subscriptions/.../cognitiveservices/foundry-workshop...
-echo "FOUNDRY_ID: $FOUNDRY_ID"
-```
+# Verify the Foundry ID is set
+Write-Host "FOUNDRY_ID: $FOUNDRY_ID"
 
-```bash
-# Step 4b: Assign Cognitive Services OpenAI User role to AI Search
-az role assignment create \
-  --assignee "$SEARCH_IDENTITY" \
-  --role "Cognitive Services OpenAI User" \
+# Assign Cognitive Services OpenAI User role to AI Search
+az role assignment create `
+  --assignee "$SEARCH_IDENTITY" `
+  --role "Cognitive Services OpenAI User" `
   --scope "$FOUNDRY_ID"
 ```
 
