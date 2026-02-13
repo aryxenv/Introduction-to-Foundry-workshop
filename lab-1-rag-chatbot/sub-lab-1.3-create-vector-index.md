@@ -170,11 +170,14 @@ You should now have:
 az search service create \
   --name search-chatbot-[yourname] \
   --resource-group rg-foundry-workshop-[yourname] \
-  --sku free \
+  --sku basic \
   --location eastus2
 ```
 
-> 💡 **Note**: If you get an error about free tier quota being exhausted, use `--sku basic` instead. Basic tier has a small cost but offers more capacity.
+> 💡 **Note**: If you get an error about quota being exhausted, use `--sku standard` instead.
+
+> ✅ **What you just created:**
+> - **Azure AI Search Service** (`search-chatbot-[yourname]`): A managed search-as-a-service that will store and query vector embeddings of your documents. It powers the "retrieval" part of RAG.
 
 ### 2. Enable Managed Identity and RBAC on AI Search
 
@@ -198,6 +201,10 @@ az search service update `
 ```
 
 > 💡 **Important**: By default, AI Search only allows API key authentication. The second command enables Azure AD authentication which is required for the Python script to work.
+
+> ✅ **What you just configured:**
+> - **System-Assigned Managed Identity**: Gives AI Search its own identity in Azure AD, allowing it to authenticate to other services (Storage, Foundry) without storing credentials
+> - **RBAC Authentication**: Enables Azure AD-based access so your Python scripts can use `DefaultAzureCredential` instead of API keys
 
 ### 3. Grant AI Search Access to Storage
 
@@ -226,6 +233,9 @@ az role assignment create `
   --scope "$STORAGE_ID"
 ```
 
+> ✅ **What you just configured:**
+> - **Storage Blob Data Reader** role: Allows AI Search to read your documents from Blob Storage during indexing. Without this, AI Search cannot access your knowledge base files.
+
 ### 4. Grant AI Search Access to Foundry
 
 Your AI Search service needs permission to use the embedding model.
@@ -243,6 +253,9 @@ az role assignment create `
   --role "Cognitive Services OpenAI User" `
   --scope "$FOUNDRY_ID"
 ```
+
+> ✅ **What you just configured:**
+> - **Cognitive Services OpenAI User** role: Allows AI Search to call the embedding model (`text-embedding-3-small`) in Foundry. This is needed during indexing to convert document chunks into vectors.
 
 ### 5. Grant Yourself Access to Manage AI Search
 
@@ -271,6 +284,10 @@ az role assignment create `
   --scope "$SEARCH_ID"
 ```
 
+> ✅ **What you just configured:**
+> - **Search Service Contributor**: Allows you to create and manage indexes, data sources, skillsets, and indexers
+> - **Search Index Data Contributor**: Allows you to query and modify data within indexes
+
 > 💡 **Note**: Role assignments can take 1-2 minutes to propagate. Wait before running the indexing script.
 
 ### 6. Install Additional Dependencies
@@ -280,6 +297,10 @@ Run this in Git Bash:
 ```bash
 pip install azure-search-documents requests
 ```
+
+> ✅ **What you just installed:**
+> - **azure-search-documents**: Azure SDK for interacting with AI Search (create indexes, run queries)
+> - **requests**: HTTP library used to call AI Search REST APIs for advanced operations
 
 ### 7. Create Vector Index with Integrated Vectorization
 
@@ -463,6 +484,14 @@ def main():
 if __name__ == "__main__":
     main()
 ```
+
+> 📖 **What this script creates:**
+> 1. **Index** (`chatbot-knowledge-base`): The data structure that stores your searchable content and vector embeddings
+> 2. **Data Source** (`chatbot-datasource`): A connection to your Blob Storage container so AI Search knows where to find documents
+> 3. **Skillset** (`chatbot-skillset`): A processing pipeline that:
+>    - Splits documents into smaller chunks (2000 chars with 500 char overlap)
+>    - Calls the embedding model to convert each chunk into a 1536-dimension vector
+> 4. **Indexer** (`chatbot-indexer`): The orchestrator that pulls documents from the data source, runs them through the skillset, and populates the index
 
 ### 8. Update Environment Variables
 
