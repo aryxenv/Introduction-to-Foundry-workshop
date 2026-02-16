@@ -22,21 +22,21 @@ The voice bot integrates GPT Realtime with your RAG agent from Lab 1 via **funct
 ┌────────────────────────────────────────────────────────────────────┐
 │                     Foundry Agent Web App                          │
 │  ┌──────────────────────────────────────────────────────────────┐  │
-│  │  React Frontend                                               │  │
+│  │  React Frontend                                              │  │
 │  │  ┌───────────────────┐      ┌────────────────────────────┐   │  │
-│  │  │  VoicePanel.tsx   │ ──▶  │  WebSocket Connection      │   │  │
+│  │  │  VoicePanel.tsx   │ ───> │  WebSocket Connection      │   │  │
 │  │  │  - Mic capture    │      │                            │   │  │
-│  │  │  - Audio playback │ ◀──  │                            │   │  │
+│  │  │  - Audio playback │ <─── │                            │   │  │
 │  │  └───────────────────┘      └────────────────────────────┘   │  │
 │  └──────────────────────────────────────────────────────────────┘  │
 │  ┌──────────────────────────────────────────────────────────────┐  │
-│  │  ASP.NET Core Backend (VoiceEndpoints.cs)                     │  │
-│  │  ┌────────────────────────────────────────────────────────┐   │  │
-│  │  │  1. Connects to GPT Realtime with agent tool configured│   │  │
-│  │  │  2. Intercepts function calls from GPT Realtime        │   │  │
-│  │  │  3. Calls the RAG Agent with user's question           │   │  │
-│  │  │  4. Returns agent response → GPT generates spoken reply│   │  │
-│  │  └────────────────────────────────────────────────────────┘   │  │
+│  │  ASP.NET Core Backend (VoiceEndpoints.cs)                    │  │
+│  │  ┌────────────────────────────────────────────────────────┐  │  │
+│  │  │  1. Connects to GPT Realtime with agent tool configured│  │  │
+│  │  │  2. Intercepts function calls from GPT Realtime        │  │  │
+│  │  │  3. Calls the RAG Agent with user's question           │  │  │
+│  │  │  4. Returns agent response → GPT generates spoken reply│  │  │
+│  │  └────────────────────────────────────────────────────────┘  │  │
 │  └──────────────────────────────────────────────────────────────┘  │
 └────────────────────────────────────────────────────────────────────┘
           │                                      │
@@ -44,45 +44,21 @@ The voice bot integrates GPT Realtime with your RAG agent from Lab 1 via **funct
 ┌─────────────────────────┐        ┌─────────────────────────────┐
 │  Azure OpenAI Realtime  │        │     RAG Agent (Lab 1)       │
 │  ┌───────────────────┐  │        │  ┌───────────────────────┐  │
-│  │ gpt-realtime      │  │  ask   │  │ Foundry IQ Agent     │  │
-│  │ - Speech-to-Speech│  │ ─────▶ │  │ - Knowledge base     │  │
-│  │ - Function Calling│  │        │  │ - Azure AI Search    │  │
-│  └───────────────────┘  │ ◀───── │  │ - Grounded answers   │  │
-└─────────────────────────┘ answer └───────────────────────────┘
+│  │ gpt-realtime      │  │  ask   │  │ Foundry IQ Agent      │  │
+│  │ - Speech-to-Speech│  │ ─────> │  │ - Knowledge base      │  │
+│  │ - Function Calling│  │        │  │ - Azure AI Search     │  │
+│  └───────────────────┘  │ <───── │  │ - Grounded answers    │  │
+│                         │ answer │  └───────────────────────┘  │
+└─────────────────────────┘        └─────────────────────────────┘
+
 ```
 
 **Flow when user asks a question:**
 1. User speaks → Audio sent to GPT Realtime
 2. GPT Realtime transcribes and decides to call `ask_agent`
-3. Backend intercepts function call, queries the RAG Agent via `AgentFrameworkService`
+3. Backend intercepts function call, sends HTTP request to the RAG Agent from Lab 1
 4. Agent queries knowledge base (Azure AI Search), returns grounded answer
 5. GPT Realtime receives answer and speaks it to the user
-
-### How It Works Under the Hood
-
-Understanding the full data flow helps with debugging and extending the system:
-
-**Audio capture & encoding (browser):**
-The `VoicePanel.tsx` component uses the Web Audio API to capture microphone input at 24kHz. The `AudioRecorder` class in `audioUtils.ts` converts the raw Float32 audio samples to **PCM16** format (the format GPT Realtime expects), then base64-encodes them and sends them over a WebSocket as `input_audio_buffer.append` events.
-
-**Dual WebSocket proxy (backend):**
-`VoiceEndpoints.cs` maintains **two simultaneous WebSocket connections** — one to the browser and one to the Azure OpenAI Realtime API. Two async loops run in parallel:
-- `ReceiveFromClientAsync`: forwards audio chunks from the browser → GPT Realtime
-- `ReceiveFromRealtimeAsync`: forwards responses from GPT Realtime → browser, **but also intercepts function calls**
-
-**Speech processing (GPT Realtime):**
-Unlike a traditional STT → LLM → TTS pipeline, GPT Realtime is a **single multimodal model** that processes audio natively. It doesn't use a separate Whisper or TTS service for the actual conversation — it understands speech and generates spoken audio directly. The `input_audio_transcription` setting with `whisper-1` is only used to generate the **text transcript shown in the UI**, not for the model's core processing.
-
-**Function call interception (backend):**
-When GPT Realtime decides to call `ask_agent`, the arguments arrive in chunks (`response.function_call_arguments.delta`). The backend accumulates these chunks until it receives `response.function_call_arguments.done`, then:
-1. Extracts the `question` parameter from the JSON
-2. Calls `AgentFrameworkService.CreateConversationAsync()` to start a new agent conversation
-3. Streams the response via `AgentFrameworkService.StreamMessageAsync()` — this uses the **Azure AI Foundry SDK** with managed identity authentication, the same way the text chat endpoint works
-4. Sends the collected answer back to GPT Realtime as a `conversation.item.create` event with `type: "function_call_output"`
-5. Sends a `response.create` event to trigger GPT Realtime to generate the spoken response
-
-**Audio playback (browser):**
-GPT Realtime sends back `response.audio.delta` events containing base64-encoded PCM16 audio chunks. The `AudioPlayer` class decodes these to Float32 samples, creates Web Audio API `AudioBuffer` objects, and schedules them for gapless playback. The transcript text arrives separately via `response.audio_transcript.done` events, which the `VoicePanel` displays in the UI.
 
 ### GPT Realtime vs Traditional Voice Pipeline
 
@@ -1368,6 +1344,89 @@ You've successfully added voice capabilities to your chatbot! Your voice bot now
 - 📝 Shows transcripts of the conversation
 
 **This architecture reuses your Lab 1 agent**, so any improvements you make to the knowledge base or agent logic automatically benefit the voice interface!
+
+---
+
+## 🔬 Deep Dive: How It Works Under the Hood
+
+Now that you've built the voice bot, here's what's happening behind the scenes:
+
+### 🎙️ Audio Capture & Encoding (Browser)
+
+```
+┌─────────────────┐    ┌──────────────┐    ┌─────────────────┐    ┌──────────────┐
+│🎤 Microphone🎤 │ →  │  Float32     │ →  │  PCM16 + Base64 │ →  │  WebSocket   │
+│    (24kHz)      │    │  Samples     │    │  Encoding       │    │  to Backend  │
+└─────────────────┘    └──────────────┘    └─────────────────┘    └──────────────┘
+```
+
+**Files**: [audioUtils.ts](frontend/src/utils/audioUtils.ts) • [VoicePanel.tsx](frontend/src/components/VoicePanel.tsx)
+
+The `VoicePanel` uses Web Audio API to capture microphone input. The `AudioRecorder` class converts raw Float32 samples to PCM16 format (what GPT Realtime expects), base64-encodes them, and sends them as `input_audio_buffer.append` events.
+
+### 🔀 Dual WebSocket Proxy (Backend)
+
+```
+┌────────────┐         ┌─────────────────────────────┐         ┌─────────────────────┐
+│🌐Browser🌐│ ←────→  │ ⚡ VoiceEndpoints.cs ⚡    │ ←────→  │ 🤖 GPT Realtime 🤖 │
+│            │  WS #1  │   • ReceiveFromClientAsync  │  WS #2  │                     │
+│            │         │   • ReceiveFromRealtimeAsync│         │                     │
+└────────────┘         │   • Function call intercept │         └─────────────────────┘
+                       └─────────────────────────────┘
+```
+
+**File**: [VoiceEndpoints.cs](backend/WebApp.Api/Endpoints/VoiceEndpoints.cs)
+
+The backend maintains **two simultaneous WebSocket connections**. Two async loops run in parallel:
+- `ReceiveFromClientAsync`: forwards audio from browser → GPT Realtime
+- `ReceiveFromRealtimeAsync`: forwards responses from GPT Realtime → browser, **but also intercepts function calls**
+
+### 🧠 Speech Processing (GPT Realtime)
+
+```
+┌──────────────────────────────────────────────────────────┐
+│                    GPT Realtime Model                    │
+│  ┌────────────────────────────────────────────────────┐  │
+│  │🎤 Audio In  → [Native Processing]  → 🔊 Audio Out │  │
+│  │                                                    │  │
+│  │  (NOT: STT → LLM → TTS — it's a single model!)     │  │
+│  └────────────────────────────────────────────────────┘  │
+│                         │                                │
+│             📝 Transcript (via Whisper-1) 📝            │
+│                  (only for UI display)                   │
+└──────────────────────────────────────────────────────────┘
+```
+
+Unlike traditional STT → LLM → TTS pipelines, GPT Realtime is a **single multimodal model** that processes audio natively. The `whisper-1` transcription is only for displaying text in the UI.
+
+### 🔧 Function Call Interception
+
+```
+┌───────────────┐    ┌──────────────┐    ┌───────────────┐    ┌─────────────────┐    ┌────────────────┐
+│📨 GPT calls📨│ →  │🔍 Backend 🔍│ →  │🤖 RAG Agent🤖│ →  │📤 Send result📤│ →  │🗣️ GPT speaks🗣️│
+│   ask_agent   │    │  intercepts  │    │     (Lab 1)   │    │    back to GPT  │    │     answer     │
+└───────────────┘    └──────────────┘    └───────────────┘    └─────────────────┘    └────────────────┘
+```
+
+When GPT Realtime decides to call `ask_agent`:
+1. Arguments arrive in chunks (`response.function_call_arguments.delta`)
+2. Backend accumulates until `response.function_call_arguments.done`
+3. Sends HTTP POST to your Lab 1 RAG Agent endpoint
+4. Returns result via `conversation.item.create` with `type: "function_call_output"`
+5. Sends `response.create` to trigger GPT to speak the answer
+
+### 🔊 Audio Playback (Browser)
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌──────────────┐    ┌────────────────────┐
+│ 📥 WebSocket 📥│ →  │ Base64 → PCM16  │ →  │ Float32      │ →  │ 🔊 AudioContext 🔊│
+│   audio.delta   │    │ → Float32       │    │ AudioBuffer  │    │      (gapless)     │
+└─────────────────┘    └─────────────────┘    └──────────────┘    └────────────────────┘
+```
+
+**File**: [audioUtils.ts](frontend/src/utils/audioUtils.ts)
+
+The `AudioPlayer` class decodes PCM16 chunks to Float32, creates Web Audio `AudioBuffer` objects, and schedules them for gapless playback. Transcript text arrives via `response.audio_transcript.done` events.
 
 ---
 
