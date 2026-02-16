@@ -1,5 +1,3 @@
-# Sub-Lab 2.2: Add Voice to Your Agent
-
 [← Back to Lab 2 Overview](./README.md) | [← Previous: Sub-Lab 2.1](./sub-lab-2.1-deploy-realtime-model.md) | [Next: Sub-Lab 2.3 →](./sub-lab-2.3-cleanup.md)
 
 ---
@@ -16,9 +14,9 @@ In this sub-lab, you'll add real-time voice capabilities to the Foundry Agent We
 
 ## 🎓 Key Concepts
 
-### Voice-Enabled Architecture
+### Voice-Enabled Architecture with Agent Integration
 
-The Foundry Agent Web App uses a **text-based architecture** (HTTP + Server-Sent Events). To add voice, we'll integrate the **GPT Realtime API** which uses WebSockets for bidirectional audio streaming:
+The voice bot integrates GPT Realtime with your RAG agent from Lab 1 via **function calling**. When users ask questions, GPT Realtime calls the agent, which queries your knowledge base and returns grounded answers:
 
 ```
 ┌────────────────────────────────────────────────────────────────────┐
@@ -27,29 +25,64 @@ The Foundry Agent Web App uses a **text-based architecture** (HTTP + Server-Sent
 │  │  React Frontend                                               │  │
 │  │  ┌───────────────────┐      ┌────────────────────────────┐   │  │
 │  │  │  VoicePanel.tsx   │ ──▶  │  WebSocket Connection      │   │  │
-│  │  │  - Mic capture    │      │  → Backend relay           │   │  │
-│  │  │  - Audio playback │ ◀──  │  → Azure OpenAI Realtime   │   │  │
+│  │  │  - Mic capture    │      │                            │   │  │
+│  │  │  - Audio playback │ ◀──  │                            │   │  │
 │  │  └───────────────────┘      └────────────────────────────┘   │  │
 │  └──────────────────────────────────────────────────────────────┘  │
 │  ┌──────────────────────────────────────────────────────────────┐  │
-│  │  ASP.NET Core Backend                                         │  │
+│  │  ASP.NET Core Backend (VoiceEndpoints.cs)                     │  │
 │  │  ┌────────────────────────────────────────────────────────┐   │  │
-│  │  │  VoiceEndpoints.cs - WebSocket proxy to Realtime API   │   │  │
+│  │  │  1. Connects to GPT Realtime with agent tool configured│   │  │
+│  │  │  2. Intercepts function calls from GPT Realtime        │   │  │
+│  │  │  3. Calls the RAG Agent with user's question           │   │  │
+│  │  │  4. Returns agent response → GPT generates spoken reply│   │  │
 │  │  └────────────────────────────────────────────────────────┘   │  │
 │  └──────────────────────────────────────────────────────────────┘  │
 └────────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌────────────────────────────────────────────────────────────────────┐
-│                   Azure OpenAI GPT Realtime API                    │
-│  ┌──────────────────────────────────────────────────────────────┐  │
-│  │  Speech-to-Speech Model (gpt-realtime)                        │  │
-│  │  - Voice Activity Detection (VAD)                             │  │
-│  │  - Natural voice synthesis                                    │  │
-│  │  - Function calling for RAG integration                       │  │
-│  └──────────────────────────────────────────────────────────────┘  │
-└────────────────────────────────────────────────────────────────────┘
+          │                                      │
+          ▼                                      ▼
+┌─────────────────────────┐        ┌─────────────────────────────┐
+│  Azure OpenAI Realtime  │        │     RAG Agent (Lab 1)       │
+│  ┌───────────────────┐  │        │  ┌───────────────────────┐  │
+│  │ gpt-realtime      │  │  ask   │  │ Foundry IQ Agent     │  │
+│  │ - Speech-to-Speech│  │ ─────▶ │  │ - Knowledge base     │  │
+│  │ - Function Calling│  │        │  │ - Azure AI Search    │  │
+│  └───────────────────┘  │ ◀───── │  │ - Grounded answers   │  │
+└─────────────────────────┘ answer └───────────────────────────┘
 ```
+
+**Flow when user asks a question:**
+1. User speaks → Audio sent to GPT Realtime
+2. GPT Realtime transcribes and decides to call `ask_agent`
+3. Backend intercepts function call, queries the RAG Agent via `AgentFrameworkService`
+4. Agent queries knowledge base (Azure AI Search), returns grounded answer
+5. GPT Realtime receives answer and speaks it to the user
+
+### How It Works Under the Hood
+
+Understanding the full data flow helps with debugging and extending the system:
+
+**Audio capture & encoding (browser):**
+The `VoicePanel.tsx` component uses the Web Audio API to capture microphone input at 24kHz. The `AudioRecorder` class in `audioUtils.ts` converts the raw Float32 audio samples to **PCM16** format (the format GPT Realtime expects), then base64-encodes them and sends them over a WebSocket as `input_audio_buffer.append` events.
+
+**Dual WebSocket proxy (backend):**
+`VoiceEndpoints.cs` maintains **two simultaneous WebSocket connections** — one to the browser and one to the Azure OpenAI Realtime API. Two async loops run in parallel:
+- `ReceiveFromClientAsync`: forwards audio chunks from the browser → GPT Realtime
+- `ReceiveFromRealtimeAsync`: forwards responses from GPT Realtime → browser, **but also intercepts function calls**
+
+**Speech processing (GPT Realtime):**
+Unlike a traditional STT → LLM → TTS pipeline, GPT Realtime is a **single multimodal model** that processes audio natively. It doesn't use a separate Whisper or TTS service for the actual conversation — it understands speech and generates spoken audio directly. The `input_audio_transcription` setting with `whisper-1` is only used to generate the **text transcript shown in the UI**, not for the model's core processing.
+
+**Function call interception (backend):**
+When GPT Realtime decides to call `ask_agent`, the arguments arrive in chunks (`response.function_call_arguments.delta`). The backend accumulates these chunks until it receives `response.function_call_arguments.done`, then:
+1. Extracts the `question` parameter from the JSON
+2. Calls `AgentFrameworkService.CreateConversationAsync()` to start a new agent conversation
+3. Streams the response via `AgentFrameworkService.StreamMessageAsync()` — this uses the **Azure AI Foundry SDK** with managed identity authentication, the same way the text chat endpoint works
+4. Sends the collected answer back to GPT Realtime as a `conversation.item.create` event with `type: "function_call_output"`
+5. Sends a `response.create` event to trigger GPT Realtime to generate the spoken response
+
+**Audio playback (browser):**
+GPT Realtime sends back `response.audio.delta` events containing base64-encoded PCM16 audio chunks. The `AudioPlayer` class decodes these to Float32 samples, creates Web Audio API `AudioBuffer` objects, and schedules them for gapless playback. The transcript text arrives separately via `response.audio_transcript.done` events, which the `VoicePanel` displays in the UI.
 
 ### GPT Realtime vs Traditional Voice Pipeline
 
@@ -119,18 +152,30 @@ AZURE_OPENAI_REALTIME_VOICE=shimmer  # Options: alloy, ash, coral, echo, sage, s
 > - **AZURE_OPENAI_REALTIME_DEPLOYMENT**: The name of your realtime model deployment (from Sub-Lab 2.1)
 > - **AZURE_OPENAI_REALTIME_VOICE**: The voice to use for responses (shimmer is a soft, gentle voice)
 >
-> The `AZURE_OPENAI_ENDPOINT` is already in your `.env` file from Lab 1.
+> **Required from Lab 1 (should already be in your .env):**
+> - `AZURE_OPENAI_ENDPOINT` - Used by the backend to connect to GPT Realtime
+> - `AI_AGENT_ENDPOINT` - The RAG agent endpoint from Sub-Lab 1.4/1.5
 
 ---
 
-### Step 3: Add Backend Voice Endpoint
+### Step 3: Add Backend Voice Endpoint with Agent Integration
 
-Create a new folder and file in the `lab-1-rag-chatbot/webapp/backend/WebApp.Api` folder 
-Create a folder named `Endpoints`and a file `VoiceEndpoints.cs` inside that folder:
+This is the key component that connects GPT Realtime to your RAG agent from Lab 1. Instead of just relaying messages, it:
+1. Configures GPT Realtime with an `ask_agent` tool
+2. Intercepts function call requests from GPT Realtime
+3. Calls the RAG Agent via `AgentFrameworkService` (the same service used by the chat endpoint)
+4. Returns the agent's response so GPT Realtime can speak the answer
+
+Create a new folder and file in the `lab-1-rag-chatbot/webapp/backend/WebApp.Api` folder.
+Create a folder named `Endpoints` and a file `VoiceEndpoints.cs` inside that folder:
 
 ```csharp
 using System.Net.WebSockets;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Azure.Identity;
+using WebApp.Api.Services;
 
 namespace WebApp.Api.Endpoints;
 
@@ -147,52 +192,52 @@ public static class VoiceEndpoints
                 return;
             }
 
+            // Resolve the AgentFrameworkService from DI to call the RAG agent properly
+            var agentService = context.RequestServices.GetRequiredService<AgentFrameworkService>();
+
             using var clientSocket = await context.WebSockets.AcceptWebSocketAsync();
-            await ProxyToRealtimeApi(clientSocket, context.RequestAborted);
+            await HandleRealtimeSession(clientSocket, agentService, context.RequestAborted);
         });
     }
 
-    private static async Task ProxyToRealtimeApi(
+    private static async Task HandleRealtimeSession(
         WebSocket clientSocket,
+        AgentFrameworkService agentService,
         CancellationToken cancellationToken)
     {
         // Get configuration
         var endpoint = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT")
             ?? throw new InvalidOperationException("AZURE_OPENAI_ENDPOINT not configured");
-        
         var deployment = Environment.GetEnvironmentVariable("AZURE_OPENAI_REALTIME_DEPLOYMENT")
-            ?? "gpt-realtime";  // Default matches Portal deployment name
-        
+            ?? "gpt-realtime";
+        var voice = Environment.GetEnvironmentVariable("AZURE_OPENAI_REALTIME_VOICE")
+            ?? "shimmer";
         var apiVersion = "2025-04-01-preview";
 
-        // Get access token using managed identity
+        // Get authentication token for Azure OpenAI
         var credential = new DefaultAzureCredential();
         var tokenResult = await credential.GetTokenAsync(
-            new Azure.Core.TokenRequestContext(
-                ["https://cognitiveservices.azure.com/.default"]),
+            new Azure.Core.TokenRequestContext(["https://cognitiveservices.azure.com/.default"]),
             cancellationToken);
 
-        // Build WebSocket URL for Azure OpenAI Realtime API
+        // Connect to Azure OpenAI Realtime API
         var wsEndpoint = endpoint.Replace("https://", "wss://");
         var realtimeUrl = $"{wsEndpoint}/openai/realtime?api-version={apiVersion}&deployment={deployment}";
 
-        // Connect to Azure OpenAI Realtime API
         using var realtimeSocket = new ClientWebSocket();
         realtimeSocket.Options.SetRequestHeader("Authorization", $"Bearer {tokenResult.Token}");
-        
+
         try
         {
             await realtimeSocket.ConnectAsync(new Uri(realtimeUrl), cancellationToken);
             Console.WriteLine("Connected to Azure OpenAI Realtime API");
 
-            // Relay messages bidirectionally
-            var clientToRealtime = RelayMessagesAsync(
-                clientSocket, realtimeSocket, "Client→Realtime", cancellationToken);
-            var realtimeToClient = RelayMessagesAsync(
-                realtimeSocket, clientSocket, "Realtime→Client", cancellationToken);
+            // Send initial session configuration with agent tool
+            await SendSessionConfig(realtimeSocket, voice, cancellationToken);
 
-            // Wait for either direction to complete (usually means disconnect)
-            await Task.WhenAny(clientToRealtime, realtimeToClient);
+            // Handle bidirectional communication with function call interception
+            await HandleBidirectionalCommunication(
+                clientSocket, realtimeSocket, agentService, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -201,53 +246,315 @@ public static class VoiceEndpoints
         }
     }
 
-    private static async Task RelayMessagesAsync(
-        WebSocket source,
-        WebSocket destination,
-        string direction,
+    private static async Task SendSessionConfig(
+        WebSocket realtimeSocket,
+        string voice,
         CancellationToken cancellationToken)
     {
-        var buffer = new byte[16384];
+        // Define the agent tool that GPT Realtime can call
+        var sessionConfig = new
+        {
+            type = "session.update",
+            session = new
+            {
+                modalities = new[] { "text", "audio" },
+                voice = voice,
+                input_audio_format = "pcm16",
+                output_audio_format = "pcm16",
+                input_audio_transcription = new { model = "whisper-1" },
+                turn_detection = new
+                {
+                    type = "server_vad",
+                    threshold = 0.5,
+                    prefix_padding_ms = 300,
+                    silence_duration_ms = 800
+                },
+                instructions = """
+                    You are a helpful customer service assistant for TechCorp.
+                    
+                    IMPORTANT: You MUST use the ask_agent function to answer ANY question 
+                    about TechCorp, its products, policies, shipping, returns, or contact information.
+                    
+                    Do NOT answer from your own knowledge - always ask the agent first.
+                    
+                    When you receive a response from the agent, speak it naturally to the user.
+                    If the agent says it doesn't know something, relay that to the user politely.
+                    
+                    Always be polite and professional.
+                    """,
+                tools = new[]
+                {
+                    new
+                    {
+                        type = "function",
+                        name = "ask_agent",
+                        description = "Ask the TechCorp RAG agent a question. The agent has access to the knowledge base with information about products, policies, shipping, returns, support, and company information. Use this for ANY question about TechCorp.",
+                        parameters = new
+                        {
+                            type = "object",
+                            properties = new
+                            {
+                                question = new
+                                {
+                                    type = "string",
+                                    description = "The question to ask the agent"
+                                }
+                            },
+                            required = new[] { "question" }
+                        }
+                    }
+                },
+                tool_choice = "auto"
+            }
+        };
 
+        var json = JsonSerializer.Serialize(sessionConfig);
+        var bytes = Encoding.UTF8.GetBytes(json);
+        await realtimeSocket.SendAsync(bytes, WebSocketMessageType.Text, true, cancellationToken);
+        Console.WriteLine("Sent session config with agent tool");
+    }
+
+    private static async Task HandleBidirectionalCommunication(
+        WebSocket clientSocket,
+        WebSocket realtimeSocket,
+        AgentFrameworkService agentService,
+        CancellationToken cancellationToken)
+    {
+        var clientBuffer = new byte[16384];
+        var realtimeBuffer = new byte[65536];
+
+        // Track pending function calls
+        var pendingFunctionCalls = new Dictionary<string, StringBuilder>();
+
+        // Start both receive loops
+        var clientReceiveTask = ReceiveFromClientAsync(
+            clientSocket, realtimeSocket, clientBuffer, cancellationToken);
+        var realtimeReceiveTask = ReceiveFromRealtimeAsync(
+            realtimeSocket, clientSocket, agentService, realtimeBuffer, 
+            pendingFunctionCalls, cancellationToken);
+
+        await Task.WhenAny(clientReceiveTask, realtimeReceiveTask);
+    }
+
+    private static async Task ReceiveFromClientAsync(
+        WebSocket clientSocket,
+        WebSocket realtimeSocket,
+        byte[] buffer,
+        CancellationToken cancellationToken)
+    {
         try
         {
-            while (source.State == WebSocketState.Open && 
-                   destination.State == WebSocketState.Open &&
-                   !cancellationToken.IsCancellationRequested)
+            while (clientSocket.State == WebSocketState.Open && !cancellationToken.IsCancellationRequested)
             {
-                var result = await source.ReceiveAsync(buffer, cancellationToken);
+                var result = await clientSocket.ReceiveAsync(buffer, cancellationToken);
 
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
-                    Console.WriteLine($"{direction}: Received close message");
-                    if (destination.State == WebSocketState.Open)
+                    if (realtimeSocket.State == WebSocketState.Open)
                     {
-                        await destination.CloseAsync(
-                            WebSocketCloseStatus.NormalClosure,
-                            "Closing",
-                            cancellationToken);
+                        await realtimeSocket.CloseAsync(
+                            WebSocketCloseStatus.NormalClosure, "Closing", cancellationToken);
                     }
                     break;
                 }
 
-                if (destination.State == WebSocketState.Open)
+                if (realtimeSocket.State == WebSocketState.Open)
                 {
-                    await destination.SendAsync(
+                    await realtimeSocket.SendAsync(
                         new ArraySegment<byte>(buffer, 0, result.Count),
-                        result.MessageType,
-                        result.EndOfMessage,
-                        cancellationToken);
+                        result.MessageType, result.EndOfMessage, cancellationToken);
                 }
             }
         }
-        catch (WebSocketException ex) when (ex.WebSocketErrorCode == WebSocketError.ConnectionClosedPrematurely)
+        catch (WebSocketException) { }
+    }
+
+    private static async Task ReceiveFromRealtimeAsync(
+        WebSocket realtimeSocket,
+        WebSocket clientSocket,
+        AgentFrameworkService agentService,
+        byte[] buffer,
+        Dictionary<string, StringBuilder> pendingFunctionCalls,
+        CancellationToken cancellationToken)
+    {
+        try
         {
-            Console.WriteLine($"{direction}: Connection closed");
+            while (realtimeSocket.State == WebSocketState.Open && !cancellationToken.IsCancellationRequested)
+            {
+                var result = await realtimeSocket.ReceiveAsync(buffer, cancellationToken);
+
+                if (result.MessageType == WebSocketMessageType.Close)
+                {
+                    if (clientSocket.State == WebSocketState.Open)
+                    {
+                        await clientSocket.CloseAsync(
+                            WebSocketCloseStatus.NormalClosure, "Closing", cancellationToken);
+                    }
+                    break;
+                }
+
+                // Parse the message to check for function calls
+                var messageText = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                var handled = await TryHandleFunctionCall(
+                    messageText, realtimeSocket, agentService, 
+                    pendingFunctionCalls, cancellationToken);
+
+                // Always forward the message to the client (for transcripts, audio, etc.)
+                if (clientSocket.State == WebSocketState.Open)
+                {
+                    await clientSocket.SendAsync(
+                        new ArraySegment<byte>(buffer, 0, result.Count),
+                        result.MessageType, result.EndOfMessage, cancellationToken);
+                }
+            }
         }
+        catch (WebSocketException) { }
+    }
+
+    private static async Task<bool> TryHandleFunctionCall(
+        string messageText,
+        WebSocket realtimeSocket,
+        AgentFrameworkService agentService,
+        Dictionary<string, StringBuilder> pendingFunctionCalls,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var message = JsonNode.Parse(messageText);
+            var messageType = message?["type"]?.GetValue<string>();
+
+            // Accumulate function call arguments (they come in chunks)
+            if (messageType == "response.function_call_arguments.delta")
+            {
+                var callId = message?["call_id"]?.GetValue<string>();
+                var delta = message?["delta"]?.GetValue<string>();
+                
+                if (!string.IsNullOrEmpty(callId) && delta != null)
+                {
+                    if (!pendingFunctionCalls.ContainsKey(callId))
+                    {
+                        pendingFunctionCalls[callId] = new StringBuilder();
+                    }
+                    pendingFunctionCalls[callId].Append(delta);
+                }
+            }
+            // Function call is complete - execute it
+            else if (messageType == "response.function_call_arguments.done")
+            {
+                var callId = message?["call_id"]?.GetValue<string>();
+                var functionName = message?["name"]?.GetValue<string>();
+                
+                if (!string.IsNullOrEmpty(callId) && functionName == "ask_agent")
+                {
+                    var argumentsJson = pendingFunctionCalls.GetValueOrDefault(callId)?.ToString() 
+                        ?? message?["arguments"]?.GetValue<string>() ?? "{}";
+                    
+                    Console.WriteLine($"Function call: {functionName}({argumentsJson})");
+
+                    // Parse the question from arguments
+                    var args = JsonNode.Parse(argumentsJson);
+                    var question = args?["question"]?.GetValue<string>() ?? "";
+
+                    // Call the RAG Agent via AgentFrameworkService (same as chat endpoint)
+                    var agentResponse = await CallAgent(agentService, question, cancellationToken);
+                    Console.WriteLine($"Agent response received: {agentResponse.Length} chars");
+
+                    // Send function result back to GPT Realtime
+                    await SendFunctionResult(realtimeSocket, callId, agentResponse, cancellationToken);
+
+                    // Clean up
+                    pendingFunctionCalls.Remove(callId);
+                    return true;
+                }
+            }
+        }
+        catch (JsonException ex)
+        {
+            Console.WriteLine($"JSON parse error: {ex.Message}");
+        }
+
+        return false;
+    }
+
+    private static async Task<string> CallAgent(
+        AgentFrameworkService agentService,
+        string question,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            Console.WriteLine($"Calling RAG agent with question: {question}");
+
+            // Create a new conversation for this voice query
+            var conversationId = await agentService.CreateConversationAsync(question, cancellationToken);
+
+            // Stream the agent response and collect the full text
+            var responseBuilder = new StringBuilder();
+            await foreach (var chunk in agentService.StreamMessageAsync(
+                conversationId,
+                question,
+                cancellationToken: cancellationToken))
+            {
+                if (chunk.IsText && chunk.TextDelta != null)
+                {
+                    responseBuilder.Append(chunk.TextDelta);
+                }
+            }
+
+            var agentResponse = responseBuilder.ToString();
+            Console.WriteLine($"Agent response: {agentResponse.Length} chars");
+
+            if (string.IsNullOrWhiteSpace(agentResponse))
+            {
+                return "I'm sorry, I didn't get a response from the knowledge base. Please try again.";
+            }
+
+            return agentResponse;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Agent call error: {ex.Message}");
+            return "I'm sorry, I couldn't connect to the knowledge base. Please try again.";
+        }
+    }
+
+    private static async Task SendFunctionResult(
+        WebSocket realtimeSocket,
+        string callId,
+        string agentResponse,
+        CancellationToken cancellationToken)
+    {
+        // Send the function output as a conversation item
+        var functionOutput = new
+        {
+            type = "conversation.item.create",
+            item = new
+            {
+                type = "function_call_output",
+                call_id = callId,
+                output = agentResponse
+            }
+        };
+
+        var json = JsonSerializer.Serialize(functionOutput);
+        var bytes = Encoding.UTF8.GetBytes(json);
+        await realtimeSocket.SendAsync(bytes, WebSocketMessageType.Text, true, cancellationToken);
+        Console.WriteLine("Sent agent response to GPT Realtime");
+
+        // Trigger response generation
+        var createResponse = new { type = "response.create" };
+        json = JsonSerializer.Serialize(createResponse);
+        bytes = Encoding.UTF8.GetBytes(json);
+        await realtimeSocket.SendAsync(bytes, WebSocketMessageType.Text, true, cancellationToken);
     }
 }
 ```
 
+> 📖 **What this code does:**
+> 1. **Configures Agent Tool**: When the session starts, it tells GPT Realtime about the `ask_agent` function
+> 2. **Intercepts Function Calls**: Watches for function call events from GPT Realtime
+> 3. **Calls Your RAG Agent**: Uses `AgentFrameworkService` (the same service the chat endpoint uses) to query your Lab 1 agent with proper authentication
+> 4. **Returns Grounded Responses**: Sends the agent's answer back so GPT Realtime can speak it to the user
 ---
 
 ### Step 4: Register Voice Endpoints and WebSockets
@@ -260,7 +567,7 @@ Update the existing file `backend/WebApp.Api/Program.cs` to enable WebSockets an
 using WebApp.Api.Endpoints;
 ```
 
-**Then, after `app.UseAuthorization()` add:**
+**Then, after `app.UseAuthorization()`, around line 154, add:**
 
 ```csharp
 // Enable WebSockets for voice
@@ -273,7 +580,7 @@ app.UseWebSockets(new WebSocketOptions
 app.MapVoiceEndpoints();
 ```
    <img src="images/websocket.png" width="400"/>
----
+
 
 ### Step 5: Create Frontend Audio Utilities
 
@@ -529,22 +836,6 @@ interface RealtimeMessage {
   [key: string]: unknown;
 }
 
-interface SessionConfig {
-  modalities: string[];
-  voice: string;
-  input_audio_format: string;
-  output_audio_format: string;
-  input_audio_transcription: {
-    model: string;
-  };
-  turn_detection: {
-    type: string;
-    threshold: number;
-    prefix_padding_ms: number;
-    silence_duration_ms: number;
-  };
-}
-
 export const VoicePanel: React.FC = () => {
   const styles = useStyles();
   
@@ -581,27 +872,10 @@ export const VoicePanel: React.FC = () => {
         // Initialize audio player
         audioPlayerRef.current = new AudioPlayer();
 
-        // Send session configuration
-        const sessionConfig: SessionConfig = {
-          modalities: ['text', 'audio'],
-          voice: 'shimmer',
-          input_audio_format: 'pcm16',
-          output_audio_format: 'pcm16',
-          input_audio_transcription: {
-            model: 'whisper-1',
-          },
-          turn_detection: {
-            type: 'server_vad',
-            threshold: 0.5,
-            prefix_padding_ms: 300,
-            silence_duration_ms: 800,
-          },
-        };
-
-        ws.send(JSON.stringify({
-          type: 'session.update',
-          session: sessionConfig,
-        }));
+        // NOTE: Session configuration (including RAG tools) is handled by the backend
+        // in VoiceEndpoints.cs - do NOT send session.update from frontend as it would
+        // overwrite the backend's RAG configuration
+        console.log('Connected - waiting for backend session config');
       };
 
       ws.onmessage = (event) => {
@@ -700,7 +974,7 @@ export const VoicePanel: React.FC = () => {
       audioRecorderRef.current = new AudioRecorder();
       audioSentRef.current = false;
       
-      await audioRecorderRef.current.start((base64Audio) => {
+      await audioRecorderRef.current.start((base64Audio: string) => {
         // Send audio to Realtime API
         if (wsRef.current?.readyState === WebSocket.OPEN) {
           wsRef.current.send(JSON.stringify({
@@ -878,7 +1152,9 @@ Then add the component to your layout. The exact location depends on your UI pre
 
 ### Step 8: Update Infrastructure for Voice Environment Variables
 
-The voice endpoint needs the `AZURE_OPENAI_ENDPOINT` environment variable to connect to the Realtime API. Update your Bicep files to pass this value.
+The voice endpoint needs environment variables to connect to the Realtime API. Update your Bicep files to pass these values.
+
+> 💡 **Note**: The voice backend calls your RAG Agent (via `AI_AGENT_ENDPOINT`, already configured in Lab 1), which handles all knowledge base queries. You only need to add the Realtime API configuration.
 
 **8a. Update `infra/main.bicep`**
 
@@ -910,7 +1186,7 @@ Add the parameter at the top:
 param azureOpenAiEndpoint string = ''
 ```
 
-Then find the `env: [...]` array inside the `webApp` module (around line 28-52) and add these three environment variables at the end of the array, before the closing `]`:
+Then find the `env: [...]` array inside the `webApp` module (around line 28-52) and add these environment variables at the end of the array, before the closing `]`:
 
 ```bicep
     env: [
@@ -929,6 +1205,7 @@ Then find the `env: [...]` array inside the `webApp` module (around line 28-52) 
       }
     ]
 ```
+
 **8c. Update `infra/main.parameters.json`**
 
 Add the mapping so azd passes the environment variable to Bicep. Find the `parameters` section and add:
@@ -941,12 +1218,10 @@ Add the mapping so azd passes the environment variable to Bicep. Find the `param
 
 **8d. Set the endpoint value in azd environment**
 
-The Bicep templates reference the parameter, but you need to provide the actual value. Run this command to set the Azure OpenAI endpoint:
-
-> ✏️ **Replace [yourname]** with the same value you used in sub-lab 1.1 (e.g., `jsmith`).
+> ✏️ **Replace [yourname]** with the same value you used in sub-lab 1.1.
 
 ```powershell
-azd env set AZURE_OPENAI_ENDPOINT "https://foundry-workshop-[yourname].openai.azure.com/"
+azd env set AZURE_OPENAI_ENDPOINT "https://foundry-workshop-[yourname].cognitiveservices.azure.com/"
 ```
 
 > ⚠️ **Important**: The `.env` file is for local development only. When deploying to Azure Container Apps, environment variables must be set via `azd env set` so they're passed through the Bicep templates.
@@ -1027,8 +1302,17 @@ azd env get-values | Select-String "WEB_ENDPOINT"
 ### "WebSocket connection failed"
 
 1. Check that WebSockets are enabled on your Container App
-2. Verify the `AZURE_OPENAI_ENDPOINT` is set correctly (it should be the base URL like `https://your-resource.services.ai.azure.com`, not the project URL)
+2. Verify the `AZURE_OPENAI_ENDPOINT` is set correctly (it should be the base URL like `https://your-resource.cognitiveservices.azure.com`)
 3. Check that the managed identity has access to Azure OpenAI
+
+### "I couldn't reach the knowledge base" / Agent connection errors
+
+1. Verify the `AI_AGENT_ENDPOINT` is set correctly in your environment
+2. Check that the agent from Lab 1 is still running (test it in the Azure AI Foundry playground)
+3. Look at the container app logs for more detailed error messages:
+   ```powershell
+   az containerapp logs show --name <your-app-name> --resource-group <your-rg> --follow
+   ```
 
 ### "Buffer too small" errors in console
 
@@ -1058,37 +1342,42 @@ This error can be safely ignored when using `server_vad` mode. The server automa
 
 | Check | Status |
 |-------|--------|
-| VoiceEndpoints.cs created | ⬜ |
+| VoiceEndpoints.cs created with agent integration | ⬜ |
 | WebSockets enabled in Program.cs | ⬜ |
 | audioUtils.ts created | ⬜ |
 | VoicePanel.tsx created | ⬜ |
 | VoicePanel added to App | ⬜ |
-| Infrastructure bicep updated | ⬜ |
+| Infrastructure bicep updated (OpenAI Realtime) | ⬜ |
 | Environment variables configured | ⬜ |
 | Can speak and be understood | ⬜ |
-| Receives spoken responses | ⬜ |
+| Voice bot queries RAG Agent from Lab 1 | ⬜ |
+| Receives spoken responses with knowledge base context | ⬜ |
 | Deployed to Azure successfully | ⬜ |
 
 ---
 
 ## 🎉 Congratulations!
 
-You've successfully added voice capabilities to your chatbot! Your agent can now:
+You've successfully added voice capabilities to your chatbot! Your voice bot now:
 
-- 🎤 Listen to natural speech input
-- 🧠 Process questions using the GPT Realtime model
-- 🗣️ Respond with natural, synthesized speech
-- 📝 Show transcripts of the conversation
+- 🎤 Listens to natural speech input
+- 🤖 Calls your RAG Agent from Lab 1 via function calling
+- 🔍 Leverages the agent's knowledge base (Azure AI Search)
+- 🧠 Processes questions using the GPT Realtime model
+- 🗣️ Responds with natural, synthesized speech grounded in your documents
+- 📝 Shows transcripts of the conversation
+
+**This architecture reuses your Lab 1 agent**, so any improvements you make to the knowledge base or agent logic automatically benefit the voice interface!
 
 ---
 
 ## ➡️ Next Steps
 
-- **Try different voices**: Change `voice` in VoicePanel.tsx to `alloy`, `ash`, `coral`, `echo`, or `sage`
+- **Try different voices**: Change `voice` in VoiceEndpoints.cs to `alloy`, `ash`, `coral`, `echo`, or `sage`
 - **Add push-to-talk mode**: Set `turn_detection.type` to `"none"` for manual control
-- **Integrate with RAG**: Add function calling to query your knowledge base
 - **Add visual feedback**: Show audio waveforms during recording
 - **Adjust sensitivity**: Modify `silence_duration_ms` (lower = faster response, higher = more natural pauses)
+- **Expand the knowledge base**: Add more documents to your AI Search index to handle more topics
 
 ---
 

@@ -103,7 +103,7 @@ The `data/knowledge_base/` folder contains sample documents:
 > 6. Click **"Select members"** → Select yourself
 > 7. Click **Review + assign** (twice)
 >
-> Log out and back in, then retry the upload.
+> If you still are not able to upload, log out and back in, then retry the upload.
 
 2. Click "Upload"
 3. Select files from the `data/knowledge_base/` folder:
