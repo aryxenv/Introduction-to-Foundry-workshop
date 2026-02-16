@@ -16,7 +16,7 @@ In this sub-lab, you'll set up Microsoft Foundry and deploy the AI models that p
 
 ## 🎯 Model Options
 
-You can choose from the following models based on your preferences:
+The models below were chosen for this workshop based on availability and quota limits at the time of writing. For your own projects, you can use newer models (such as GPT-5 or later releases) depending on your needs and regional availability.
 
 ### Chat/Reasoning Models
 

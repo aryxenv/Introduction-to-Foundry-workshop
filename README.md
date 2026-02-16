@@ -36,7 +36,9 @@ By the end of this workshop, you will have:
 
 ## 🗂️ Workshop Structure
 
-This workshop is divided into two progressive labs, each with multiple sub-labs offering **Portal** and **Code** paths:
+This workshop is divided into two progressive labs, each with multiple sub-labs offering **Portal** and **Code** paths.
+
+> 💡 For production deployments, you can also use Bicep, Terraform, or ARM Templates instead of the Azure CLI.
 
 ### [Lab 1: Building a RAG-Enabled Chatbot](./lab-1-rag-chatbot/README.md)
 **Duration**: 75-105 minutes

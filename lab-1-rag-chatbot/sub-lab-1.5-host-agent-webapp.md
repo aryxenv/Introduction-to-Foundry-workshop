@@ -134,12 +134,12 @@ lab-1-rag-chatbot/
 Use the Azure Developer CLI to download the template files (this does NOT create a nested git repo):
 > ✏️ **Replace [yourname]** with the same value you used in sub-lab 1.1 (e.g., `jsmith`).
 
+> ⚠️ When prompted for an environment name, enter: rag-chatbot-[yourname]! Example: rag-chatbot-jsmith
+
 ```powershell
 # Initialize from the template (inside the webapp folder)
 azd init -t microsoft-foundry/foundry-agent-webapp
 
-# When prompted for an environment name, enter: rag-chatbot-[yourname]
-# Example: rag-chatbot-jsmith
 ```
 
 > ⚠️ **Important**: Use a **unique** environment name! The environment name determines the Azure resource group name (e.g., `rag-chatbot-jsmith` creates resource group `rg-rag-chatbot-jsmith`). If multiple users use the same environment name, they will overwrite each other's deployments.
@@ -163,7 +163,7 @@ azd env set AI_AGENT_ID "RAG-Chatbot"
 > .\deployment\scripts\list-agents.ps1
 > ```
 
-**If you have multiple AI Foundry resources**, you must also specify which one to use. Otherwise the script will pick a random one and fail:
+**If you have multiple Microsoft Foundry resources**, you must also specify which one to use. Otherwise the script will pick a random one and fail:
 
 > ✏️ **Replace [yourname]** with the same value you used in sub-lab 1.1 (e.g., `jsmith`).
 
