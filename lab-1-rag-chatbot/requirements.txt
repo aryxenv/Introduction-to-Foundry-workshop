@@ -1,12 +1,12 @@
 # Requirements for Lab 1: RAG-Enabled Chatbot
 
 # Microsoft Foundry / Agent Framework
-azure-ai-projects
+azure-ai-projects>=2.0.0b3
 azure-ai-inference
 azure-identity
 
 # Azure Search for RAG
-azure-search-documents
+azure-search-documents>=11.7.0b2
 
 # Web Framework
 fastapi
