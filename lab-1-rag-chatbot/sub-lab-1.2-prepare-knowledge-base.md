@@ -97,7 +97,7 @@ The `data/knowledge_base/` folder contains sample documents:
 >
 > 1. Go to **Access Control (IAM)** on your storage account
 > 2. Click **Add** → **Add role assignment**
-> 3. Choose role: **"Storage Blob Data Owner"**
+> 3. Choose role: **"Storage Blob Data Contributor"**
 > 4. Press **Next**
 > 5. Select **"User, group, or service principal"**
 > 6. Click **"Select members"** → Select yourself
