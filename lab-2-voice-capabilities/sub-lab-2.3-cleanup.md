@@ -10,7 +10,8 @@
 
 In this sub-lab, you'll clean up all Azure resources created during Labs 1 and 2. This ensures you don't incur ongoing costs for resources you're no longer using.
 
-> ⚠️ **Warning**: This process is **irreversible**. All data, deployments, and configurations will be permanently deleted.
+> [!WARNING]
+> This process is **irreversible**. All data, deployments, and configurations will be permanently deleted.
 
 ---
 
@@ -79,7 +80,8 @@ SUCCESS: Your application was removed from Azure.
 
 Now delete the main resource group containing your Foundry resources, AI Search, Storage, and model deployments:
 
-> ✏️ **Replace `[yourname]`** with your actual name (same as Lab 1.1).
+> [!IMPORTANT]
+> **Replace `[yourname]`** with your actual name (same as Lab 1.1).
 
 ```powershell
 # Delete the main resource group (this deletes EVERYTHING inside it)
@@ -89,7 +91,8 @@ az group delete `
   --no-wait
 ```
 
-> 💡 **Note**: The `--no-wait` flag returns immediately while deletion continues in the background. Full deletion takes 2-5 minutes.
+> [!NOTE]
+> The `--no-wait` flag returns immediately while deletion continues in the background. Full deletion takes 2-5 minutes.
 
 ---
 
@@ -97,7 +100,8 @@ az group delete `
 
 After a few minutes, verify the resources are deleted:
 
-> ✏️ **Replace `[yourname]`** with your actual name (same as Lab 1.1).
+> [!IMPORTANT]
+> **Replace `[yourname]`** with your actual name (same as Lab 1.1).
 
 ```powershell
 # Check if resource group still exists (should return error)

@@ -164,7 +164,8 @@ You should now have:
 <details>
 <summary><strong>Click to expand Code instructions</strong></summary>
 
-> 📝 **First time using the Code option?** Make sure you've completed the [Setup Guide](../SETUP.md) before continuing.
+> [!NOTE]
+> **First time using the Code option?** Make sure you've completed the [Setup Guide](../SETUP.md) before continuing.
 
 In this option, you'll create a **Foundry IQ knowledge base** that wraps your Azure AI Search index, then connect it to an agent using the **Model Context Protocol (MCP)**. This matches what the Portal does behind the scenes.
 
@@ -178,7 +179,8 @@ pip install azure-ai-projects azure-search-documents azure-identity python-doten
 
 The Foundry project has a **managed identity** that needs permission to read from your AI Search index. Without this role, the MCP endpoint returns a `405 Method Not Allowed` error when the agent tries to use the knowledge base.
 
-> ✏️ **Use PowerShell for this step.** Replace `[yourname]` with your actual name.
+> [!IMPORTANT]
+> **Use PowerShell for this step.** Replace `[yourname]` with your actual name.
 
 ```powershell
 # Get the project's managed identity principal ID
@@ -203,14 +205,16 @@ az role assignment create `
   --scope "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/rg-foundry-workshop-[yourname]/providers/Microsoft.Search/searchServices/search-chatbot-[yourname]"
 ```
 
-> ✅ **What you just configured:**
+> [!NOTE]
 > - **Search Index Data Reader** role: Allows the Foundry project's managed identity to read from your AI Search index. This is required for the MCP tool to retrieve knowledge base content.
 
-> **⏱️ Note:** Role assignments can take 1-2 minutes to propagate. If you get a 405 error when running the script, wait a moment and try again.
+> [!NOTE]
+> Role assignments can take 1-2 minutes to propagate. If you get a 405 error when running the script, wait a moment and try again.
 
 ### 3. Get Your Project Endpoint and Resource ID
 
-> ✏️ **Switch back to Git Bash for this step and the remaining steps.**
+> [!IMPORTANT]
+> **Switch back to Git Bash for this step and the remaining steps.**
 
 You need two values for this lab:
 
@@ -714,7 +718,8 @@ After running the script, you can verify your agent was created correctly:
 4. You should see your `RAG-Chatbot` agent listed
 5. Click on the agent to see the knowledge base connected to it
 
-> **💡 Note:** If you navigate to **Build → Knowledge**, you might not see your knowledge base listed initially. This is because the script creates the knowledge source and knowledge base **on Azure AI Search**, but the portal needs the AI Search connection to discover and display these objects.
+> [!NOTE]
+> If you navigate to **Build → Knowledge**, you might not see your knowledge base listed initially. This is because the script creates the knowledge source and knowledge base **on Azure AI Search**, but the portal needs the AI Search connection to discover and display these objects.
 >
 > To fix this:
 > 1. Go to **Build → Knowledge**

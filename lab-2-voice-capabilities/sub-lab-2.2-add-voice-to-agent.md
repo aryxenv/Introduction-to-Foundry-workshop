@@ -8,7 +8,8 @@
 
 In this sub-lab, you'll add real-time voice capabilities to the Foundry Agent Web App you deployed in Sub-Lab 1.5. Users will be able to speak directly to your chatbot and receive spoken responses using the GPT Realtime model.
 
-> **Note**: This sub-lab is **Code only** and builds on the Foundry Agent Web App from Sub-Lab 1.5.
+> [!NOTE]
+> This sub-lab is **Code only** and builds on the Foundry Agent Web App from Sub-Lab 1.5.
 
 ---
 
@@ -75,7 +76,8 @@ flowchart TD
 | **semantic_vad** | Server detects speech end based on meaning | More natural turn-taking |
 | **none** | Manual control (push-to-talk) | Noisy environments |
 
-> 💡 **Important**: When using `server_vad` or `semantic_vad`, the server automatically detects when you stop speaking and triggers a response. You don't need to manually commit the audio buffer - the server handles this for you.
+> [!IMPORTANT]
+> When using `server_vad` or `semantic_vad`, the server automatically detects when you stop speaking and triggers a response. You don't need to manually commit the audio buffer - the server handles this for you.
 
 ### Available Voices
 
@@ -92,7 +94,8 @@ flowchart TD
 
 ## 📋 Prerequisites
 
-> 📝 **First time using the Code option?** Make sure you've completed the [Setup Guide](../SETUP.md) before continuing.
+> [!NOTE]
+> **First time using the Code option?** Make sure you've completed the [Setup Guide](../SETUP.md) before continuing.
 
 - ✅ Completed [Sub-Lab 1.5](../lab-1-rag-chatbot/sub-lab-1.5-host-agent-webapp.md) - Foundry Agent Web App deployed
 - ✅ Completed [Sub-Lab 2.1](./sub-lab-2.1-deploy-realtime-model.md) - GPT Realtime model deployed
@@ -524,7 +527,7 @@ public static class VoiceEndpoints
 }
 ```
 
-> 📖 **What this code does:**
+> [!NOTE]
 > 1. **Configures Agent Tool**: When the session starts, it tells GPT Realtime about the `ask_agent` function
 > 2. **Intercepts Function Calls**: Watches for function call events from GPT Realtime
 > 3. **Calls Your RAG Agent**: Uses `AgentFrameworkService` (the same service the chat endpoint uses) to query your Lab 1 agent with proper authentication
@@ -1100,7 +1103,8 @@ export const VoicePanel: React.FC = () => {
 };
 ```
 
-> **Note**: The VoicePanel displays as a collapsible floating button in the bottom-right corner. Click the mic button to expand it, then click "Start" to connect. Once connected, click "Talk" and speak - the server will automatically detect when you're done and respond with audio. The panel shows only the last 3 transcript lines for a cleaner UI.
+> [!NOTE]
+> The VoicePanel displays as a collapsible floating button in the bottom-right corner. Click the mic button to expand it, then click "Start" to connect. Once connected, click "Talk" and speak - the server will automatically detect when you're done and respond with audio. The panel shows only the last 3 transcript lines for a cleaner UI.
 
 ---
 
@@ -1128,7 +1132,8 @@ Then add the component to your layout. The exact location depends on your UI pre
 
 The voice endpoint needs environment variables to connect to the Realtime API. Update your Bicep files to pass these values.
 
-> 💡 **Note**: The voice backend calls your RAG Agent (via `AI_AGENT_ENDPOINT`, already configured in Lab 1), which handles all knowledge base queries. You only need to add the Realtime API configuration.
+> [!NOTE]
+> The voice backend calls your RAG Agent (via `AI_AGENT_ENDPOINT`, already configured in Lab 1), which handles all knowledge base queries. You only need to add the Realtime API configuration.
 
 **8a. Update `infra/main.bicep`**
 
@@ -1192,13 +1197,15 @@ Add the mapping so azd passes the environment variable to Bicep. Find the `param
 
 **8d. Set the endpoint value in azd environment**
 
-> ✏️ **Replace [yourname]** with the same value you used in sub-lab 1.1.
+> [!IMPORTANT]
+> **Replace [yourname]** with the same value you used in sub-lab 1.1.
 
 ```powershell
 azd env set AZURE_OPENAI_ENDPOINT "https://foundry-workshop-[yourname].cognitiveservices.azure.com/"
 ```
 
-> ⚠️ **Important**: The `.env` file is for local development only. When deploying to Azure Container Apps, environment variables must be set via `azd env set` so they're passed through the Bicep templates.
+> [!IMPORTANT]
+> The `.env` file is for local development only. When deploying to Azure Container Apps, environment variables must be set via `azd env set` so they're passed through the Bicep templates.
 
 ---
 
@@ -1218,7 +1225,8 @@ ingress: enableIngress ? {
 } : null
 ```
 
-> 💡 **Note**: The default template already has `transport: 'auto'` which supports WebSockets. If your configuration matches the above, no changes are needed.
+> [!NOTE]
+> The default template already has `transport: 'auto'` which supports WebSockets. If your configuration matches the above, no changes are needed.
 
 ---
 
@@ -1230,7 +1238,8 @@ Deploy your updated app with voice capabilities. Use `azd up` (not `azd deploy`)
 azd up
 ```
 
-> ⚠️ **Important**: `azd deploy` only updates the container image. To apply new environment variables from the Bicep templates, you must run `azd up` which provisions infrastructure AND deploys the app.
+> [!IMPORTANT]
+> `azd deploy` only updates the container image. To apply new environment variables from the Bicep templates, you must run `azd up` which provisions infrastructure AND deploys the app.
 
 
 **Get your deployed URL:**

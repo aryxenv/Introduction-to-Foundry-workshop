@@ -67,7 +67,8 @@ Our index has these fields:
 <details>
 <summary><strong>Click to expand Portal instructions</strong></summary>
 
-> ✏️ **Replace [yourname]** with your actual name or identifier (e.g., `jsmith`) throughout these instructions. Use the same value you chose in sub-lab 1.1.
+> [!IMPORTANT]
+> **Replace [yourname]** with your actual name or identifier (e.g., `jsmith`) throughout these instructions. Use the same value you chose in sub-lab 1.1.
 
 ### 1. Create Azure AI Search Service
 
@@ -159,11 +160,13 @@ You should now have:
 <details>
 <summary><strong>Click to expand Code instructions</strong></summary>
 
-> 📝 **First time using the Code option?** Make sure you've completed the [Setup Guide](../SETUP.md) before continuing.
+> [!NOTE]
+> **First time using the Code option?** Make sure you've completed the [Setup Guide](../SETUP.md) before continuing.
 
 ### 1. Create AI Search Service via CLI
 
-> ✏️ Copy the code below into a text editor, **replace `[yourname]`** with your actual name, then run the command **in Git Bash**.
+> [!IMPORTANT]
+> Copy the code below into a text editor, **replace `[yourname]`** with your actual name, then run the command **in Git Bash**.
 
 ```bash
 # Create Azure AI Search service
@@ -174,9 +177,10 @@ az search service create \
   --location eastus2
 ```
 
-> 💡 **Note**: If you get an error about quota being exhausted, use `--sku standard` instead.
+> [!NOTE]
+> If you get an error about quota being exhausted, use `--sku standard` instead.
 
-> ✅ **What you just created:**
+> [!NOTE]
 > - **Azure AI Search Service** (`search-chatbot-[yourname]`): A managed search-as-a-service that will store and query vector embeddings of your documents. It powers the "retrieval" part of RAG.
 
 ### 2. Enable Managed Identity and RBAC on AI Search
@@ -198,15 +202,17 @@ az search service update \
   --aad-auth-failure-mode http401WithBearerChallenge
 ```
 
-> 💡 **Important**: By default, AI Search only allows API key authentication. The second command enables Azure AD authentication which is required for the Python script to work.
+> [!IMPORTANT]
+> By default, AI Search only allows API key authentication. The second command enables Azure AD authentication which is required for the Python script to work.
 
-> ✅ **What you just configured:**
+> [!NOTE]
 > - **System-Assigned Managed Identity**: Gives AI Search its own identity in Azure AD, allowing it to authenticate to other services (Storage, Foundry) without storing credentials
 > - **RBAC Authentication**: Enables Azure AD-based access so your Python scripts can use `DefaultAzureCredential` instead of API keys
 
 ### 3. Grant AI Search Access to Storage
 
-> ✏️ **Use PowerShell for this step.** Replace `[yourname]` with your actual name.
+> [!IMPORTANT]
+> **Use PowerShell for this step.** Replace `[yourname]` with your actual name.
 
 Your AI Search service needs permission to read documents from Blob Storage.
 
@@ -233,12 +239,13 @@ az role assignment create `
   --scope "$STORAGE_ID"
 ```
 
-> ✅ **What you just configured:**
+> [!NOTE]
 > - **Storage Blob Data Reader** role: Allows AI Search to read your documents from Blob Storage during indexing. Without this, AI Search cannot access your knowledge base files.
 
 ### 4. Grant AI Search Access to Foundry
 
-> ✏️ **Continue in PowerShell.** Replace `[yourname]` with your actual name.
+> [!IMPORTANT]
+> **Continue in PowerShell.** Replace `[yourname]` with your actual name.
 
 Your AI Search service needs permission to use the embedding model.
 
@@ -259,12 +266,13 @@ az role assignment create `
   --scope "$FOUNDRY_ID"
 ```
 
-> ✅ **What you just configured:**
+> [!NOTE]
 > - **Cognitive Services OpenAI User** role: Allows AI Search to call the embedding model (`text-embedding-3-small`) in Foundry. This is needed during indexing to convert document chunks into vectors.
 
 ### 5. Grant Yourself Access to Manage AI Search
 
-> ✏️ **Continue in PowerShell.** Replace `[yourname]` with your actual name.
+> [!IMPORTANT]
+> **Continue in PowerShell.** Replace `[yourname]` with your actual name.
 
 Your user account needs permission to create indexes, data sources, skillsets, and indexers via the REST API.
 
@@ -297,11 +305,12 @@ az role assignment create `
   --scope "$SEARCH_ID"
 ```
 
-> ✅ **What you just configured:**
+> [!NOTE]
 > - **Search Service Contributor**: Allows you to create and manage indexes, data sources, skillsets, and indexers
 > - **Search Index Data Contributor**: Allows you to query and modify data within indexes
 
-> 💡 **Note**: Role assignments can take 1-2 minutes to propagate. Wait before running the indexing script.
+> [!NOTE]
+> Role assignments can take 1-2 minutes to propagate. Wait before running the indexing script.
 
 ### 6. Install Additional Dependencies
 
@@ -311,7 +320,7 @@ Run this in Git Bash:
 pip install azure-search-documents requests
 ```
 
-> ✅ **What you just installed:**
+> [!NOTE]
 > - **azure-search-documents**: Azure SDK for interacting with AI Search (create indexes, run queries)
 > - **requests**: HTTP library used to call AI Search REST APIs for advanced operations
 
@@ -526,7 +535,8 @@ if __name__ == "__main__":
     main()
 ```
 
-> 📖 **What this script creates:**
+> [!NOTE]
+> **What this script creates:**
 > 1. **Index** (`chatbot-knowledge-base`): The data structure that stores your searchable content and vector embeddings
 > 2. **Data Source** (`chatbot-datasource`): A connection to your Blob Storage container so AI Search knows where to find documents
 > 3. **Skillset** (`chatbot-skillset`): A processing pipeline that:

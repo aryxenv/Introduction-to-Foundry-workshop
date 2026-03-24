@@ -34,7 +34,8 @@ The models below were chosen for this workshop based on availability and quota l
 | `text-embedding-3-large` | 3072 | Higher accuracy, larger index |
 | `text-embedding-ada-002` | 1536 | Legacy compatibility |
 
-> 💡 **Note**: This workshop uses `gpt-4.1-mini` and `text-embedding-3-small` by default. If you choose different models, update the model names in all subsequent steps.
+> [!NOTE]
+> This workshop uses `gpt-4.1-mini` and `text-embedding-3-small` by default. If you choose different models, update the model names in all subsequent steps.
 
 ---
 
@@ -69,7 +70,8 @@ A deployment is an instance of a model that you can call via API:
 <details>
 <summary><strong>Click to expand Portal instructions</strong></summary>
 
-> ✏️ **Replace [yourname]** with your actual name or identifier (e.g., `jsmith`) throughout these instructions. This ensures your resources are uniquely named.
+> [!IMPORTANT]
+> **Replace [yourname]** with your actual name or identifier (e.g., `jsmith`) throughout these instructions. This ensures your resources are uniquely named.
 
 ### 1. Create a Resource Group
 
@@ -156,7 +158,8 @@ Once your environment is ready, open a **Git Bash terminal** and navigate to the
 az --version
 ```
 
-> ✅ You should see Azure CLI version **2.50.0 or higher**. If you see a lower version or "command not found", revisit the [Setup Guide](../SETUP.md) to install/update the Azure CLI.
+> [!TIP]
+> You should see Azure CLI version **2.50.0 or higher**. If you see a lower version or "command not found", revisit the [Setup Guide](../SETUP.md) to install/update the Azure CLI.
 
 ```bash
 # Login to Azure
@@ -214,9 +217,11 @@ az cognitiveservices account project create \
 
 ### 4. Deploy Models via CLI
 
-> ✏️ Copy the code below into a text editor, **replace `[yourname]`** with your actual name, then run the commands.
+> [!IMPORTANT]
+> Copy the code below into a text editor, **replace `[yourname]`** with your actual name, then run the commands.
 
-> 💡 **Using different models?** Replace `gpt-4.1-mini` with `gpt-4.1` or `gpt-4o`, and/or replace `text-embedding-3-small` with `text-embedding-ada-002`.
+> [!TIP]
+> **Using different models?** Replace `gpt-4.1-mini` with `gpt-4.1` or `gpt-4o`, and/or replace `text-embedding-3-small` with `text-embedding-ada-002`.
 
 ```bash
 # Deploy Chat Model (default: gpt-4.1-mini)
@@ -285,9 +290,11 @@ AZURE_OPENAI_EMBEDDING_DEPLOYMENT=text-embedding-3-small
 AZURE_OPENAI_API_VERSION=2024-02-15-preview
 ```
 
-> 💡 **Note**: We're using Azure Identity (DefaultAzureCredential) for authentication instead of API keys. This is more secure and uses your `az login` credentials automatically.
+> [!NOTE]
+> We're using Azure Identity (DefaultAzureCredential) for authentication instead of API keys. This is more secure and uses your `az login` credentials automatically.
 
-> ⚠️ **Important**: Never commit `.env` file to version control!
+> [!IMPORTANT]
+> Never commit `.env` file to version control!
 
 ### ✅ Code Checkpoint
 

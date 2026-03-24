@@ -48,7 +48,8 @@ GPT Realtime is priced based on tokens per million:
 - Text input/output tokens
 - Audio input/output tokens (audio is tokenized)
 
-> 💡 For this workshop, usage will be minimal and well within free tier or trial credits.
+> [!TIP]
+> For this workshop, usage will be minimal and well within free tier or trial credits.
 
 ---
 
@@ -100,15 +101,18 @@ You should now have:
 <details>
 <summary><strong>Click to expand Code instructions</strong></summary>
 
-> 📝 **First time using the Code option?** Make sure you've completed the [Setup Guide](../SETUP.md) before continuing.
+> [!NOTE]
+> Make sure you've completed the [Setup Guide](../SETUP.md) before continuing.
 
-> ✏️ **Use PowerShell for all commands in this sub-lab.**
+> [!IMPORTANT]
+> Use PowerShell for all commands in this sub-lab.
 
 ### 1. Verify Prerequisites
 
 Ensure you're logged into Azure and have the Foundry resource from Lab 1.
 
-> ✏️ **Replace `[yourname]`** with your actual name (same as Lab 1.1) in all commands below.
+> [!IMPORTANT]
+> Replace `[yourname]` with your actual name (same as Lab 1.1) in all commands below.
 
 ```powershell
 # Check Azure CLI is installed
@@ -133,7 +137,8 @@ If you see an error like "ResourceNotFound", double-check your resource name fro
 
 ### 2. Deploy GPT Realtime Model
 
-> ✏️ **Replace `[yourname]`** with your actual name (same as Lab 1.1).
+> [!IMPORTANT]
+> Replace `[yourname]` with your actual name (same as Lab 1.1).
 
 ```powershell
 # Deploy GPT Realtime model
@@ -148,11 +153,13 @@ az cognitiveservices account deployment create `
   --sku-name GlobalStandard
 ```
 
-> 💡 **Note**: The GPT Realtime model uses `GlobalStandard` SKU which provides global availability. Capacity of 1 is sufficient for workshop purposes.
+> [!NOTE]
+> The GPT Realtime model uses `GlobalStandard` SKU which provides global availability. Capacity of 1 is sufficient for workshop purposes.
 
 ### 3. Verify Deployment
 
-> ✏️ **Replace `[yourname]`** with your actual name (same as Lab 1.1).
+> [!IMPORTANT]
+> Replace `[yourname]` with your actual name (same as Lab 1.1).
 
 ```powershell
 # Verify the deployment was created
@@ -173,7 +180,8 @@ gpt-realtime  gpt-realtime     Succeeded
 
 You can also list all deployments to see the complete picture:
 
-> ✏️ **Replace `[yourname]`** with your actual name (same as Lab 1.1).
+> [!IMPORTANT]
+> Replace `[yourname]` with your actual name (same as Lab 1.1).
 
 ```powershell
 # List all deployments

@@ -60,7 +60,8 @@ flowchart TD
 ---
 
 ## 📋 Prerequisites
-> 📝 **First time using the Code option?** Make sure you've completed the [Setup Guide](../SETUP.md) before continuing.
+> [!NOTE]
+> **First time using the Code option?** Make sure you've completed the [Setup Guide](../SETUP.md) before continuing.
 Before starting this sub-lab, ensure you have:
 
 - ✅ Completed Sub-Lab 1.4 (agent created and tested)
@@ -76,7 +77,8 @@ Before starting this sub-lab, ensure you have:
 | **Node.js 18+** | https://nodejs.org |
 | **Docker Desktop** (optional) | https://docker.com |
 
-> 💡 **Note**: Docker is optional. If not installed, `azd` automatically uses Azure Container Registry cloud build.
+> [!NOTE]
+> Docker is optional. If not installed, `azd` automatically uses Azure Container Registry cloud build.
 
 #### Installing PowerShell 7 (Required)
 
@@ -130,9 +132,11 @@ lab-1-rag-chatbot/
 ### Step 2: Initialize from the Template
 
 Use the Azure Developer CLI to download the template files (this does NOT create a nested git repo):
-> ✏️ **Replace [yourname]** with the same value you used in sub-lab 1.1 (e.g., `jsmith`).
+> [!IMPORTANT]
+> **Replace [yourname]** with the same value you used in sub-lab 1.1 (e.g., `jsmith`).
 
-> ⚠️ When prompted for an environment name, enter: rag-chatbot-[yourname]! Example: rag-chatbot-jsmith
+> [!WARNING]
+> When prompted for an environment name, enter: rag-chatbot-[yourname]! Example: rag-chatbot-jsmith
 
 ```powershell
 # Initialize from the template (inside the webapp folder)
@@ -140,7 +144,8 @@ azd init -t microsoft-foundry/foundry-agent-webapp
 
 ```
 
-> ⚠️ **Important**: Use a **unique** environment name! The environment name determines the Azure resource group name (e.g., `rag-chatbot-jsmith` creates resource group `rg-rag-chatbot-jsmith`). If multiple users use the same environment name, they will overwrite each other's deployments.
+> [!IMPORTANT]
+> Use a **unique** environment name! The environment name determines the Azure resource group name (e.g., `rag-chatbot-jsmith` creates resource group `rg-rag-chatbot-jsmith`). If multiple users use the same environment name, they will overwrite each other's deployments.
 
 
 This downloads the template files into your `webapp/` folder without any git history conflicts.
@@ -156,14 +161,16 @@ Set the agent ID to connect to your RAG chatbot from Sub-Lab 1.4:
 azd env set AI_AGENT_ID "RAG-Chatbot"
 ```
 
-> 💡 **Tip**: If you're unsure of your agent name, check the Foundry portal under **Build** → **Agents**, or run the list script after `azd up`:
+> [!TIP]
+> If you're unsure of your agent name, check the Foundry portal under **Build** → **Agents**, or run the list script after `azd up`:
 > ```powershell
 > .\deployment\scripts\list-agents.ps1
 > ```
 
 **If you have multiple Microsoft Foundry resources**, you must also specify which one to use. Otherwise the script will pick a random one and fail:
 
-> ✏️ **Replace [yourname]** with the same value you used in sub-lab 1.1 (e.g., `jsmith`).
+> [!IMPORTANT]
+> **Replace [yourname]** with the same value you used in sub-lab 1.1 (e.g., `jsmith`).
 
 ```powershell
 # Replace with your actual resource name and resource group from sub-lab 1.1
@@ -245,7 +252,8 @@ Web endpoint: https://ca-web-xxxxx.azurecontainerapps.io
 ---
 ### Step 6: Assign Project-Level Permissions
 
-> ✏️ **Use PowerShell for this step.** Replace `[yourname]` with your actual name.
+> [!IMPORTANT]
+> **Use PowerShell for this step.** Replace `[yourname]` with your actual name.
 
 The `azd up` command assigns roles at the Foundry **resource** level, but the web app also needs the `Cognitive Services User` role at the **project** level to invoke agents.
 
@@ -267,10 +275,12 @@ az role assignment create `
   --scope "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/rg-foundry-workshop-[yourname]/providers/Microsoft.CognitiveServices/accounts/foundry-workshop-[yourname]/projects/my-first-chatbot"
 ```
 
-> ✅ **What you just configured:**
+> [!NOTE]
+> **What you just configured:**
 > - **Cognitive Services User** role at the project level: Allows the web app's managed identity to invoke agents in your Foundry project.
 
-> **⏱️ Note:** Role assignments can take 1-2 minutes to propagate.
+> [!NOTE]
+> Role assignments can take 1-2 minutes to propagate.
 
 ---
 
@@ -301,9 +311,11 @@ The responses should be the same as when you tested in the Foundry portal, but n
 
 ## 🧹 Cleanup
 
-> ⚠️ **Planning to continue to Lab 2?** Skip this section! The resources created here are reused in Lab 2.
+> [!WARNING]
+> **Planning to continue to Lab 2?** Skip this section! The resources created here are reused in Lab 2.
 
-> 💡 **Full cleanup instructions** are available in [Sub-Lab 2.3: Cleanup Resources](../lab-2-voice-capabilities/sub-lab-2.3-cleanup.md), which covers deleting all resources from both Labs 1 and 2.
+> [!TIP]
+> **Full cleanup instructions** are available in [Sub-Lab 2.3: Cleanup Resources](../lab-2-voice-capabilities/sub-lab-2.3-cleanup.md), which covers deleting all resources from both Labs 1 and 2.
 
 If you only want to remove the web app resources (and keep your Foundry resources for other projects):
 

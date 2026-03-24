@@ -52,7 +52,8 @@ The `data/knowledge_base/` folder contains sample documents:
 <details>
 <summary><strong>Click to expand Portal instructions</strong></summary>
 
-> ✏️ **Replace [yourname]** with your actual name or identifier (e.g., `jsmith`) throughout these instructions. Use the same value you chose in sub-lab 1.1.
+> [!IMPORTANT]
+> **Replace [yourname]** with your actual name or identifier (e.g., `jsmith`) throughout these instructions. Use the same value you chose in sub-lab 1.1.
 
 ### 1. Create a Storage Account
 
@@ -87,7 +88,8 @@ The `data/knowledge_base/` folder contains sample documents:
 
 1. Click on your `knowledge-base-container`
 
-> ⚠️ **Warning: Permissions Error?**
+> [!WARNING]
+> **Permissions Error?**
 >
 > If you see: *"You do not have permissions to list the data using your user account with Microsoft Entra ID..."*
 >
@@ -130,7 +132,8 @@ You should now have:
 <details>
 <summary><strong>Click to expand Code instructions</strong></summary>
 
-> 📝 **First time using the Code option?** Make sure you've completed the [Setup Guide](../SETUP.md) before continuing.
+> [!NOTE]
+> **First time using the Code option?** Make sure you've completed the [Setup Guide](../SETUP.md) before continuing.
 
 ### 1. Install Dependencies
 
@@ -140,7 +143,8 @@ pip install azure-storage-blob azure-identity python-dotenv
 
 ### 2. Create Storage Account via CLI
 
-> ✏️ Copy the code below into a text editor, **replace `[yourname]`** with your actual name, then run the commands. Storage account names must be under 24 characters.
+> [!IMPORTANT]
+> Copy the code below into a text editor, **replace `[yourname]`** with your actual name, then run the commands. Storage account names must be under 24 characters.
 
 ```bash
 # Create storage account
@@ -163,9 +167,11 @@ az storage container create \
 
 ### 3. Grant Yourself Data Permissions
 
-> ⚠️ **Important**: You need the **Storage Blob Data Contributor** role to upload files using Azure Identity.
+> [!IMPORTANT]
+> You need the **Storage Blob Data Contributor** role to upload files using Azure Identity.
 
-> ✏️ **Use a PowerShell terminal for this step**. Replace `[yourname]` with your actual name.
+> [!IMPORTANT]
+> **Use a PowerShell terminal for this step**. Replace `[yourname]` with your actual name.
 
 ```powershell
 # Make sure you're logged in first
@@ -184,7 +190,8 @@ Write-Host "SUBSCRIPTION_ID: $SUBSCRIPTION_ID"
 # Assign Storage Blob Data Contributor role (single line command)
 az role assignment create --role "Storage Blob Data Contributor" --assignee-object-id $USER_OBJECT_ID --assignee-principal-type User --scope "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/rg-foundry-workshop-[yourname]/providers/Microsoft.Storage/storageAccounts/stchatbot[yourname]"
 ```
- ⚠️ **Troubleshooting: "Continuous access evaluation" Error**
+> [!WARNING]
+> **"Continuous access evaluation" Error**
 >
 > If you see an error like:
 > ```
@@ -197,7 +204,8 @@ az role assignment create --role "Storage Blob Data Contributor" --assignee-obje
 > ```
 > Then re-run the commands above.
 
-> 💡 **Note**: Role assignments can take a few minutes to propagate. If you still get permission errors, wait 2-3 minutes and try again.
+> [!NOTE]
+> Role assignments can take a few minutes to propagate. If you still get permission errors, wait 2-3 minutes and try again.
 
 ### 4. Upload Documents Programmatically
 
@@ -290,7 +298,8 @@ python scripts/upload_to_blob.py
 🎉 Successfully uploaded 2 documents!
 ```
 
-⚠️ **Troubleshooting: "AuthorizationPermissionMismatch" Error**
+> [!WARNING]
+> **"AuthorizationPermissionMismatch" Error**
 >
 > If you see an error like:
 > ```
