@@ -18,39 +18,37 @@ In this sub-lab, you'll add real-time voice capabilities to the Foundry Agent We
 
 The voice bot integrates GPT Realtime with your RAG agent from Lab 1 via **function calling**. When users ask questions, GPT Realtime calls the agent, which queries your knowledge base and returns grounded answers:
 
-```
-┌────────────────────────────────────────────────────────────────────┐
-│                     Foundry Agent Web App                          │
-│  ┌──────────────────────────────────────────────────────────────┐  │
-│  │  React Frontend                                              │  │
-│  │  ┌───────────────────┐      ┌────────────────────────────┐   │  │
-│  │  │  VoicePanel.tsx   │ ───> │  WebSocket Connection      │   │  │
-│  │  │  - Mic capture    │      │                            │   │  │
-│  │  │  - Audio playback │ <─── │                            │   │  │
-│  │  └───────────────────┘      └────────────────────────────┘   │  │
-│  └──────────────────────────────────────────────────────────────┘  │
-│  ┌──────────────────────────────────────────────────────────────┐  │
-│  │  ASP.NET Core Backend (VoiceEndpoints.cs)                    │  │
-│  │  ┌────────────────────────────────────────────────────────┐  │  │
-│  │  │  1. Connects to GPT Realtime with agent tool configured│  │  │
-│  │  │  2. Intercepts function calls from GPT Realtime        │  │  │
-│  │  │  3. Calls the RAG Agent with user's question           │  │  │
-│  │  │  4. Returns agent response → GPT generates spoken reply│  │  │
-│  │  └────────────────────────────────────────────────────────┘  │  │
-│  └──────────────────────────────────────────────────────────────┘  │
-└────────────────────────────────────────────────────────────────────┘
-          │                                      │
-          ▼                                      ▼
-┌─────────────────────────┐        ┌─────────────────────────────┐
-│  Azure OpenAI Realtime  │        │     RAG Agent (Lab 1)       │
-│  ┌───────────────────┐  │        │  ┌───────────────────────┐  │
-│  │ gpt-realtime      │  │  ask   │  │ Foundry IQ Agent      │  │
-│  │ - Speech-to-Speech│  │ ─────> │  │ - Knowledge base      │  │
-│  │ - Function Calling│  │        │  │ - Azure AI Search     │  │
-│  └───────────────────┘  │ <───── │  │ - Grounded answers    │  │
-│                         │ answer │  └───────────────────────┘  │
-└─────────────────────────┘        └─────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph APP["🏗️ Foundry Agent Web App"]
+        subgraph FRONTEND["⚛️ React Frontend"]
+            VP["VoicePanel.tsx - Mic capture - Audio playback"]
+            WS["WebSocket Connection"]
+            VP -->|"audio"| WS
+            WS -->|"responses"| VP
+        end
+        subgraph BACKEND["🖥️ ASP.NET Core Backend (VoiceEndpoints.cs)"]
+            S1["1. Connects to GPT Realtime with agent tool configured"]
+            S2["2. Intercepts function calls from GPT Realtime"]
+            S3["3. Calls the RAG Agent with user's question"]
+            S4["4. Returns agent response → GPT generates spoken reply"]
+            S1 --- S2 --- S3 --- S4
+        end
+        WS --> BACKEND
+    end
 
+    subgraph REALTIME["☁️ Azure OpenAI Realtime"]
+        GPT["gpt-realtime - Speech-to-Speech - Function Calling"]
+    end
+
+    subgraph RAG["🤖 RAG Agent (Lab 1)"]
+        IQ["Foundry IQ Agent - Knowledge base - Azure AI Search - Grounded answers"]
+    end
+
+    APP --> REALTIME
+    APP --> RAG
+    REALTIME -->|"ask"| RAG
+    RAG -->|"answer"| REALTIME
 ```
 
 **Flow when user asks a question:**
@@ -1353,11 +1351,9 @@ Now that you've built the voice bot, here's what's happening behind the scenes:
 
 ### 🎙️ Audio Capture & Encoding (Browser)
 
-```
-┌─────────────────┐    ┌──────────────┐    ┌─────────────────┐    ┌──────────────┐
-│🎤 Microphone🎤 │ →  │  Float32     │ →  │  PCM16 + Base64 │ →  │  WebSocket   │
-│    (24kHz)      │    │  Samples     │    │  Encoding       │    │  to Backend  │
-└─────────────────┘    └──────────────┘    └─────────────────┘    └──────────────┘
+```mermaid
+flowchart LR
+    A["🎤 Microphone 🎤 (24kHz)"] --> B["Float32 Samples"] --> C["PCM16 + Base64 Encoding"] --> D["WebSocket to Backend"]
 ```
 
 **Files**: [audioUtils.ts](frontend/src/utils/audioUtils.ts) • [VoicePanel.tsx](frontend/src/components/VoicePanel.tsx)
@@ -1366,13 +1362,9 @@ The `VoicePanel` uses Web Audio API to capture microphone input. The `AudioRecor
 
 ### 🔀 Dual WebSocket Proxy (Backend)
 
-```
-┌────────────┐         ┌─────────────────────────────┐         ┌─────────────────────┐
-│🌐Browser🌐│ ←────→  │ ⚡ VoiceEndpoints.cs ⚡    │ ←────→  │ 🤖 GPT Realtime 🤖 │
-│            │  WS #1  │   • ReceiveFromClientAsync  │  WS #2  │                     │
-│            │         │   • ReceiveFromRealtimeAsync│         │                     │
-└────────────┘         │   • Function call intercept │         └─────────────────────┘
-                       └─────────────────────────────┘
+```mermaid
+flowchart LR
+    BROWSER["🌐 Browser 🌐"] <-->|"WS #1"| BACKEND["⚡ VoiceEndpoints.cs ⚡ • ReceiveFromClientAsync • ReceiveFromRealtimeAsync • Function call intercept"] <-->|"WS #2"| GPT["🤖 GPT Realtime 🤖"]
 ```
 
 **File**: [VoiceEndpoints.cs](backend/WebApp.Api/Endpoints/VoiceEndpoints.cs)
@@ -1383,29 +1375,22 @@ The backend maintains **two simultaneous WebSocket connections**. Two async loop
 
 ### 🧠 Speech Processing (GPT Realtime)
 
-```
-┌──────────────────────────────────────────────────────────┐
-│                    GPT Realtime Model                    │
-│  ┌────────────────────────────────────────────────────┐  │
-│  │🎤 Audio In  → [Native Processing]  → 🔊 Audio Out │  │
-│  │                                                    │  │
-│  │  (NOT: STT → LLM → TTS — it's a single model!)     │  │
-│  └────────────────────────────────────────────────────┘  │
-│                         │                                │
-│             📝 Transcript (via Whisper-1) 📝            │
-│                  (only for UI display)                   │
-└──────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph MODEL["🧠 GPT Realtime Model"]
+        IN["🎤 Audio In"] --> PROC["Native Processing"] --> OUT["🔊 Audio Out"]
+        NOTE["(NOT: STT → LLM → TTS — it's a single model!)"]
+        PROC --> TRANSCRIPT["📝 Transcript (via Whisper-1) 📝 (only for UI display)"]
+    end
 ```
 
 Unlike traditional STT → LLM → TTS pipelines, GPT Realtime is a **single multimodal model** that processes audio natively. The `whisper-1` transcription is only for displaying text in the UI.
 
 ### 🔧 Function Call Interception
 
-```
-┌───────────────┐    ┌──────────────┐    ┌───────────────┐    ┌─────────────────┐    ┌────────────────┐
-│📨 GPT calls📨│ →  │🔍 Backend 🔍│ →  │🤖 RAG Agent🤖│ →  │📤 Send result📤│ →  │🗣️ GPT speaks🗣️│
-│   ask_agent   │    │  intercepts  │    │     (Lab 1)   │    │    back to GPT  │    │     answer     │
-└───────────────┘    └──────────────┘    └───────────────┘    └─────────────────┘    └────────────────┘
+```mermaid
+flowchart LR
+    A["📨 GPT calls 📨 ask_agent"] --> B["🔍 Backend 🔍 intercepts"] --> C["🤖 RAG Agent 🤖 (Lab 1)"] --> D["📤 Send result 📤 back to GPT"] --> E["🗣️ GPT speaks 🗣️ answer"]
 ```
 
 When GPT Realtime decides to call `ask_agent`:
@@ -1417,11 +1402,9 @@ When GPT Realtime decides to call `ask_agent`:
 
 ### 🔊 Audio Playback (Browser)
 
-```
-┌─────────────────┐    ┌─────────────────┐    ┌──────────────┐    ┌────────────────────┐
-│ 📥 WebSocket 📥│ →  │ Base64 → PCM16  │ →  │ Float32      │ →  │ 🔊 AudioContext 🔊│
-│   audio.delta   │    │ → Float32       │    │ AudioBuffer  │    │      (gapless)     │
-└─────────────────┘    └─────────────────┘    └──────────────┘    └────────────────────┘
+```mermaid
+flowchart LR
+    A["📥 WebSocket 📥 audio.delta"] --> B["Base64 → PCM16 → Float32"] --> C["Float32 AudioBuffer"] --> D["🔊 AudioContext 🔊 (gapless)"]
 ```
 
 **File**: [audioUtils.ts](frontend/src/utils/audioUtils.ts)

@@ -46,15 +46,13 @@ GPT Realtime is a model family that enables natural voice conversations:
 
 ### How It Works
 
-```
-┌──────────────────────────────────────────────────────────────────┐
-│                    GPT Realtime Model                            │
-│                                                                  │
-│   User Voice ──→ [Audio Processing] ──→ LLM ──→ Voice Response   │
-│       ↑                                              │           │
-│       └──────────── Interruption Detection ──────────┘           │
-│                                                                  │
-└──────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph GPT_Realtime_Model["GPT Realtime Model"]
+        A["User Voice"] -->|"Audio Processing"| B["LLM"]
+        B --> C["Voice Response"]
+        C -->|"Interruption Detection"| A
+    end
 ```
 
 Unlike traditional pipelines (STT → LLM → TTS), GPT Realtime handles everything in one model, reducing latency and enabling more natural conversations.
@@ -85,21 +83,14 @@ GPT Realtime supports multiple voices:
 
 ### Voice-Enabled Architecture
 
-```
-┌───────────────────────────────────────────────────────────────────┐
-│                      Microsoft Foundry                            │
-│                                                                   │
-│   ┌─────────────┐    ┌─────────────────┐    ┌─────────────────┐   │
-│   │ GPT Realtime│ ←→ │ Your RAG Agent  │ ←→ │ Knowledge Base  │   │
-│   │   (voice)   │    │ (from Lab 1)    │    │ (AI Search)     │   │
-│   └─────────────┘    └─────────────────┘    └─────────────────┘   │
-│          ↑                                                        │
-└──────────│────────────────────────────────────────────────────────┘
-           │
-    ┌──────┴─────┐
-    │    User    │
-    │ 🎤Voice🎤 │
-    └────────────┘
+```mermaid
+flowchart TD
+    User["User 🎤Voice🎤"] --> GPT
+
+    subgraph Microsoft_Foundry["Microsoft Foundry"]
+        GPT["GPT Realtime (voice)"] <--> RAG["Your RAG Agent (from Lab 1)"]
+        RAG <--> KB["Knowledge Base (AI Search)"]
+    end
 ```
 
 ### Microsoft Services Used

@@ -42,15 +42,14 @@ Retrieval-Augmented Generation (RAG) is a technique that enhances Large Language
 
 ### System Architecture
 
-```
-                                                    
-                                                                      
-User Query ──┬──→ Embedding → Vector Search → Relevant Context        
-             │                                      │                  
-             │                                      ↓                  
-             └─────────────────────────────────→  LLM  ───→ Response   
-                                                                     
-                                                    
+```mermaid
+flowchart LR
+    A[User Query] --> B[Embedding]
+    B --> C[Vector Search]
+    C --> D[Relevant Context]
+    D --> E[LLM]
+    A --> E
+    E --> F[Response]
 ```
 
 ### Microsoft Services Used

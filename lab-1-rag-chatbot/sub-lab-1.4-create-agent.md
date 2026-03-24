@@ -747,22 +747,15 @@ You've completed Lab 1! You now have a fully functional RAG chatbot that:
 
 ### What You Built
 
-```
-┌────────────────────────────────────────────────────────────────┐
-│                     Microsoft Foundry                          │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │                    Your Agent                           │   │
-│  │  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐  │   │
-│  │  │ Chat Model  │ ↔→ │ Foundry IQ  │ ↔→ │  AI Search  │  │   │
-│  │  │  (answers)  │    │ (retrieval) │    │  (index)    │  │   │
-│  │  └─────────────┘    └─────────────┘    └─────────────┘  │   │
-│  └─────────────────────────────────────────────────────────┘   │
-│                              ↑                                 │
-│                     ┌─────────────┐                            │
-│                     │Blob Storage │                            │
-│                     │  (docs)     │                            │
-│                     └─────────────┘                            │
-└────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph Foundry["Microsoft Foundry"]
+        subgraph Agent["Your Agent"]
+            A["Chat Model (answers)"] <--> B["Foundry IQ (retrieval)"]
+            B <--> C["AI Search (index)"]
+        end
+        D["Blob Storage (docs)"] --> Agent
+    end
 ```
 
 ### Next Steps

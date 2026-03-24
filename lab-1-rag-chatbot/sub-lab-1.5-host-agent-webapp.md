@@ -25,28 +25,26 @@ The Foundry Agent Web App is an open-source template that provides:
 
 ### Architecture
 
-```
-┌───────────────────────────────────────────────────────────────────┐
-│                     Azure Container Apps                          │
-│  ┌─────────────────────────────────────────────────────────────┐  │
-│  │                  Foundry Agent Web App                       │  │
-│  │  ┌─────────────────┐         ┌─────────────────────────┐    │  │
-│  │  │  React Frontend │ ──API──▶│  ASP.NET Core Backend   │    │  │
-│  │  │  (Chat UI)      │         │  (Streaming + Auth)     │    │  │
-│  │  └─────────────────┘         └───────────┬─────────────┘    │  │
-│  └──────────────────────────────────────────│──────────────────┘  │
-└─────────────────────────────────────────────│─────────────────────┘
-                                              │
-                                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                     Microsoft Foundry                            │
-│  ┌─────────────────────────────────────────────────────────────┐ │
-│  │  Your RAG Agent (from Sub-Lab 1.4)                          │ │
-│  │  ┌─────────────┐    ┌─────────────┐    ┌─────────────────┐  │ │
-│  │  │ Chat Model  │ ↔→ │ Foundry IQ  │ ↔→ │ AI Search Index │  │ │
-│  │  └─────────────┘    └─────────────┘    └─────────────────┘  │ │
-│  └─────────────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph ACA["Azure Container Apps"]
+        subgraph WebApp["Foundry Agent Web App"]
+            Frontend["React Frontend (Chat UI)"]
+            Backend["ASP.NET Core Backend (Streaming + Auth)"]
+            Frontend -- API --> Backend
+        end
+    end
+
+    subgraph Foundry["Microsoft Foundry"]
+        subgraph RAG["Your RAG Agent (from Sub-Lab 1.4)"]
+            ChatModel["Chat Model"]
+            FoundryIQ["Foundry IQ"]
+            SearchIndex["AI Search Index"]
+            ChatModel <--> FoundryIQ <--> SearchIndex
+        end
+    end
+
+    Backend --> Foundry
 ```
 
 ### What Gets Deployed

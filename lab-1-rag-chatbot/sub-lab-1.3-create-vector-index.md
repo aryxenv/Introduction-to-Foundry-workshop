@@ -25,10 +25,10 @@ A vector index stores numerical representations (embeddings) of your documents:
 
 ### How Embeddings Work
 
-```
-"What is the return policy?" 
-    ↓ Embedding Model
-[0.023, -0.456, 0.789, ..., 0.234]  (1536 numbers)
+```mermaid
+flowchart TD
+    A["&quot;What is the return policy?&quot;"] --> B["Embedding Model"]
+    B --> C["[0.023, -0.456, 0.789, ..., 0.234] (1536 numbers)"]
 ```
 
 Similar meanings → Similar vectors → Found together in search
